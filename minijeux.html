@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE LOCK · Mini-Jeux</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#f0b429;--electric:#00d4ff;--danger:#ff2d55;--green:#22c55e;--purple:#a855f7;--ink:#07090f;--panel:#0d1117;--panel2:#111822;--border:#1c2a3a;--text:#e2e8f0;--muted:#4a6080;--card:#0f1923}
+body{background:var(--ink);font-family:'DM Sans',sans-serif;color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at 20% 0%,#0d1a2e,transparent 50%),radial-gradient(ellipse at 80% 100%,#1a0d1a,transparent 50%)}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(7,9,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tb-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;color:white;cursor:pointer}
+.tb-logo span{color:var(--gold)}
+.tb-nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tb-nav::-webkit-scrollbar{display:none}
+.tb-link{padding:6px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;border-radius:6px;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.tb-link:hover{color:white;background:rgba(255,255,255,.05)}
+.tb-link.on{color:var(--gold)}
+.tb-right{display:flex;gap:8px;align-items:center}
+.tb-icon{width:34px;height:34px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;position:relative}
+.tb-notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;background:var(--danger);border-radius:50%;border:1px solid var(--ink)}
+.tb-profile{padding:0 12px;height:34px;border-radius:8px;background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.2);display:flex;align-items:center;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--gold);cursor:pointer;white-space:nowrap}
+
+/* LAYOUT */
+.layout{max-width:700px;margin:0 auto;padding:24px 16px;display:flex;flex-direction:column;gap:16px}
+
+/* SCREENS */
+.screen{display:none}
+.screen.on{display:flex;flex-direction:column;gap:16px;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── LOBBY ── */
+.lobby-header{text-align:center;padding:16px 0}
+.lobby-eyebrow{font-size:10px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:6px}
+.lobby-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,8vw,60px);letter-spacing:6px;color:white;line-height:1}
+.lobby-sub{font-size:13px;color:var(--muted);margin-top:6px}
+
+/* STREAK BAR */
+.streak-bar{
+  background:linear-gradient(135deg,rgba(240,180,41,.08),rgba(255,45,85,.04));
+  border:1px solid rgba(240,180,41,.2);border-radius:14px;
+  padding:16px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.sb-streak{display:flex;align-items:center;gap:8px}
+.sb-fire{font-size:28px}
+.sb-count{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:var(--gold)}
+.sb-label{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.sb-divider{width:1px;height:40px;background:var(--border);flex-shrink:0}
+.sb-stat{text-align:center}
+.sb-stat-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:white}
+.sb-stat-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.sb-right{margin-left:auto;text-align:right}
+.sb-daily{font-size:11px;color:var(--muted);margin-bottom:6px}
+.streak-dots{display:flex;gap:6px}
+.sd{width:28px;height:28px;border-radius:8px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .3s}
+.sd.done{background:var(--gold);border-color:var(--gold);color:#000}
+.sd.today{background:rgba(240,180,41,.2);border-color:var(--gold);animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(240,180,41,.4)}50%{box-shadow:0 0 0 6px rgba(240,180,41,0)}}
+
+/* CATEGORIES */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cat-card{
+  background:var(--card);border:2px solid var(--border);border-radius:16px;
+  padding:18px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;
+}
+.cat-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.4)}
+.cat-card.locked{opacity:.5;cursor:not-allowed}
+.cat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:0;transition:opacity .3s}
+.cat-card:hover::before{opacity:1}
+.cc-icon{font-size:32px;margin-bottom:10px}
+.cc-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:white;margin-bottom:4px}
+.cc-desc{font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:10px}
+.cc-footer{display:flex;align-items:center;justify-content:space-between}
+.cc-xp{font-size:11px;font-weight:700;color:var(--green)}
+.cc-diff{font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:10px;border:1px solid}
+.diff-easy{background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.2)}
+.diff-med{background:rgba(240,180,41,.1);color:var(--gold);border-color:rgba(240,180,41,.2)}
+.diff-hard{background:rgba(255,45,85,.1);color:var(--danger);border-color:rgba(255,45,85,.2)}
+.cc-prog{margin-top:10px}
+.cp-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.cp-fill{height:100%;border-radius:2px;transition:width .5s}
+.cp-label{font-size:10px;color:var(--muted);margin-top:4px;display:flex;justify-content:space-between}
+.cc-lock-icon{position:absolute;top:12px;right:12px;font-size:18px}
+
+/* ── GAME SCREEN ── */
+.game-header{
+  display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;
+}
+.gh-back{width:36px;height:36px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s;flex-shrink:0}
+.gh-back:hover{border-color:var(--gold)}
+.gh-progress{flex:1}
+.gh-title{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.progress-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--electric));transition:width .4s cubic-bezier(.22,1,.36,1)}
+.gh-stats{display:flex;gap:12px;flex-shrink:0}
+.gh-stat{text-align:center}
+.gh-stat-val{font-family:'Bebas Neue',sans-serif;font-size:16px}
+.gh-stat-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+
+/* HEARTS */
+.hearts{display:flex;gap:4px}
+.heart{font-size:18px;transition:all .3s}
+.heart.lost{opacity:.2;transform:scale(.8)}
+
+/* QUESTION CARD */
+.question-card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:24px;position:relative;overflow:hidden;
+}
+.qc-type{font-size:10px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.qc-type::after{content:'';flex:1;height:1px;background:var(--border)}
+.qc-question{font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,4vw,26px);letter-spacing:2px;color:white;line-height:1.3;margin-bottom:20px}
+.qc-image{
+  width:100%;height:140px;border-radius:10px;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--panel2);border:1px solid var(--border);overflow:hidden;
+}
+
+/* ANSWERS */
+.answers-grid{display:flex;flex-direction:column;gap:8px}
+.answer-btn{
+  width:100%;padding:14px 18px;
+  background:var(--panel2);border:2px solid var(--border);border-radius:12px;
+  color:white;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;text-align:left;display:flex;align-items:center;gap:12px;
+}
+.answer-btn:hover:not(:disabled){background:rgba(240,180,41,.06);border-color:rgba(240,180,41,.4);transform:translateX(3px)}
+.answer-btn.correct{background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green)}
+.answer-btn.wrong{background:rgba(255,45,85,.1);border-color:var(--danger);color:var(--danger)}
+.answer-btn.reveal{background:rgba(34,197,94,.06);border-color:rgba(34,197,94,.3);color:var(--muted)}
+.answer-letter{
+  width:28px;height:28px;border-radius:8px;background:var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;
+  flex-shrink:0;transition:all .2s;
+}
+.answer-btn.correct .answer-letter{background:var(--green);color:#000}
+.answer-btn.wrong .answer-letter{background:var(--danger);color:white}
+
+/* FEEDBACK */
+.feedback{
+  padding:16px 20px;border-radius:12px;display:flex;align-items:center;gap:12px;
+  animation:slideUp .3s cubic-bezier(.22,1,.36,1);
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fb-correct{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2)}
+.fb-wrong{background:rgba(255,45,85,.1);border:1px solid rgba(255,45,85,.2)}
+.fb-icon{font-size:28px;flex-shrink:0}
+.fb-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px}
+.fb-title.c{color:var(--green)}
+.fb-title.w{color:var(--danger)}
+.fb-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.fb-xp{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--green);margin-left:auto}
+.btn-next{
+  width:100%;padding:14px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:4px;
+  border:none;border-radius:12px;cursor:pointer;transition:all .2s;
+}
+.btn-next-correct{background:var(--green);color:#000}
+.btn-next-correct:hover{background:#16a34a;transform:translateY(-1px)}
+.btn-next-wrong{background:var(--danger);color:white}
+.btn-next-wrong:hover{background:#e01f45;transform:translateY(-1px)}
+
+/* ── RESULTS SCREEN ── */
+.results-hero{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:32px 24px;text-align:center;position:relative;overflow:hidden;
+}
+.results-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--electric),var(--purple))}
+.res-icon{font-size:64px;margin-bottom:16px;animation:bounce .6s cubic-bezier(.22,1,.36,1)}
+@keyframes bounce{from{transform:scale(0) rotate(-10deg)}to{transform:scale(1) rotate(0)}}
+.res-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,6vw,42px);letter-spacing:4px;color:white;margin-bottom:6px}
+.res-sub{font-size:14px;color:var(--muted);margin-bottom:24px}
+.res-rewards{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.res-reward{
+  padding:10px 20px;border-radius:12px;text-align:center;
+  background:var(--panel2);border:1px solid var(--border);
+}
+.rr-val{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px}
+.rr-label{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.res-score-bar{margin:0 auto 20px;max-width:300px}
+.rsb-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.rsb-bar{height:10px;background:var(--border);border-radius:5px;overflow:hidden}
+.rsb-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--gold),var(--green));transition:width 1s ease}
+.res-actions{display:flex;gap:10px}
+.btn-replay{flex:1;padding:13px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;background:var(--panel2);border:1.5px solid var(--border);color:white;border-radius:10px;cursor:pointer;transition:all .2s}
+.btn-replay:hover{border-color:var(--gold);color:var(--gold)}
+.btn-continue{flex:1;padding:13px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;background:var(--gold);color:#000;border:none;border-radius:10px;cursor:pointer;transition:all .2s}
+.btn-continue:hover{background:#f8d73b;transform:translateY(-1px)}
+
+/* LEADERBOARD */
+.lb-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(28,42,58,.4)}
+.lb-item:last-child{border-bottom:none}
+.lb-rank{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--muted);width:24px;text-align:center;flex-shrink:0}
+.lb-rank.gold{color:var(--gold)}.lb-rank.silver{color:#ccc}.lb-rank.bronze{color:#cd7f32}
+.lb-info{flex:1}
+.lb-name{font-weight:700;font-size:13px;color:white}
+.lb-me{font-size:9px;padding:1px 6px;border-radius:10px;background:rgba(240,180,41,.15);color:var(--gold);border:1px solid rgba(240,180,41,.2);margin-left:6px;font-weight:700;letter-spacing:1px}
+.lb-streak{font-size:11px;color:var(--muted)}
+.lb-score{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--green)}
+
+/* FOOTER */
+.site-footer{background:var(--ink);border-top:1px solid var(--border);padding:24px 20px;margin-top:20px}
+.footer-inner{max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:4px;color:white}
+.footer-logo span{color:var(--gold)}
+.footer-right{font-size:11px;color:#2a3a4a;font-family:'DM Mono',monospace}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-logo" onclick="nav('accueil')">THE <span>LOCK</span></div>
+  <nav class="tb-nav">
+    <button class="tb-link" onclick="nav('accueil')">Accueil</button>
+    <button class="tb-link" onclick="nav('joueurs')">Joueurs</button>
+    <button class="tb-link" onclick="nav('ligue')">Ligues</button>
+    <button class="tb-link on">Mini-Jeux</button>
+  </nav>
+  <div class="tb-right">
+    <div class="tb-icon"><span>🔔</span><div class="tb-notif-dot"></div></div>
+    <div class="tb-profile" onclick="nav('profil')">NASSIM</div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- ══ LOBBY ══ -->
+  <div class="screen on" id="screen-lobby">
+
+    <div class="lobby-header">
+      <div class="lobby-eyebrow">THE LOCK · EDITION I</div>
+      <div class="lobby-title">MINI-JEUX</div>
+      <div class="lobby-sub">Reponds correctement pour gagner XP et Lock Coins</div>
+    </div>
+
+    <!-- STREAK -->
+    <div class="streak-bar">
+      <div class="sb-streak">
+        <div class="sb-fire">🔥</div>
+        <div>
+          <div class="sb-count" id="streak-count">5</div>
+          <div class="sb-label">Streak</div>
+        </div>
+      </div>
+      <div class="sb-divider"></div>
+      <div class="sb-stat"><div class="sb-stat-val" style="color:var(--green)" id="total-xp">1 250</div><div class="sb-stat-label">XP gagne</div></div>
+      <div class="sb-divider"></div>
+      <div class="sb-stat"><div class="sb-stat-val" style="color:var(--gold)" id="total-lc">320</div><div class="sb-stat-label">Lock Coins</div></div>
+      <div class="sb-right">
+        <div class="sb-daily">Progression du jour</div>
+        <div class="streak-dots" id="streak-dots"></div>
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:3px;color:var(--muted)">CHOISIR UNE CATEGORIE</div>
+    <div class="cat-grid" id="cat-grid"></div>
+
+    <!-- LEADERBOARD -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:white;margin-bottom:14px">CLASSEMENT DU JOUR</div>
+      <div id="leaderboard"></div>
+    </div>
+
+  </div>
+
+  <!-- ══ GAME ══ -->
+  <div class="screen" id="screen-game">
+
+    <!-- Header -->
+    <div class="game-header">
+      <div class="gh-back" onclick="backToLobby()">←</div>
+      <div class="gh-progress">
+        <div class="gh-title" id="game-cat-title">TACTIQUE</div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      </div>
+      <div class="gh-stats">
+        <div class="gh-stat">
+          <div class="gh-stat-val" style="color:var(--green)" id="game-xp">0</div>
+          <div class="gh-stat-label">XP</div>
+        </div>
+        <div class="gh-stat">
+          <div class="hearts" id="hearts-display"></div>
+          <div class="gh-stat-label">Vies</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question -->
+    <div class="question-card" id="question-card"></div>
+
+    <!-- Feedback -->
+    <div id="feedback-zone"></div>
+
+    <!-- Next button -->
+    <button class="btn-next" id="btn-next" style="display:none" onclick="nextQuestion()">CONTINUER</button>
+
+  </div>
+
+  <!-- ══ RESULTS ══ -->
+  <div class="screen" id="screen-results">
+    <div class="results-hero">
+      <div class="res-icon" id="res-icon">🎉</div>
+      <div class="res-title" id="res-title">EXCELLENT !</div>
+      <div class="res-sub" id="res-sub">Tu as tout dechire !</div>
+      <div class="res-rewards" id="res-rewards"></div>
+      <div class="res-score-bar">
+        <div class="rsb-label"><span>Score</span><span id="res-score-label">0/0</span></div>
+        <div class="rsb-bar"><div class="rsb-fill" id="res-score-fill" style="width:0%"></div></div>
+      </div>
+      <div class="res-actions">
+        <button class="btn-replay" onclick="replayGame()">REJOUER</button>
+        <button class="btn-continue" onclick="backToLobby()">CONTINUER</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">THE <span>LOCK</span></div>
+    <div class="footer-right">THE LOCK · EDITION I · 2026</div>
+  </div>
+</footer>
+
+<script>
+// ══════════════════════════════
+//  DATA - QUESTIONS
+// ══════════════════════════════
+var ALL_QUESTIONS = {
+  tactique: [
+    {q:'Quelle formation utilise 3 defenseurs centraux, 5 milieux et 2 attaquants ?',a:['3-5-2','4-4-2','4-3-3','5-3-2'],correct:0,expl:'Le 3-5-2 est une formation tres equilibree avec un milieu dense.'},
+    {q:'Dans un 4-3-3, combien de milieux de terrain y a-t-il ?',a:['2','3','4','5'],correct:1,expl:'Le 4-3-3 comprend 4 defenseurs, 3 milieux et 3 attaquants.'},
+    {q:'Qu est-ce que le pressing haut ?',a:['Defendre pres de son but','Attaquer haut sur le terrain','Jouer en contre-attaque','Garder le ballon'],correct:1,expl:'Le pressing haut consiste a recuperer le ballon le plus haut possible sur le terrain adversaire.'},
+    {q:'Quel poste joue generalement derriere les attaquants en 4-2-3-1 ?',a:['Milieu defensif','Attaquant de pointe','Numero 10 / Trequartista','Lateral'],correct:2,expl:'Le numero 10 joue entre le milieu et l attaque, avec liberte totale de mouvement.'},
+    {q:'Le "faux 9" est un attaquant qui :',a:['Ne marque jamais','Descend pour creer des espaces','Reste toujours en pointe','Joue lateral'],correct:1,expl:'Le faux 9 descend dans l espace pour perturber la defense adverse et creer des opportunites.'},
+    {q:'Qu est-ce qu un contre ?',a:['Une attaque rapide apres recuperation','Un tacle','Un corner','Un hors-jeu'],correct:0,expl:'Le contre consiste a attaquer rapidement apres avoir recupere le ballon, avant que la defense adverse se reorganise.'},
+    {q:'Le diamant en milieu de terrain correspond a quelle formation ?',a:['4-3-3','4-4-2 diamant','3-5-2','5-4-1'],correct:1,expl:'Le 4-4-2 diamant utilise 4 milieux disposes en losange : defensif, 2 centraux et offensif.'},
+    {q:'Qu est-ce que le "jeu en transitions" ?',a:['Jouer lentement','Alterner rapidement attaque et defense','Garder le ballon longtemps','Jouer en retrait'],correct:1,expl:'Les transitions sont les moments de bascule rapide entre phase offensive et defensive.'},
+  ],
+  regles: [
+    {q:'Combien de joueurs peut avoir une equipe de football a 11 ?',a:['9','10','11','12'],correct:2,expl:'Une equipe de football comprend 11 joueurs dont le gardien.'},
+    {q:'Que se passe-t-il si le gardien touche le ballon avec les mains apres une passe du pied d un coequipier ?',a:['Corner','Penalty','Coup franc indirect','Coup franc direct'],correct:2,expl:'C est une faute sanctionnee par un coup franc indirect, une regle ajoutee pour eviter que les gardiens perdent du temps.'},
+    {q:'Un joueur est en hors-jeu si :',a:['Il est derriere le ballon','Il est plus proche du but adverse que l avant-dernier defenseur','Il est dans sa propre moitie','Il court vite'],correct:1,expl:'Le hors-jeu se produit quand un joueur est devant l avant-dernier defenseur adverse au moment ou le ballon est joue.'},
+    {q:'Combien de temps dure une mi-temps en football ?',a:['40 minutes','45 minutes','50 minutes','60 minutes'],correct:1,expl:'Chaque mi-temps dure 45 minutes, plus le temps additionnel decide par l arbitre.'},
+    {q:'Qu est-ce qu un penalty ?',a:['Un coup franc a 20m','Un tir depuis le point de penalty apres faute dans la surface','Un corner','Un coup franc indirect'],correct:1,expl:'Le penalty est accorde pour toute faute commise par un defenseur dans sa propre surface de reparation.'},
+    {q:'Combien de changements sont autorises en match officiel ?',a:['3','5','7','Illimite'],correct:1,expl:'Depuis 2020, les competitions officielles autorisent 5 changements par match.'},
+    {q:'Qu est-ce qu un carton rouge direct justifie ?',a:['Simulation','Faute grossiere ou violent conduct','Contestation','Retard de jeu'],correct:1,expl:'Un carton rouge direct est donne pour faute grossiere, violence ou crachat sur un adversaire.'},
+    {q:'Ou se situe le point de penalty ?',a:['A 5m du but','A 11m du but','A 16m du but','A 20m du but'],correct:1,expl:'Le point de penalty est place a 11 metres du centre de la ligne de but.'},
+  ],
+  thelock: [
+    {q:'Combien de joueurs ont participe a la premiere edition de THE LOCK ?',a:['20','25','27','30'],correct:2,expl:'THE LOCK Edition I compte 27 joueurs repartis en 2 equipes.'},
+    {q:'Quel est le nom de la monnaie du site THE LOCK ?',a:['THE Coins','Lock Coins','Gold Coins','Lock Money'],correct:1,expl:'Les Lock Coins sont la monnaie officielle de THE LOCK, gagnee par les performances et les presences.'},
+    {q:'Combien y a-t-il de niveaux dans THE LOCK ?',a:['5','6','7','10'],correct:2,expl:'THE LOCK comprend 7 niveaux : Recrue, Initie, Apprenti, Confirme, Elite, Legendaire et ICON.'},
+    {q:'Quel est le niveau maximum dans THE LOCK ?',a:['Legendaire','ICON','Elite','Maitre'],correct:1,expl:'ICON est le niveau ultime de THE LOCK, obtenu apres 20 000 XP.'},
+    {q:'Qui est le coach de l equipe Bleue dans Edition I ?',a:['Nassim','ABD','JNR','Yves'],correct:2,expl:'JNR est le coach officiel de THE LOCK Edition I, il a le niveau ICON.'},
+    {q:'Combien de capacites un joueur peut-il avoir au maximum ?',a:['1','2','3','4'],correct:2,expl:'Un joueur peut avoir jusqu a 3 capacites : principale, secondaire (Confirme) et ultime (Legendaire).'},
+    {q:'Qu est-ce que le mercato dans THE LOCK ?',a:['Un match special','Une periode d echanges de joueurs entre equipes','Un tournoi','Une recompense'],correct:1,expl:'Le mercato est une fenetre de transfert entre equipes, ouverte a l ouverture d une ligue.'},
+    {q:'Combien de XP faut-il pour atteindre le niveau CONFIRME ?',a:['1 500','2 000','3 000','5 000'],correct:2,expl:'Il faut 3 000 XP pour atteindre le niveau Confirme dans THE LOCK.'},
+  ],
+  positions: [
+    {q:'Quel est le role principal d un milieu defensif ?',a:['Marquer des buts','Proteger la defense et intercepter','Centrer pour les attaquants','Tirer les corners'],correct:1,expl:'Le milieu defensif est l ecran devant la defense, il protege et relance proprement.'},
+    {q:'Qu est-ce qu un lateral offensif ?',a:['Un defenseur qui reste derriere','Un lateral qui monte souvent en attaque','Un milieu central','Un attaquant de couloir'],correct:1,expl:'Le lateral offensif participe activement aux actions offensives tout en assurant la defense.'},
+    {q:'Le libero est un poste de :',a:['Attaquant','Milieu','Defenseur central libre','Gardien'],correct:2,expl:'Le libero est un defenseur central qui a la liberte de monter en possession du ballon.'},
+    {q:'Qu est-ce qu un trequartista ?',a:['Un gardien','Un milieu offensif creatif entre lignes','Un attaquant de pointe','Un defenseur'],correct:1,expl:'Le trequartista est un meneur de jeu offensif qui evolue entre les lignes adverses avec liberte totale.'},
+    {q:'Le box-to-box est un milieu qui :',a:['Reste devant la defense','Court de sa surface a celle de l adversaire','Joue toujours en pointe','Tire les coups francs'],correct:1,expl:'Le box-to-box est un milieu complet qui parcourt tout le terrain, aussi efficace en defense qu en attaque.'},
+    {q:'Quel est le poste du joueur dont le seul role est d arreter les tirs ?',a:['Stoppeur','Libero','Gardien de but','Sentinelle'],correct:2,expl:'Le gardien de but est le seul joueur autorise a toucher le ballon avec les mains dans sa surface.'},
+    {q:'Qu est-ce qu un ailier inversee ?',a:['Un ailier qui joue du meme pied que son cote','Un ailier qui joue du pied oppose a son cote pour rentrer dans l axe','Un defenseur','Un milieu'],correct:1,expl:'L ailier inverse coupe vers le centre pour frapper du pied fort, comme Messi a gauche ou Robben a droite.'},
+    {q:'Quel poste est designe comme numero 9 traditionnellement ?',a:['Gardien','Milieu central','Attaquant de pointe','Lateral'],correct:2,expl:'Le numero 9 est l attaquant de pointe, dont le role principal est de marquer des buts.'},
+  ]
+};
+
+var CATEGORIES = [
+  {key:'tactique',  icon:'1F9E0',name:'TACTIQUE',     desc:'Formations, strategies et systemes de jeu',xp:90, lc:25,diff:'hard',  color:'#a855f7',prog:6,total:8},
+  {key:'regles',    icon:'1F4CB',name:'REGLES',        desc:'Connais les regles officielles du football',xp:60, lc:15,diff:'easy',  color:'#22c55e',prog:8,total:8},
+  {key:'thelock',   icon:'1F512',name:'THE LOCK',      desc:'Questions sur notre ligue et nos joueurs',xp:75, lc:20,diff:'med',   color:'#f0b429',prog:4,total:8},
+  {key:'positions', icon:'26BD', name:'POSITIONS',     desc:'Comprends chaque poste et son role',xp:75, lc:20,diff:'med',   color:'#00d4ff',prog:2,total:8},
+];
+
+var LEADERBOARD = [
+  {name:'JNR',     score:890, streak:12, me:false},
+  {name:'ABD',     score:750, streak:8,  me:false},
+  {name:'Nassim',  score:640, streak:5,  me:true},
+  {name:'Damien',  score:580, streak:4,  me:false},
+  {name:'Kaloga 1',score:420, streak:2,  me:false},
+];
+
+// ══════════════════════════════
+//  GAME STATE
+// ══════════════════════════════
+var G = {
+  category: null,
+  questions: [],
+  currentQ: 0,
+  hearts: 3,
+  xp: 0,
+  lc: 0,
+  correct: 0,
+  answered: false,
+  totalStreak: 5,
+  totalXP: 1250,
+  totalLC: 320,
+};
+
+// ══════════════════════════════
+//  BUILD LOBBY
+// ══════════════════════════════
+function buildStreakDots(){
+  var wrap = document.getElementById('streak-dots');
+  if(!wrap) return;
+  var days = ['L','M','M','J','V','S','D'];
+  var done = [true,true,true,true,true,false,false];
+  days.forEach(function(d,i){
+    var el = document.createElement('div');
+    el.className = 'sd' + (done[i]?' done':i===5?' today':'');
+    el.textContent = done[i] ? '✓' : d;
+    wrap.appendChild(el);
+  });
+}
+
+function buildCategories(){
+  var grid = document.getElementById('cat-grid');
+  if(!grid) return;
+  var diffLabel = {easy:'FACILE', med:'MOYEN', hard:'DIFFICILE'};
+  CATEGORIES.forEach(function(cat){
+    var card = document.createElement('div');
+    card.className = 'cat-card';
+    card.style.setProperty('--cat-color', cat.color);
+    card.style.cssText += 'border-color:'+cat.color+'33';
+    card.style.setProperty('border-color', cat.color+'33');
+
+    var pct = Math.round((cat.prog/cat.total)*100);
+    card.innerHTML =
+      '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:'+cat.color+'"></div>' +
+      '<div class="cc-icon">'+String.fromCodePoint(parseInt(cat.icon,16))+'</div>' +
+      '<div class="cc-name" style="color:'+cat.color+'">'+cat.name+'</div>' +
+      '<div class="cc-desc">'+cat.desc+'</div>' +
+      '<div class="cc-footer">' +
+        '<div class="cc-xp">+'+cat.xp+' XP · +'+cat.lc+' LC</div>' +
+        '<div class="cc-diff diff-'+cat.diff+'">'+diffLabel[cat.diff]+'</div>' +
+      '</div>' +
+      '<div class="cc-prog">' +
+        '<div class="cp-bar"><div class="cp-fill" style="width:'+pct+'%;background:'+cat.color+'"></div></div>' +
+        '<div class="cp-label"><span>'+cat.prog+'/'+cat.total+' completes</span><span style="color:'+cat.color+'">'+pct+'%</span></div>' +
+      '</div>';
+
+    card.onclick = function(){ startGame(cat.key); };
+    grid.appendChild(card);
+  });
+}
+
+function buildLeaderboard(){
+  var wrap = document.getElementById('leaderboard');
+  if(!wrap) return;
+  var rankClass = ['gold','silver','bronze','',''];
+  LEADERBOARD.forEach(function(p, i){
+    var item = document.createElement('div');
+    item.className = 'lb-item';
+    item.innerHTML =
+      '<div class="lb-rank '+(rankClass[i]||'')+'">'+(i+1)+'</div>' +
+      '<div class="lb-info">' +
+        '<div class="lb-name">'+p.name+(p.me?'<span class="lb-me">MOI</span>':'')+'</div>' +
+        '<div class="lb-streak">Streak: '+p.streak+' jours</div>' +
+      '</div>' +
+      '<div class="lb-score">'+p.score+' pts</div>';
+    wrap.appendChild(item);
+  });
+}
+
+// ══════════════════════════════
+//  GAME LOGIC
+// ══════════════════════════════
+function startGame(catKey){
+  G.category = catKey;
+  G.questions = shuffle(ALL_QUESTIONS[catKey] || []).slice(0, 6);
+  G.currentQ = 0;
+  G.hearts = 3;
+  G.xp = 0;
+  G.lc = 0;
+  G.correct = 0;
+  G.answered = false;
+
+  var cat = CATEGORIES.find(function(c){ return c.key===catKey; });
+  document.getElementById('game-cat-title').textContent = cat ? cat.name : catKey.toUpperCase();
+
+  showScreen('game');
+  renderQuestion();
+  updateHearts();
+  updateProgress();
+}
+
+function shuffle(arr){
+  var a = arr.slice();
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+  return a;
+}
+
+function renderQuestion(){
+  if(G.currentQ >= G.questions.length){ showResults(); return; }
+  var q = G.questions[G.currentQ];
+  G.answered = false;
+  document.getElementById('feedback-zone').innerHTML = '';
+  document.getElementById('btn-next').style.display = 'none';
+
+  var letters = ['A','B','C','D'];
+  var answers = q.a.map(function(ans, i){
+    return '<button class="answer-btn" onclick="answer('+i+')">' +
+      '<div class="answer-letter">'+letters[i]+'</div>' +
+      '<div>'+ans+'</div>' +
+    '</button>';
+  }).join('');
+
+  document.getElementById('question-card').innerHTML =
+    '<div class="qc-type">Question '+(G.currentQ+1)+' / '+G.questions.length+'</div>' +
+    '<div class="qc-question">'+q.q+'</div>' +
+    '<div class="answers-grid">'+answers+'</div>';
+
+  updateProgress();
+}
+
+function answer(idx){
+  if(G.answered) return;
+  G.answered = true;
+  var q = G.questions[G.currentQ];
+  var correct = idx === q.correct;
+  var cat = CATEGORIES.find(function(c){ return c.key===G.category; });
+  var xpGain = correct ? (cat ? Math.round(cat.xp / G.questions.length) : 15) : 0;
+  var lcGain  = correct ? (cat ? Math.round(cat.lc / G.questions.length) : 3) : 0;
+  if(correct){ G.correct++; G.xp += xpGain; G.lc += lcGain; }
+  else { G.hearts--; }
+
+  // Style answers
+  var btns = document.querySelectorAll('.answer-btn');
+  btns.forEach(function(btn, i){
+    btn.disabled = true;
+    if(i === q.correct) btn.classList.add('correct');
+    else if(i === idx && !correct) btn.classList.add('wrong');
+    else btn.classList.add('reveal');
+  });
+
+  // Feedback
+  var fb = document.getElementById('feedback-zone');
+  fb.innerHTML = correct
+    ? '<div class="feedback fb-correct"><div class="fb-icon">✅</div><div><div class="fb-title c">CORRECT !</div><div class="fb-sub">'+q.expl+'</div></div><div class="fb-xp">+'+xpGain+' XP</div></div>'
+    : '<div class="feedback fb-wrong"><div class="fb-icon">❌</div><div><div class="fb-title w">RATE !</div><div class="fb-sub">'+q.expl+'</div></div><div class="fb-xp" style="color:var(--danger)">-1 ❤️</div></div>';
+
+  // Next btn
+  var btn = document.getElementById('btn-next');
+  btn.style.display = 'block';
+  btn.className = 'btn-next ' + (correct ? 'btn-next-correct' : 'btn-next-wrong');
+
+  document.getElementById('game-xp').textContent = G.xp;
+  updateHearts();
+
+  if(G.hearts <= 0){ setTimeout(function(){ showResults(); }, 1200); }
+}
+
+function nextQuestion(){
+  G.currentQ++;
+  if(G.currentQ >= G.questions.length || G.hearts <= 0){ showResults(); return; }
+  renderQuestion();
+}
+
+function updateHearts(){
+  var wrap = document.getElementById('hearts-display');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  for(var i=0;i<3;i++){
+    var h = document.createElement('div');
+    h.className = 'heart' + (i >= G.hearts ? ' lost' : '');
+    h.textContent = '❤️';
+    wrap.appendChild(h);
+  }
+}
+
+function updateProgress(){
+  var pct = (G.currentQ / G.questions.length) * 100;
+  var el = document.getElementById('progress-fill');
+  if(el) el.style.width = pct+'%';
+}
+
+// ══════════════════════════════
+//  RESULTS
+// ══════════════════════════════
+function showResults(){
+  var total = G.questions.length;
+  var pct = Math.round((G.correct / total) * 100);
+  var perfect = G.correct === total;
+  var good = pct >= 60;
+
+  document.getElementById('res-icon').textContent = perfect ? '🏆' : good ? '🎉' : '💪';
+  document.getElementById('res-title').textContent = perfect ? 'PARFAIT !' : good ? 'BIEN JOUE !' : 'CONTINUE !';
+  document.getElementById('res-sub').textContent = perfect
+    ? 'Score parfait ! Tu es au top !'
+    : good ? G.correct+'/'+total+' bonnes reponses, pas mal !'
+    : 'Encore un effort, tu peux faire mieux !';
+
+  var rewards = document.getElementById('res-rewards');
+  rewards.innerHTML =
+    '<div class="res-reward"><div class="rr-val" style="color:var(--green)">+'+G.xp+'</div><div class="rr-label">XP</div></div>' +
+    '<div class="res-reward"><div class="rr-val" style="color:var(--gold)">+'+G.lc+'</div><div class="rr-label">Lock Coins</div></div>' +
+    '<div class="res-reward"><div class="rr-val" style="color:white">'+G.correct+'/'+total+'</div><div class="rr-label">Score</div></div>' +
+    (perfect ? '<div class="res-reward"><div class="rr-val" style="color:var(--gold)">+1</div><div class="rr-label">Streak</div></div>' : '');
+
+  document.getElementById('res-score-label').textContent = G.correct+'/'+total;
+  setTimeout(function(){
+    var fill = document.getElementById('res-score-fill');
+    if(fill) fill.style.width = pct+'%';
+  }, 300);
+
+  // Update totals
+  G.totalXP += G.xp;
+  G.totalLC += G.lc;
+  if(perfect) G.totalStreak++;
+  document.getElementById('total-xp').textContent = G.totalXP.toLocaleString();
+  document.getElementById('total-lc').textContent = G.totalLC;
+  document.getElementById('streak-count').textContent = G.totalStreak;
+
+  showScreen('results');
+}
+
+function replayGame(){ startGame(G.category); }
+function backToLobby(){ showScreen('lobby'); }
+
+// ══════════════════════════════
+//  SCREEN MANAGER
+// ══════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('on'); });
+  document.getElementById('screen-'+id).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── NAV ──
+function nav(page){
+  var pages={'accueil':'index.html','profil':'profil.html','joueurs':'joueurs.html','ligue':'ligue.html','classement':'classement.html','economie':'economie.html','minijeux':'minijeux.html','notifications':'notifications.html','coach':'coach.html'};
+  if(pages[page]) window.location.href=pages[page];
+}
+
+// ── INIT ──
+buildStreakDots();
+buildCategories();
+buildLeaderboard();
+</script>
+</body>
+</html>

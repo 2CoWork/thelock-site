@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE LOCK · Coach</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#f0b429;--electric:#00d4ff;--danger:#ff2d55;--green:#22c55e;--purple:#a855f7;--ink:#07090f;--panel:#0d1117;--panel2:#111822;--border:#1c2a3a;--text:#e2e8f0;--muted:#4a6080;--card:#0f1923}
+body{background:var(--ink);font-family:'DM Sans',sans-serif;color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at 20% 0%,#0d1a2e,transparent 50%),radial-gradient(ellipse at 80% 100%,#1a0d1a,transparent 50%)}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(7,9,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tb-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;color:white;flex-shrink:0;cursor:pointer}
+.tb-logo span{color:var(--gold)}
+.tb-nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tb-nav::-webkit-scrollbar{display:none}
+.tb-link{padding:6px 12px;font-size:12px;font-weight:600;letter-spacing:.5px;color:var(--muted);background:none;border:none;cursor:pointer;border-radius:6px;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.tb-link:hover{color:white;background:rgba(255,255,255,.05)}
+.tb-link.on{color:var(--gold)}
+.tb-right{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.tb-icon{width:34px;height:34px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;position:relative;transition:all .2s}
+.tb-icon:hover{border-color:var(--gold)}
+.tb-notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;background:var(--danger);border-radius:50%;border:1px solid var(--ink)}
+.tb-profile{padding:0 12px;height:34px;border-radius:8px;background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.2);display:flex;align-items:center;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--gold);cursor:pointer;white-space:nowrap}
+
+/* LAYOUT */
+.layout{max-width:1000px;margin:0 auto;padding:24px 16px;display:flex;flex-direction:column;gap:16px}
+
+/* COACH HERO */
+.coach-hero{
+  background:linear-gradient(135deg,#0d1a0a,#0a1208);
+  border:1px solid rgba(34,197,94,.2);border-radius:16px;
+  padding:20px 24px;display:flex;align-items:center;gap:20px;
+  position:relative;overflow:hidden;flex-wrap:wrap;
+}
+.coach-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--electric),var(--gold))}
+.ch-badge{
+  width:72px;height:72px;border-radius:16px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--green),#16a34a);
+  display:flex;align-items:center;justify-content:center;font-size:32px;
+  box-shadow:0 4px 20px rgba(34,197,94,.3);
+}
+.ch-info{flex:1}
+.ch-role{font-size:10px;letter-spacing:4px;color:var(--green);text-transform:uppercase;margin-bottom:4px}
+.ch-name{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:white}
+.ch-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.ch-level{
+  display:inline-flex;align-items:center;gap:6px;margin-top:8px;
+  padding:4px 12px;border-radius:20px;
+  background:rgba(255,45,85,.1);border:1px solid rgba(255,45,85,.2);
+  font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--danger);
+}
+.ch-stats{display:flex;gap:20px;flex-wrap:wrap}
+.chs-item{text-align:center}
+.chs-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:white}
+.chs-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+
+/* XP BOOST BANNER */
+.xp-boost{
+  background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);
+  border-radius:12px;padding:14px 16px;
+  display:flex;align-items:center;gap:12px;
+}
+.xpb-icon{font-size:24px;flex-shrink:0}
+.xpb-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:var(--green)}
+.xpb-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.xpb-val{margin-left:auto;font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--green);flex-shrink:0}
+
+/* TABS */
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:9px 18px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:10px;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.tab:hover{border-color:rgba(240,180,41,.3);color:var(--text)}
+.tab.on{background:rgba(240,180,41,.1);border-color:var(--gold);color:var(--gold)}
+.tab-notif{display:inline-block;width:16px;height:16px;border-radius:50%;background:var(--danger);color:white;font-size:9px;font-family:'DM Mono',monospace;text-align:center;line-height:16px;margin-left:4px;font-family:'DM Sans',sans-serif}
+
+/* TAB CONTENT */
+.tab-content{display:none}
+.tab-content.on{display:flex;flex-direction:column;gap:14px;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION */
+.sc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.sc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.sc-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:white}
+.sc-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.btn-primary{padding:9px 18px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;background:var(--gold);color:#000;border:none;border-radius:8px;cursor:pointer;transition:all .2s}
+.btn-primary:hover{background:#f8d73b;transform:translateY(-1px)}
+.btn-secondary{padding:9px 18px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;background:transparent;border:1.5px solid var(--border);color:var(--muted);border-radius:8px;cursor:pointer;transition:all .2s}
+.btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
+.btn-danger{padding:9px 18px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;background:rgba(255,45,85,.1);border:1px solid rgba(255,45,85,.2);color:var(--danger);border-radius:8px;cursor:pointer;transition:all .2s}
+.btn-danger:hover{background:rgba(255,45,85,.2)}
+.btn-green{padding:9px 18px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;background:var(--green);color:#000;border:none;border-radius:8px;cursor:pointer;transition:all .2s}
+.btn-green:hover{background:#16a34a;transform:translateY(-1px)}
+
+/* TRAINING SESSION */
+.training-card{
+  background:var(--panel2);border:2px solid var(--border);border-radius:12px;
+  padding:16px;display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:all .2s;
+}
+.training-card:hover{border-color:rgba(240,180,41,.3);transform:translateX(2px)}
+.training-card.active{border-color:var(--green);background:rgba(34,197,94,.04)}
+.tc-icon{font-size:28px;flex-shrink:0}
+.tc-info{flex:1}
+.tc-name{font-weight:700;font-size:15px;color:white}
+.tc-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.tc-xp{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--green);flex-shrink:0}
+.tc-status{font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 10px;border-radius:10px;flex-shrink:0}
+.ts-active{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.ts-done{background:rgba(74,96,128,.1);color:var(--muted);border:1px solid var(--border)}
+.ts-pending{background:rgba(240,180,41,.1);color:var(--gold);border:1px solid rgba(240,180,41,.2)}
+
+/* PRESENCE LIST */
+.presence-header{
+  display:grid;grid-template-columns:1fr 80px 80px 100px;
+  padding:8px 12px;font-size:9px;letter-spacing:2px;color:var(--muted);
+  text-transform:uppercase;border-bottom:1px solid var(--border);margin-bottom:4px;
+}
+.presence-row{
+  display:grid;grid-template-columns:1fr 80px 80px 100px;
+  padding:10px 12px;border-radius:8px;align-items:center;
+  transition:background .2s;
+}
+.presence-row:hover{background:rgba(255,255,255,.02)}
+.pr-player{display:flex;align-items:center;gap:10px}
+.pr-av{width:32px;height:32px;border-radius:50%;background:var(--panel);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted)}
+.pr-name{font-weight:700;font-size:13px;color:white}
+.pr-pos{font-size:10px;color:var(--muted)}
+.pr-xp{font-family:'DM Mono',monospace;font-size:12px;color:var(--green);text-align:center}
+.pr-status-cell{display:flex;justify-content:center}
+.pr-validate{padding:5px 12px;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;background:var(--green);color:#000;border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.pr-validate:hover{background:#16a34a}
+.pr-validate.validated{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.pr-validate.absent{background:rgba(255,45,85,.1);color:var(--danger);border:1px solid rgba(255,45,85,.2)}
+.pr-note{text-align:center}
+.note-input{width:50px;padding:4px 6px;background:var(--panel2);border:1px solid var(--border);border-radius:6px;color:white;font-family:'DM Mono',monospace;font-size:12px;text-align:center;outline:none;transition:border-color .2s}
+.note-input:focus{border-color:var(--gold)}
+
+/* QUICK ACTIONS */
+.quick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:500px){.quick-grid{grid-template-columns:1fr}}
+.qa-card{
+  background:var(--panel2);border:1px solid var(--border);border-radius:12px;
+  padding:16px;cursor:pointer;transition:all .2s;display:flex;gap:12px;align-items:flex-start;
+}
+.qa-card:hover{border-color:rgba(240,180,41,.3);transform:translateY(-2px)}
+.qa-icon{font-size:24px;flex-shrink:0}
+.qa-title{font-weight:700;font-size:14px;color:white;margin-bottom:3px}
+.qa-sub{font-size:11px;color:var(--muted);line-height:1.4}
+.qa-badge{display:inline-block;margin-top:6px;font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:10px}
+.qab-gold{background:rgba(240,180,41,.1);color:var(--gold);border:1px solid rgba(240,180,41,.2)}
+.qab-green{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.qab-blue{background:rgba(0,212,255,.1);color:var(--electric);border:1px solid rgba(0,212,255,.2)}
+.qab-red{background:rgba(255,45,85,.1);color:var(--danger);border:1px solid rgba(255,45,85,.2)}
+
+/* FORMATION PICKER */
+.formation-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.form-btn{
+  padding:10px;background:var(--panel2);border:2px solid var(--border);
+  border-radius:10px;cursor:pointer;transition:all .2s;text-align:center;
+}
+.form-btn:hover{border-color:rgba(240,180,41,.3)}
+.form-btn.on{border-color:var(--gold);background:rgba(240,180,41,.06)}
+.form-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:white}
+.form-desc{font-size:10px;color:var(--muted);margin-top:2px}
+
+/* PITCH MINI */
+.pitch-mini{
+  background:repeating-linear-gradient(180deg,#1a5c1a 0px,#1a5c1a 30px,#1e6b1e 30px,#1e6b1e 60px);
+  border-radius:10px;height:200px;position:relative;overflow:hidden;
+  border:2px solid #2a4a2a;margin-bottom:14px;
+}
+.pitch-line{position:absolute;border:1px solid rgba(255,255,255,.2)}
+.pitch-player{
+  position:absolute;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;
+}
+.pitch-dot{width:28px;height:28px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:white;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.pitch-name{font-size:7px;font-weight:700;color:white;background:rgba(0,0,0,.7);padding:1px 4px;border-radius:3px;white-space:nowrap}
+
+/* STATS TABLE */
+.stats-table{width:100%;border-collapse:collapse}
+.stats-table th{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--border);text-align:left}
+.stats-table td{padding:10px;border-bottom:1px solid rgba(28,42,58,.4);font-size:13px;vertical-align:middle}
+.stats-table tr:last-child td{border-bottom:none}
+.stats-table tr:hover td{background:rgba(255,255,255,.02)}
+.stat-bar-cell{width:100px}
+.stat-bar-bg{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.stat-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold),rgba(240,180,41,.5))}
+
+/* NOTIFICATION ITEM */
+.notif-item{
+  display:flex;gap:12px;padding:12px;background:var(--panel2);
+  border:1px solid var(--border);border-radius:10px;
+  transition:border-color .2s;cursor:pointer;
+}
+.notif-item:hover{border-color:rgba(240,180,41,.2)}
+.notif-item.unread{border-left:3px solid var(--gold)}
+.ni-icon{font-size:20px;flex-shrink:0}
+.ni-text{flex:1;font-size:13px;color:var(--text);line-height:1.5}
+.ni-text strong{color:white;font-weight:700}
+.ni-time{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:3px}
+.ni-action{flex-shrink:0;display:flex;flex-direction:column;gap:6px}
+.ni-btn{padding:5px 12px;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.ni-accept{background:var(--green);color:#000}
+.ni-refuse{background:rgba(255,45,85,.1);color:var(--danger);border:1px solid rgba(255,45,85,.2)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);z-index:500;display:none;align-items:flex-end;justify-content:center;padding:0}
+.modal-bg.open{display:flex;animation:bgIn .2s ease}
+@keyframes bgIn{from{opacity:0}to{opacity:1}}
+.modal-sheet{width:100%;max-width:500px;background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:0 0 32px;animation:sheetUp .3s cubic-bezier(.22,1,.36,1);max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:40px;height:4px;border-radius:2px;background:var(--border);margin:12px auto 20px}
+.sheet-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:white;text-align:center;margin-bottom:20px;padding:0 20px}
+.mfield{padding:0 16px;margin-bottom:14px}
+.mfield label{display:block;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:5px}
+.mfield input,.mfield select,.mfield textarea{width:100%;padding:11px 13px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;color:white;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;outline:none;transition:border-color .2s;appearance:none}
+.mfield input:focus,.mfield select:focus,.mfield textarea:focus{border-color:var(--gold)}
+.mfield select option{background:var(--panel2)}
+.modal-actions{display:flex;gap:10px;padding:0 16px;margin-top:6px}
+
+/* FOOTER */
+.site-footer{background:var(--ink);border-top:1px solid var(--border);padding:24px 20px;margin-top:20px}
+.footer-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:4px;color:white}
+.footer-logo span{color:var(--gold)}
+.footer-links{display:flex;gap:16px}
+.footer-link{font-size:11px;color:var(--muted);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif}
+.footer-right{font-size:11px;color:#2a3a4a;font-family:'DM Mono',monospace}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-logo" onclick="nav('accueil')">THE <span>LOCK</span></div>
+  <nav class="tb-nav">
+    <button class="tb-link" onclick="nav('accueil')">Accueil</button>
+    <button class="tb-link" onclick="nav('joueurs')">Joueurs</button>
+    <button class="tb-link" onclick="nav('ligue')">Ligues</button>
+    <button class="tb-link" onclick="nav('classement')">Classement</button>
+    <button class="tb-link on">Coach</button>
+  </nav>
+  <div class="tb-right">
+    <div class="tb-icon" onclick="showTab('notifications',document.querySelector('.tab:last-child'))"><span>🔔</span><div class="tb-notif-dot"></div></div>
+    <div class="tb-profile" onclick="nav('profil')">JNR</div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- COACH HERO -->
+  <div class="coach-hero">
+    <div class="ch-badge">🧠</div>
+    <div class="ch-info">
+      <div class="ch-role">Tableau de bord</div>
+      <div class="ch-name">JNR · COACH</div>
+      <div class="ch-meta">THE LOCK Edition I · Equipe Bleue · 12 joueurs</div>
+      <div class="ch-level">🔥 ICON · Level max</div>
+    </div>
+    <div class="ch-stats">
+      <div class="chs-item"><div class="chs-val" style="color:var(--green)">+200</div><div class="chs-label">XP/presence</div></div>
+      <div class="chs-item"><div class="chs-val">8</div><div class="chs-label">Entrainements</div></div>
+      <div class="chs-item"><div class="chs-val">3</div><div class="chs-label">Victoires</div></div>
+      <div class="chs-item"><div class="chs-val">12k</div><div class="chs-label">Valeur</div></div>
+    </div>
+  </div>
+
+  <!-- XP BOOST -->
+  <div class="xp-boost">
+    <div class="xpb-icon">⚡</div>
+    <div>
+      <div class="xpb-title">BONUS COACH ICON</div>
+      <div class="xpb-sub">Ton niveau maximum booste l'XP de tes joueurs a chaque presence validee</div>
+    </div>
+    <div class="xpb-val">x2.5</div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" onclick="showTab('presences',this)">Presences<span class="tab-notif">5</span></button>
+    <button class="tab" onclick="showTab('entrainements',this)">Entrainements</button>
+    <button class="tab" onclick="showTab('effectif',this)">Mon Effectif</button>
+    <button class="tab" onclick="showTab('tactique',this)">Tactique</button>
+    <button class="tab" onclick="showTab('stats',this)">Stats Equipe</button>
+    <button class="tab" onclick="showTab('notifications',this)">Alertes<span class="tab-notif">3</span></button>
+  </div>
+
+  <!-- ══ PRESENCES ══ -->
+  <div class="tab-content on" id="tab-presences">
+    <div class="sc">
+      <div class="sc-head">
+        <div>
+          <div class="sc-title">VALIDATION DES PRESENCES</div>
+          <div class="sc-sub">Entrainement du 15 Mai · XP accordee selon ton niveau ICON (+200 XP)</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-green" onclick="validateAll()">Valider tous</button>
+          <button class="btn-secondary" onclick="openTrainingModal()">+ Nouvel entrainement</button>
+        </div>
+      </div>
+      <div class="presence-header">
+        <div>JOUEUR</div>
+        <div style="text-align:center">XP</div>
+        <div style="text-align:center">NOTE</div>
+        <div style="text-align:center">PRESENCE</div>
+      </div>
+      <div id="presence-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ ENTRAINEMENTS ══ -->
+  <div class="tab-content" id="tab-entrainements">
+    <div class="sc">
+      <div class="sc-head">
+        <div class="sc-title">SESSIONS D'ENTRAINEMENT</div>
+        <button class="btn-primary" onclick="openTrainingModal()">+ Programmer</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="training-list"></div>
+    </div>
+    <div class="sc">
+      <div class="sc-head"><div class="sc-title">TYPES D'EXERCICES</div></div>
+      <div class="quick-grid">
+        <div class="qa-card" onclick="selectExercise('Technique')">
+          <div class="qa-icon">⚽</div>
+          <div><div class="qa-title">Technique</div><div class="qa-sub">Controle, passes, dribbles</div><div class="qa-badge qab-gold">+75 XP</div></div>
+        </div>
+        <div class="qa-card" onclick="selectExercise('Physique')">
+          <div class="qa-icon">💪</div>
+          <div><div class="qa-title">Physique</div><div class="qa-sub">Endurance, vitesse, force</div><div class="qa-badge qab-green">+60 XP</div></div>
+        </div>
+        <div class="qa-card" onclick="selectExercise('Tactique')">
+          <div class="qa-icon">🧠</div>
+          <div><div class="qa-title">Tactique</div><div class="qa-sub">Positionnement, schemas</div><div class="qa-badge qab-blue">+90 XP</div></div>
+        </div>
+        <div class="qa-card" onclick="selectExercise('Match amical')">
+          <div class="qa-icon">🏆</div>
+          <div><div class="qa-title">Match amical</div><div class="qa-sub">11v11 ou format reduit</div><div class="qa-badge qab-red">+150 XP</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ EFFECTIF ══ -->
+  <div class="tab-content" id="tab-effectif">
+    <div class="sc">
+      <div class="sc-head">
+        <div class="sc-title">MON EFFECTIF · EQUIPE BLEUE</div>
+        <button class="btn-secondary" onclick="window.open('ligue.html','_self')">Mercato</button>
+      </div>
+      <div id="effectif-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ TACTIQUE ══ -->
+  <div class="tab-content" id="tab-tactique">
+    <div class="sc">
+      <div class="sc-head">
+        <div class="sc-title">FORMATION</div>
+        <div style="font-size:12px;color:var(--muted)" id="current-formation">4-3-3 selectionnee</div>
+      </div>
+      <div class="formation-grid" id="formation-grid"></div>
+      <div class="pitch-mini" id="pitch-mini">
+        <div class="pitch-line" style="top:0;bottom:0;left:50%;width:1px"></div>
+        <div class="pitch-line" style="top:50%;left:10%;right:10%;height:1px"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;border:1px solid rgba(255,255,255,.2)"></div>
+      </div>
+      <button class="btn-primary" style="width:100%" onclick="saveTactics()">SAUVEGARDER LA FORMATION</button>
+    </div>
+    <div class="sc">
+      <div class="sc-head"><div class="sc-title">CONSIGNES D'EQUIPE</div></div>
+      <div class="mfield" style="padding:0">
+        <label>Message a l'equipe</label>
+        <textarea rows="3" placeholder="Ex: On joue haut, pressing intense des la perte du ballon..." style="width:100%;padding:11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;color:white;font-family:DM Sans,sans-serif;resize:none;outline:none"></textarea>
+      </div>
+      <button class="btn-primary" style="margin-top:10px" onclick="alert('Consigne envoyee a toute l equipe !')">ENVOYER A L'EQUIPE</button>
+    </div>
+  </div>
+
+  <!-- ══ STATS ══ -->
+  <div class="tab-content" id="tab-stats">
+    <div class="sc">
+      <div class="sc-head"><div class="sc-title">STATS DE L'EQUIPE BLEUE</div></div>
+      <table class="stats-table" id="stats-table"></table>
+    </div>
+  </div>
+
+  <!-- ══ NOTIFICATIONS ══ -->
+  <div class="tab-content" id="tab-notifications">
+    <div class="sc">
+      <div class="sc-head">
+        <div class="sc-title">ALERTES COACH</div>
+        <button class="btn-secondary" onclick="markAllRead()">Tout lire</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="notif-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TRAINING MODAL -->
+<div class="modal-bg" id="training-modal" onclick="if(event.target===this)closeModal('training-modal')">
+  <div class="modal-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">PROGRAMMER UN ENTRAINEMENT</div>
+    <div class="mfield"><label>Type d'exercice</label>
+      <select id="train-type"><option>Technique</option><option>Physique</option><option>Tactique</option><option>Match amical</option></select>
+    </div>
+    <div class="mfield"><label>Date</label><input type="date" id="train-date"></div>
+    <div class="mfield"><label>Heure</label><input type="time" id="train-time" value="18:00"></div>
+    <div class="mfield"><label>Lieu</label><input type="text" placeholder="Ex: Terrain municipal, Gymnase..."></div>
+    <div class="mfield"><label>Notes</label><textarea rows="2" placeholder="Instructions supplementaires..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" style="flex:0 0 auto;padding:12px 20px" onclick="closeModal('training-modal')">ANNULER</button>
+      <button class="btn-primary" style="flex:1;padding:12px" onclick="saveTraining()">PROGRAMMER</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">THE <span>LOCK</span></div>
+    <div class="footer-links">
+      <button class="footer-link">A propos</button>
+      <button class="footer-link">CGU</button>
+      <button class="footer-link">Contact</button>
+    </div>
+    <div class="footer-right">THE LOCK · EDITION I · 2026</div>
+  </div>
+</footer>
+
+<script>
+// ── DATA ──
+var ROSTER = [
+  {name:'ABD',      pos:'ATT',  buts:10,assists:9, note:10,  presences:8,valeur:9000, skin:'#4A2912',hair:'#1a1a1a',eye:'#f0b429'},
+  {name:'Nassim',   pos:'ATT',  buts:12,assists:7, note:10,  presences:8,valeur:8500, skin:'#C68642',hair:'#1a1a1a',eye:'#00d4ff'},
+  {name:'Damien',   pos:'ATT',  buts:11,assists:6, note:9.5, presences:8,valeur:8200, skin:'#D4956A',hair:'#3d2b1f',eye:'#ff2d55'},
+  {name:'Bilal',    pos:'MDef', buts:2, assists:8, note:8,   presences:7,valeur:6800, skin:'#6B3A2A',hair:'#1a1a1a',eye:'#22c55e'},
+  {name:'Kaloga 2', pos:'MC',   buts:4, assists:7, note:8,   presences:7,valeur:6600, skin:'#8D5524',hair:'#1a1a1a',eye:'#f0b429'},
+  {name:'Christoph',pos:'MC',   buts:2, assists:6, note:7.5, presences:6,valeur:5600, skin:'#F5CBA7',hair:'#2c2c2c',eye:'#22c55e'},
+  {name:'Moha',     pos:'DC',   buts:0, assists:2, note:7,   presences:6,valeur:5000, skin:'#8D5524',hair:'#1a1a1a',eye:'#00d4ff'},
+  {name:'Meschac',  pos:'DC',   buts:0, assists:3, note:7,   presences:5,valeur:4900, skin:'#4A2912',hair:'#1a1a1a',eye:'#a855f7'},
+  {name:'Djibson',  pos:'DC',   buts:0, assists:1, note:6,   presences:5,valeur:4200, skin:'#6B3A2A',hair:'#1a1a1a',eye:'#22c55e'},
+  {name:'Mouzayyy', pos:'DC',   buts:0, assists:1, note:6,   presences:4,valeur:4000, skin:'#C68642',hair:'#8B4513',eye:'#f0b429'},
+  {name:'Matthieu', pos:'GK',   buts:0, assists:0, note:5,   presences:5,valeur:3200, skin:'#F1C27D',hair:'#FFD700',eye:'#4fa3ff'},
+];
+
+var FORMATIONS = [
+  {name:'4-3-3', desc:'Offensif', players:[
+    {name:'Matthieu',pos:[50,90],col:'#a855f7'},
+    {name:'Moha',pos:[15,72],col:'#00d4ff'},{name:'Djibson',pos:[38,72],col:'#00d4ff'},
+    {name:'Meschac',pos:[62,72],col:'#00d4ff'},{name:'Mouzayyy',pos:[85,72],col:'#00d4ff'},
+    {name:'Bilal',pos:[25,52],col:'#f0b429'},{name:'Kaloga 2',pos:[50,52],col:'#f0b429'},{name:'Christoph',pos:[75,52],col:'#f0b429'},
+    {name:'Damien',pos:[20,28],col:'#ff2d55'},{name:'Nassim',pos:[50,22],col:'#ff2d55'},{name:'ABD',pos:[80,28],col:'#ff2d55'},
+  ]},
+  {name:'4-4-2', desc:'Equilibre', players:[
+    {name:'Matthieu',pos:[50,90],col:'#a855f7'},
+    {name:'Moha',pos:[15,72],col:'#00d4ff'},{name:'Djibson',pos:[38,72],col:'#00d4ff'},
+    {name:'Meschac',pos:[62,72],col:'#00d4ff'},{name:'Mouzayyy',pos:[85,72],col:'#00d4ff'},
+    {name:'Bilal',pos:[15,52],col:'#f0b429'},{name:'Kaloga 2',pos:[38,52],col:'#f0b429'},
+    {name:'Christoph',pos:[62,52],col:'#f0b429'},{name:'Christoph',pos:[85,52],col:'#f0b429'},
+    {name:'Nassim',pos:[35,28],col:'#ff2d55'},{name:'ABD',pos:[65,28],col:'#ff2d55'},
+  ]},
+  {name:'3-5-2', desc:'Milieu fort', players:[
+    {name:'Matthieu',pos:[50,90],col:'#a855f7'},
+    {name:'Moha',pos:[20,72],col:'#00d4ff'},{name:'Djibson',pos:[50,72],col:'#00d4ff'},{name:'Meschac',pos:[80,72],col:'#00d4ff'},
+    {name:'Mouzayyy',pos:[10,50],col:'#f0b429'},{name:'Bilal',pos:[30,50],col:'#f0b429'},{name:'Kaloga 2',pos:[50,50],col:'#f0b429'},
+    {name:'Christoph',pos:[70,50],col:'#f0b429'},{name:'Damien',pos:[90,50],col:'#f0b429'},
+    {name:'Nassim',pos:[35,25],col:'#ff2d55'},{name:'ABD',pos:[65,25],col:'#ff2d55'},
+  ]},
+  {name:'5-3-2', desc:'Defensif', players:[
+    {name:'Matthieu',pos:[50,90],col:'#a855f7'},
+    {name:'Moha',pos:[10,70],col:'#00d4ff'},{name:'Djibson',pos:[28,70],col:'#00d4ff'},{name:'Meschac',pos:[50,70],col:'#00d4ff'},
+    {name:'Mouzayyy',pos:[72,70],col:'#00d4ff'},{name:'Damien',pos:[90,70],col:'#00d4ff'},
+    {name:'Bilal',pos:[25,50],col:'#f0b429'},{name:'Kaloga 2',pos:[50,50],col:'#f0b429'},{name:'Christoph',pos:[75,50],col:'#f0b429'},
+    {name:'Nassim',pos:[35,26],col:'#ff2d55'},{name:'ABD',pos:[65,26],col:'#ff2d55'},
+  ]},
+  {name:'4-2-3-1', desc:'Moderne', players:[
+    {name:'Matthieu',pos:[50,90],col:'#a855f7'},
+    {name:'Moha',pos:[15,72],col:'#00d4ff'},{name:'Djibson',pos:[38,72],col:'#00d4ff'},
+    {name:'Meschac',pos:[62,72],col:'#00d4ff'},{name:'Mouzayyy',pos:[85,72],col:'#00d4ff'},
+    {name:'Bilal',pos:[35,55],col:'#f0b429'},{name:'Kaloga 2',pos:[65,55],col:'#f0b429'},
+    {name:'Damien',pos:[18,38],col:'#f0b429'},{name:'Christoph',pos:[50,34],col:'#f0b429'},{name:'ABD',pos:[82,38],col:'#f0b429'},
+    {name:'Nassim',pos:[50,20],col:'#ff2d55'},
+  ]},
+  {name:'3-4-3', desc:'Ultra offensif', players:[
+    {name:'Matthieu',pos:[50,90],col:'#a855f7'},
+    {name:'Moha',pos:[22,72],col:'#00d4ff'},{name:'Djibson',pos:[50,72],col:'#00d4ff'},{name:'Meschac',pos:[78,72],col:'#00d4ff'},
+    {name:'Mouzayyy',pos:[15,52],col:'#f0b429'},{name:'Bilal',pos:[38,52],col:'#f0b429'},
+    {name:'Kaloga 2',pos:[62,52],col:'#f0b429'},{name:'Christoph',pos:[85,52],col:'#f0b429'},
+    {name:'Damien',pos:[20,26],col:'#ff2d55'},{name:'Nassim',pos:[50,20],col:'#ff2d55'},{name:'ABD',pos:[80,26],col:'#ff2d55'},
+  ]},
+];
+
+var TRAININGS = [
+  {type:'Match amical', date:'Aujourd hui 18h', lieu:'Terrain municipal', status:'active', xp:150},
+  {type:'Technique',    date:'12 Mai 18h',      lieu:'Gymnase Nord',      status:'done',   xp:75},
+  {type:'Tactique',     date:'8 Mai 19h',       lieu:'Salle de reunion',  status:'done',   xp:90},
+  {type:'Physique',     date:'19 Mai 18h',       lieu:'Stade principal',   status:'pending',xp:60},
+];
+
+var NOTIFICATIONS = [
+  {icon:'1F4E9',text:'<strong>Nassim</strong> demande a rejoindre la ligue THE LOCK Edition II en tant qu attaquant.',time:'Il y a 30 min',unread:true,actions:true},
+  {icon:'1F504',text:'<strong>Coach Rouge</strong> propose un echange : <strong>Eros</strong> contre <strong>Mouzayyy</strong> + 500 LC',time:'Il y a 2h',unread:true,actions:true},
+  {icon:'26A1',text:'<strong>Kaloga 2</strong> a atteint le niveau CONFIRME. Son XP par presence augmente.',time:'Il y a 3h',unread:true,actions:false},
+  {icon:'1F3C6',text:'La finale de la ligue est programmee pour le <strong>24 Mai</strong>.',time:'Il y a 1j',unread:false,actions:false},
+  {icon:'1F4C8',text:'La valeur de ton effectif a augmente de <strong>+8.5%</strong> ce mois.',time:'Il y a 2j',unread:false,actions:false},
+];
+
+var COACH_LEVEL_XP = 200; // ICON level bonus
+var presenceState = {};
+var currentFormation = 0;
+
+// ── TABS ──
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('on'); });
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+  document.getElementById('tab-'+id).classList.add('on');
+  if(btn) btn.classList.add('on');
+}
+
+// ── PRESENCE ──
+function buildPresence() {
+  var list = document.getElementById('presence-list');
+  if(!list) return;
+  list.innerHTML = '';
+  ROSTER.forEach(function(p, i) {
+    var state = presenceState[i] || 'pending';
+    var xp = state === 'present' ? COACH_LEVEL_XP : 0;
+    var row = document.createElement('div');
+    row.className = 'presence-row';
+    var initial = p.name[0];
+    var btnClass = state === 'present' ? 'pr-validate validated' : state === 'absent' ? 'pr-validate absent' : 'pr-validate';
+    var btnText = state === 'present' ? 'Present' : state === 'absent' ? 'Absent' : 'Valider';
+    row.innerHTML =
+      '<div class="pr-player">' +
+        '<div class="pr-av" style="background:'+p.skin+';color:white;font-weight:900">'+initial+'</div>' +
+        '<div><div class="pr-name">'+p.name+'</div><div class="pr-pos">'+p.pos+'</div></div>' +
+      '</div>' +
+      '<div class="pr-xp">'+(state==='present'?'+'+xp+' XP':'-')+'</div>' +
+      '<div class="pr-note"><input class="note-input" type="number" min="0" max="10" step="0.5" placeholder="-" value="'+(state==='present'?p.note.toFixed(1):'')+'"></div>' +
+      '<div class="pr-status-cell">' +
+        '<div style="display:flex;gap:4px">' +
+          '<button class="'+btnClass+'" onclick="setPresence('+i+',\'present\',this)">'+btnText+'</button>' +
+          (state!=='absent'?'<button class="pr-validate absent" onclick="setPresence('+i+',\'absent\',this)" style="padding:5px 8px">✕</button>':'') +
+        '</div>' +
+      '</div>';
+    list.appendChild(row);
+  });
+}
+
+function setPresence(idx, state, btn) {
+  presenceState[idx] = presenceState[idx] === state ? 'pending' : state;
+  buildPresence();
+}
+
+function validateAll() {
+  ROSTER.forEach(function(_, i){ presenceState[i] = 'present'; });
+  buildPresence();
+}
+
+// ── TRAININGS ──
+function buildTrainings() {
+  var list = document.getElementById('training-list');
+  if(!list) return;
+  var icons = {Technique:'26BD', Physique:'1F4AA', Tactique:'1F9E0', 'Match amical':'1F3C6'};
+  var statusMap = {active:'ts-active', done:'ts-done', pending:'ts-pending'};
+  var statusLabel = {active:'EN COURS', done:'TERMINE', pending:'A VENIR'};
+  TRAININGS.forEach(function(t) {
+    var card = document.createElement('div');
+    card.className = 'training-card' + (t.status==='active'?' active':'');
+    card.innerHTML =
+      '<div class="tc-icon">'+String.fromCodePoint(parseInt(icons[t.type]||'26BD',16))+'</div>' +
+      '<div class="tc-info">' +
+        '<div class="tc-name">'+t.type+'</div>' +
+        '<div class="tc-meta">'+t.date+' · '+t.lieu+'</div>' +
+      '</div>' +
+      '<div class="tc-xp">+'+t.xp+' XP</div>' +
+      '<div class="tc-status '+statusMap[t.status]+'">'+statusLabel[t.status]+'</div>';
+    list.appendChild(card);
+  });
+}
+
+// ── EFFECTIF ──
+function buildEffectif() {
+  var list = document.getElementById('effectif-list');
+  if(!list) return;
+  var posCls = {ATT:'pos-att',MC:'pos-mid',MDef:'pos-mid',DC:'pos-def',GK:'pos-gk'};
+  var colors = {ATT:'#ff2d55',MC:'#f0b429',MDef:'#f0b429',DC:'#00d4ff',GK:'#a855f7'};
+  var totalVal = ROSTER.reduce(function(s,p){return s+p.valeur;},0);
+  list.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:12px">Valeur totale de l effectif: <span style="color:var(--gold);font-weight:700">'+totalVal.toLocaleString()+' EUR</span></div>';
+  ROSTER.forEach(function(p) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(28,42,58,.4);cursor:pointer;transition:all .2s';
+    row.onmouseover = function(){ row.style.paddingLeft='4px'; };
+    row.onmouseout  = function(){ row.style.paddingLeft='0'; };
+    var pct = (p.note/10)*100;
+    row.innerHTML =
+      '<div style="width:32px;height:32px;border-radius:50%;background:'+p.skin+';border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:white;flex-shrink:0">'+p.name[0]+'</div>' +
+      '<div style="flex:1">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">' +
+          '<span style="font-weight:700;font-size:13px;color:white">'+p.name+'</span>' +
+          '<span style="font-size:9px;font-weight:700;letter-spacing:1px;padding:1px 6px;border-radius:10px;background:'+colors[p.pos]+'11;color:'+colors[p.pos]+';border:1px solid '+colors[p.pos]+'33">'+p.pos+'</span>' +
+        '</div>' +
+        '<div style="height:3px;background:var(--border);border-radius:2px;overflow:hidden;width:120px">' +
+          '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,var(--gold),rgba(240,180,41,.5));border-radius:2px"></div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="text-align:right;flex-shrink:0">' +
+        '<div style="font-family:Bebas Neue,sans-serif;font-size:16px;color:white">'+p.note+'</div>' +
+        '<div style="font-size:10px;color:var(--muted)">'+p.valeur.toLocaleString()+' EUR</div>' +
+      '</div>';
+    list.appendChild(row);
+  });
+}
+
+// ── FORMATIONS ──
+function buildFormations() {
+  var grid = document.getElementById('formation-grid');
+  if(!grid) return;
+  FORMATIONS.forEach(function(f, i) {
+    var btn = document.createElement('div');
+    btn.className = 'form-btn' + (i===currentFormation?' on':'');
+    btn.innerHTML = '<div class="form-name">'+f.name+'</div><div class="form-desc">'+f.desc+'</div>';
+    btn.onclick = function() {
+      currentFormation = i;
+      document.getElementById('current-formation').textContent = f.name+' selectionnee';
+      document.querySelectorAll('.form-btn').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      buildPitch();
+    };
+    grid.appendChild(btn);
+  });
+  buildPitch();
+}
+
+function buildPitch() {
+  var pitch = document.getElementById('pitch-mini');
+  if(!pitch) return;
+  // Remove old players
+  pitch.querySelectorAll('.pitch-player').forEach(function(p){ p.remove(); });
+  var f = FORMATIONS[currentFormation];
+  if(!f || !f.players.length) {
+    var msg = document.createElement('div');
+    msg.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:Bebas Neue,sans-serif;font-size:14px;letter-spacing:2px;color:rgba(255,255,255,.3)';
+    msg.textContent = 'FORMATION A CONFIGURER';
+    pitch.appendChild(msg);
+    return;
+  }
+  f.players.forEach(function(p) {
+    var el = document.createElement('div');
+    el.className = 'pitch-player';
+    el.style.left = p.pos[0]+'%';
+    el.style.top  = p.pos[1]+'%';
+    el.innerHTML =
+      '<div class="pitch-dot" style="background:'+p.col+'">'+p.name[0]+'</div>' +
+      '<div class="pitch-name">'+p.name+'</div>';
+    pitch.appendChild(el);
+  });
+}
+
+// ── STATS ──
+function buildStats() {
+  var table = document.getElementById('stats-table');
+  if(!table) return;
+  table.innerHTML =
+    '<thead><tr>' +
+      '<th>JOUEUR</th><th>BUTS</th><th>ASSISTS</th><th>NOTE</th><th>PERFORMANCE</th><th>PRESENCES</th>' +
+    '</tr></thead>';
+  var tbody = document.createElement('tbody');
+  var sorted = ROSTER.slice().sort(function(a,b){ return b.note-a.note; });
+  sorted.forEach(function(p) {
+    var pct = (p.note/10)*100;
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><div style="display:flex;align-items:center;gap:8px">' +
+        '<div style="width:28px;height:28px;border-radius:50%;background:'+p.skin+';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:white;flex-shrink:0">'+p.name[0]+'</div>' +
+        '<div><div style="font-weight:700;font-size:13px;color:white">'+p.name+'</div><div style="font-size:10px;color:var(--muted)">'+p.pos+'</div></div>' +
+      '</div></td>' +
+      '<td style="font-family:Bebas Neue,sans-serif;font-size:16px;color:white">'+p.buts+'</td>' +
+      '<td style="font-family:Bebas Neue,sans-serif;font-size:16px;color:white">'+p.assists+'</td>' +
+      '<td style="font-family:Bebas Neue,sans-serif;font-size:16px;color:var(--gold)">'+p.note+'</td>' +
+      '<td class="stat-bar-cell"><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:'+pct+'%"></div></div></td>' +
+      '<td style="font-family:DM Mono,monospace;font-size:12px;color:var(--muted)">'+p.presences+'/8</td>';
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+}
+
+// ── NOTIFICATIONS ──
+function buildNotifs() {
+  var list = document.getElementById('notif-list');
+  if(!list) return;
+  NOTIFICATIONS.forEach(function(n, i) {
+    var item = document.createElement('div');
+    item.className = 'notif-item' + (n.unread?' unread':'');
+    var actions = n.actions ?
+      '<div class="ni-action">' +
+        '<button class="ni-btn ni-accept" onclick="handleNotif('+i+',\'accept\',this)">Accepter</button>' +
+        '<button class="ni-btn ni-refuse" onclick="handleNotif('+i+',\'refuse\',this)">Refuser</button>' +
+      '</div>' : '';
+    item.innerHTML =
+      '<div class="ni-icon">'+String.fromCodePoint(parseInt(n.icon,16))+'</div>' +
+      '<div style="flex:1"><div class="ni-text">'+n.text+'</div><div class="ni-time">'+n.time+'</div></div>' +
+      actions;
+    list.appendChild(item);
+  });
+}
+
+function handleNotif(idx, action, btn) {
+  var item = btn.closest('.notif-item');
+  if(action==='accept'){
+    item.style.borderColor='var(--green)';
+    item.querySelector('.ni-action').innerHTML='<span style="font-size:11px;color:var(--green);font-weight:700">Accepte</span>';
+  } else {
+    item.style.borderColor='var(--danger)';
+    item.querySelector('.ni-action').innerHTML='<span style="font-size:11px;color:var(--danger);font-weight:700">Refuse</span>';
+  }
+  item.classList.remove('unread');
+}
+
+function markAllRead() {
+  document.querySelectorAll('.notif-item').forEach(function(el){ el.classList.remove('unread'); });
+}
+
+// ── TRAINING MODAL ──
+function openTrainingModal() {
+  document.getElementById('training-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow='';
+}
+function saveTraining() {
+  closeModal('training-modal');
+  alert('Entrainement programme ! Les joueurs ont ete notifies.');
+}
+function selectExercise(type) {
+  document.getElementById('train-type').value=type;
+  openTrainingModal();
+}
+function saveTactics(){ alert('Formation sauvegardee !'); }
+
+// ── NAV ──
+function nav(page) {
+  var pages={'accueil':'index.html','inscription':'inscription.html','profil':'profil.html','feed':'feed.html','classement':'classement.html','ligue':'ligue.html','economie':'economie.html','minijeux':'minijeux.html','notifications':'notifications.html','coach':'coach.html','joueurs':'joueurs.html','coach':'coach.html'};
+  if(pages[page]) window.location.href=pages[page];
+}
+
+// ── INIT ──
+buildPresence();
+buildTrainings();
+buildEffectif();
+buildFormations();
+buildStats();
+buildNotifs();
+</script>
+</body>
+</html>

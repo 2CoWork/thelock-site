@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE LOCK · Economie</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#f0b429;--electric:#00d4ff;--danger:#ff2d55;--green:#22c55e;
+  --purple:#a855f7;--ink:#07090f;--panel:#0d1117;--panel2:#111822;
+  --border:#1c2a3a;--text:#e2e8f0;--muted:#4a6080;--card:#0f1923;
+}
+body{background:var(--ink);font-family:'DM Sans',sans-serif;color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at 20% 0%,#0d1a2e,transparent 50%),radial-gradient(ellipse at 80% 100%,#1a0d1a,transparent 50%)}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(7,9,15,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.tb-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;color:white}
+.tb-logo span{color:var(--gold)}
+.tb-nav{display:flex;gap:2px}
+.tb-link{padding:6px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;color:var(--muted);background:none;border:none;cursor:pointer;border-radius:6px;transition:all .2s}
+.tb-link:hover{color:white;background:rgba(255,255,255,.05)}
+.tb-link.on{color:var(--gold)}
+
+/* LAYOUT */
+.layout{max-width:1000px;margin:0 auto;padding:24px 16px;display:flex;flex-direction:column;gap:16px}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.ph-eyebrow{font-size:10px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:4px}
+.ph-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,6vw,48px);letter-spacing:4px;color:white;line-height:1}
+.ph-sub{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* TOP GRID */
+.top-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:600px){.top-grid{grid-template-columns:1fr}}
+
+/* METRIC CARD */
+.metric-card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:18px 20px;position:relative;overflow:hidden;cursor:pointer;
+  transition:border-color .2s,transform .2s;
+}
+.metric-card:hover{border-color:rgba(240,180,41,.3);transform:translateY(-2px)}
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.mc-gold::before{background:linear-gradient(90deg,var(--gold),#f59e0b)}
+.mc-blue::before{background:linear-gradient(90deg,var(--electric),var(--purple))}
+.mc-green::before{background:linear-gradient(90deg,var(--green),var(--electric))}
+.mc-label{font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+.mc-val{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;line-height:1}
+.mc-sub{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px}
+.mc-change{font-weight:700}
+.up{color:var(--green)}.dn{color:var(--danger)}.eq{color:var(--muted)}
+.mc-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:32px;opacity:.12}
+
+/* CHART CARD */
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.cc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.cc-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:white}
+.chart-filters{display:flex;gap:4px}
+.cf-btn{padding:4px 12px;font-size:11px;font-weight:700;background:var(--panel2);border:1px solid var(--border);color:var(--muted);border-radius:20px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.cf-btn:hover{border-color:rgba(240,180,41,.3);color:var(--text)}
+.cf-btn.on{background:rgba(240,180,41,.1);border-color:var(--gold);color:var(--gold)}
+.chart-wrap{position:relative;height:200px}
+.chart-svg{width:100%;height:100%}
+.chart-tooltip{
+  position:absolute;background:#1a2535;border:1px solid var(--border);
+  border-radius:8px;padding:8px 12px;pointer-events:none;opacity:0;
+  transition:opacity .2s;font-size:12px;z-index:10;white-space:nowrap;
+}
+.chart-legend{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
+.cl-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.cl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* LOCK COINS WALLET */
+.wallet-card{
+  background:linear-gradient(135deg,#0d1a0a,#0a1a0d);
+  border:1px solid rgba(34,197,94,.2);border-radius:14px;
+  padding:20px;position:relative;overflow:hidden;
+}
+.wallet-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--electric))}
+.wallet-bg-text{position:absolute;right:-10px;bottom:-10px;font-family:'Bebas Neue',sans-serif;font-size:80px;color:var(--green);opacity:.04;letter-spacing:4px;pointer-events:none}
+.wallet-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.wallet-left{}
+.wallet-label{font-size:10px;letter-spacing:3px;color:var(--green);text-transform:uppercase;margin-bottom:6px;opacity:.8}
+.wallet-amount{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:3px;color:var(--green);line-height:1}
+.wallet-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.wallet-right{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.wallet-action{padding:9px 18px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;border-radius:8px;cursor:pointer;transition:all .2s;border:none}
+.wa-primary{background:var(--green);color:#000}
+.wa-primary:hover{background:#16a34a;transform:translateY(-1px)}
+.wa-secondary{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)!important;border:none}
+.wa-secondary:hover{background:rgba(34,197,94,.15)}
+
+/* Wallet stats */
+.wallet-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:500px){.wallet-stats{grid-template-columns:1fr 1fr}}
+.ws-item{background:rgba(0,0,0,.3);border:1px solid rgba(34,197,94,.1);border-radius:10px;padding:10px;text-align:center}
+.ws-val{font-family:'Bebas Neue',sans-serif;font-size:18px;color:white}
+.ws-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+
+/* REWARDS */
+.rewards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:500px){.rewards-grid{grid-template-columns:1fr 1fr}}
+.reward-card{
+  background:var(--panel2);border:1px solid var(--border);border-radius:12px;
+  padding:14px;text-align:center;position:relative;overflow:hidden;
+  transition:border-color .2s,transform .2s;cursor:pointer;
+}
+.reward-card:hover{transform:translateY(-2px)}
+.reward-card.unlocked{border-color:rgba(240,180,41,.3);background:rgba(240,180,41,.04)}
+.reward-card.locked{opacity:.5}
+.rc-icon{font-size:28px;margin-bottom:8px}
+.rc-name{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;color:white;margin-bottom:4px}
+.rc-amount{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--green)}
+.rc-condition{font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.5px}
+.rc-badge{
+  position:absolute;top:8px;right:8px;
+  font-size:8px;font-weight:700;letter-spacing:1px;padding:2px 6px;border-radius:10px;
+}
+.rb-done{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.rb-lock{background:rgba(74,96,128,.1);color:var(--muted);border:1px solid var(--border)}
+.rb-new{background:rgba(240,180,41,.15);color:var(--gold);border:1px solid rgba(240,180,41,.2)}
+
+/* TRANSACTION LIST */
+.tx-list{display:flex;flex-direction:column;gap:6px}
+.tx-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;background:var(--panel2);border:1px solid var(--border);
+  border-radius:10px;transition:border-color .2s;
+}
+.tx-item:hover{border-color:rgba(240,180,41,.2)}
+.tx-icon{
+  width:36px;height:36px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.tx-in{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.15)}
+.tx-out{background:rgba(255,45,85,.1);border:1px solid rgba(255,45,85,.15)}
+.tx-info{flex:1}
+.tx-label{font-weight:700;font-size:13px;color:white}
+.tx-time{font-size:11px;color:var(--muted);margin-top:1px;font-family:'DM Mono',monospace}
+.tx-amount{font-family:'Bebas Neue',sans-serif;font-size:18px;flex-shrink:0}
+.tx-pos{color:var(--green)}.tx-neg{color:var(--danger)}
+
+/* LEAGUE PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:500px){.pricing-grid{grid-template-columns:1fr}}
+.price-card{
+  background:var(--panel2);border:2px solid var(--border);border-radius:12px;
+  padding:16px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+}
+.price-card:hover{transform:translateY(-2px)}
+.price-card.featured{border-color:var(--gold);background:rgba(240,180,41,.04)}
+.price-card.featured::before{content:'POPULAIRE';position:absolute;top:10px;right:-18px;font-size:8px;font-weight:700;letter-spacing:1px;background:var(--gold);color:#000;padding:2px 20px;transform:rotate(35deg)}
+.pc-icon{font-size:32px;margin-bottom:10px}
+.pc-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:white;margin-bottom:6px}
+.pc-price{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--green);margin-bottom:4px}
+.pc-price-sub{font-size:11px;color:var(--muted);margin-bottom:12px}
+.pc-features{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
+.pc-feat{font-size:11px;color:var(--muted)}
+.pc-feat span{color:var(--text);font-weight:600}
+.btn-buy{width:100%;padding:9px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;border:none;border-radius:8px;cursor:pointer;transition:all .2s}
+.bb-gold{background:var(--gold);color:#000}
+.bb-gold:hover{background:#f8d73b}
+.bb-outline{background:transparent;border:1.5px solid var(--border);color:var(--muted)}
+.bb-outline:hover{border-color:var(--gold);color:var(--gold)}
+
+/* SC GENERIC */
+.sc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.sc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sc-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:white}
+.sc-action{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:color .2s}
+.sc-action:hover{color:var(--gold)}
+
+/* LEVEL PROGRESS */
+.level-wrap{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}
+.lw-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.lw-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--electric)}
+.lw-xp{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.lw-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:8px}
+.lw-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--electric),var(--purple));transition:width 1s ease}
+.lw-milestones{display:flex;justify-content:space-between;font-size:10px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="tb-logo" href="index.html">THE <span>LOCK</span></a>
+  <nav class="tb-nav">
+    <button class="tb-link" onclick="nav('accueil')">Accueil</button>
+    <button class="tb-link" onclick="nav('joueurs')">Joueurs</button>
+    <button class="tb-link" onclick="nav('ligue')">Ligues</button>
+    <button class="tb-link" onclick="nav('classement')">Classement</button>
+    <button class="tb-link on" onclick="nav('economie')" class="tb-link on">Economie</button>
+  </nav>
+  <div class="tb-right">
+    <div class="tb-icon" title="Notifications"><span>🔔</span><div class="tb-notif-dot"></div></div>
+    <div class="tb-profile" onclick="nav('profil')">MON PROFIL</div>
+  </div>
+</div>
+
+  <div class="tb-nav">
+    <button class="tb-link">Accueil</button>
+    <button class="tb-link">Profil</button>
+    <button class="tb-link on">Economie</button>
+    <button class="tb-link">Ligues</button>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="ph-eyebrow">THE LOCK · EDITION I</div>
+      <div class="ph-title">ECONOMIE</div>
+      <div class="ph-sub">Valeur boursiere · Lock Coins · Recompenses</div>
+    </div>
+  </div>
+
+  <!-- TOP METRICS -->
+  <div class="top-grid">
+    <div class="metric-card mc-gold">
+      <div class="mc-label">Valeur boursiere</div>
+      <div class="mc-val" style="color:var(--gold)">8 500</div>
+      <div class="mc-sub"><span class="mc-change up">+13.3%</span><span style="color:var(--muted)">ce mois</span></div>
+      <div class="mc-icon">💹</div>
+    </div>
+    <div class="metric-card mc-blue">
+      <div class="mc-label">Lock Coins</div>
+      <div class="mc-val" style="color:var(--green)">4 250</div>
+      <div class="mc-sub"><span class="mc-change up">+750</span><span style="color:var(--muted)">cette semaine</span></div>
+      <div class="mc-icon">🪙</div>
+    </div>
+    <div class="metric-card mc-green">
+      <div class="mc-label">Level actuel</div>
+      <div class="mc-val" style="color:var(--electric);font-size:24px">CONFIRME</div>
+      <div class="mc-sub"><span style="color:var(--muted)">6 500 XP · Prochain: </span><span style="color:var(--purple);font-weight:700">ELITE</span></div>
+      <div class="mc-icon">⚡</div>
+    </div>
+  </div>
+
+  <!-- VALEUR CHART -->
+  <div class="chart-card">
+    <div class="cc-head">
+      <div class="cc-title">EVOLUTION DE LA VALEUR BOURSIERE</div>
+      <div class="chart-filters">
+        <button class="cf-btn on" onclick="setChartPeriod('8m',this)">8 matchs</button>
+        <button class="cf-btn" onclick="setChartPeriod('saison',this)">Saison</button>
+        <button class="cf-btn" onclick="setChartPeriod('tout',this)">Tout</button>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-tooltip" id="chart-tooltip"></div>
+      <svg class="chart-svg" id="main-chart" viewBox="0 0 600 200" preserveAspectRatio="none"></svg>
+    </div>
+    <div class="chart-legend">
+      <div class="cl-item"><div class="cl-dot" style="background:var(--gold)"></div>Valeur (EUR)</div>
+      <div class="cl-item"><div class="cl-dot" style="background:var(--electric)"></div>Buts marques</div>
+    </div>
+  </div>
+
+  <!-- LEVEL PROGRESS -->
+  <div class="sc">
+    <div class="sc-head"><div class="sc-title">PROGRESSION DE NIVEAU</div></div>
+    <!-- 7 NIVEAUX -->
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase">Progression generale</div>
+        <div style="font-family:DM Mono,monospace;font-size:12px;color:var(--electric)">6 500 XP total</div>
+      </div>
+      <div id="levels-wrap" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;margin-top:4px">Comment gagner de l'XP :</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="xp-sources"></div>
+  </div>
+
+  <!-- LOCK COINS WALLET -->
+  <div class="wallet-card">
+    <div class="wallet-bg-text">LC</div>
+    <div class="wallet-top">
+      <div class="wallet-left">
+        <div class="wallet-label">Mon portefeuille</div>
+        <div class="wallet-amount">4 250 LC</div>
+        <div class="wallet-sub">Lock Coins · THE LOCK Edition I</div>
+      </div>
+      <div class="wallet-right">
+        <button class="wallet-action wa-primary" onclick="alert('Depenser des LC')">DEPENSER</button>
+        <button class="wallet-action wa-secondary" onclick="alert('Historique complet')">Historique</button>
+      </div>
+    </div>
+    <div class="wallet-stats">
+      <div class="ws-item"><div class="ws-val">7 200</div><div class="ws-label">Total gagne</div></div>
+      <div class="ws-item"><div class="ws-val">2 950</div><div class="ws-label">Depense</div></div>
+      <div class="ws-item"><div class="ws-val">750</div><div class="ws-label">Cette semaine</div></div>
+      <div class="ws-item"><div class="ws-val">3</div><div class="ws-label">Transactions</div></div>
+    </div>
+  </div>
+
+  <!-- REWARDS -->
+  <div class="sc">
+    <div class="sc-head">
+      <div class="sc-title">RECOMPENSES</div>
+      <button class="sc-action" onclick="alert('Toutes les recompenses')">Voir tout</button>
+    </div>
+    <div class="rewards-grid" id="rewards-grid"></div>
+  </div>
+
+  <!-- TRANSACTIONS -->
+  <div class="sc">
+    <div class="sc-head">
+      <div class="sc-title">HISTORIQUE DES TRANSACTIONS</div>
+      <button class="sc-action">Filtrer</button>
+    </div>
+    <div class="tx-list" id="tx-list"></div>
+  </div>
+
+  <!-- CREER UNE LIGUE — TARIFS -->
+  <div class="sc">
+    <div class="sc-head">
+      <div class="sc-title">OUVRIR UNE LIGUE</div>
+      <div style="font-size:11px;color:var(--muted)">Solde: <span style="color:var(--green);font-weight:700">4 250 LC</span></div>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="pc-icon">⚡</div>
+        <div class="pc-name">BASIQUE</div>
+        <div class="pc-price">500 LC</div>
+        <div class="pc-price-sub">2 equipes</div>
+        <div class="pc-features">
+          <div class="pc-feat"><span>2</span> equipes max</div>
+          <div class="pc-feat"><span>24h</span> mercato</div>
+          <div class="pc-feat"><span>15</span> joueurs max</div>
+          <div class="pc-feat"><span>Prive</span> uniquement</div>
+        </div>
+        <button class="btn-buy bb-outline" onclick="buyLeague('BASIQUE',500)">CREER</button>
+      </div>
+      <div class="price-card featured">
+        <div class="pc-icon">🏆</div>
+        <div class="pc-name">STANDARD</div>
+        <div class="pc-price">1 000 LC</div>
+        <div class="pc-price-sub">4 equipes</div>
+        <div class="pc-features">
+          <div class="pc-feat"><span>4</span> equipes max</div>
+          <div class="pc-feat"><span>72h</span> mercato</div>
+          <div class="pc-feat"><span>40</span> joueurs max</div>
+          <div class="pc-feat"><span>Public</span> ou prive</div>
+        </div>
+        <button class="btn-buy bb-gold" onclick="buyLeague('STANDARD',1000)">CREER</button>
+      </div>
+      <div class="price-card">
+        <div class="pc-icon">👑</div>
+        <div class="pc-name">PREMIUM</div>
+        <div class="pc-price">2 500 LC</div>
+        <div class="pc-price-sub">8+ equipes</div>
+        <div class="pc-features">
+          <div class="pc-feat"><span>8+</span> equipes</div>
+          <div class="pc-feat"><span>7 jours</span> mercato</div>
+          <div class="pc-feat"><span>Illimite</span> joueurs</div>
+          <div class="pc-feat"><span>Badge</span> exclusif</div>
+        </div>
+        <button class="btn-buy bb-outline" onclick="buyLeague('PREMIUM',2500)">CREER</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── CHART DATA ──
+var CHART_DATA = {
+  '8m': {
+    labels: ['M1','M2','M3','M4','M5','M6','M7','M8'],
+    valeur: [5000,5800,5500,6200,6800,7200,7800,8500],
+    buts:   [0,2,1,3,1,2,0,3]
+  },
+  'saison': {
+    labels: ['Jan','Fev','Mar','Avr','Mai'],
+    valeur: [4000,5000,5800,7000,8500],
+    buts:   [2,5,8,11,12]
+  },
+  'tout': {
+    labels: ['Ed.0','Ed.I M1','Ed.I M4','Ed.I M8'],
+    valeur: [2000,5000,6800,8500],
+    buts:   [0,5,9,12]
+  }
+};
+
+var currentPeriod = '8m';
+
+function setChartPeriod(p, btn) {
+  currentPeriod = p;
+  document.querySelectorAll('.cf-btn').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  drawChart();
+}
+
+function drawChart() {
+  var svg = document.getElementById('main-chart');
+  if (!svg) return;
+  var data = CHART_DATA[currentPeriod];
+  var W = 600, H = 200, pad = {top:20,right:20,bottom:30,left:10};
+  var iW = W-pad.left-pad.right, iH = H-pad.top-pad.bottom;
+
+  var maxV = Math.max.apply(null, data.valeur);
+  var minV = Math.min.apply(null, data.valeur);
+  var maxB = Math.max.apply(null, data.buts);
+  var n = data.labels.length;
+
+  function xPos(i){ return pad.left + (i/(n-1))*iW; }
+  function yPosV(v){ return pad.top + (1-(v-minV)/(maxV-minV||1))*iH; }
+  function yPosB(v){ return pad.top + (1-(v/(maxB||1)))*iH; }
+
+  // Value line path
+  var vPts = data.valeur.map(function(v,i){ return xPos(i)+','+yPosV(v).toFixed(1); });
+  var vPath = 'M'+vPts.join(' L');
+  var vArea = vPath+' L'+xPos(n-1)+','+(pad.top+iH)+' L'+xPos(0)+','+(pad.top+iH)+' Z';
+
+  // Buts line
+  var bPts = data.buts.map(function(v,i){ return xPos(i)+','+yPosB(v).toFixed(1); });
+  var bPath = 'M'+bPts.join(' L');
+
+  // Grid lines
+  var grid = '';
+  [0,25,50,75,100].forEach(function(pct){
+    var y = pad.top + (pct/100)*iH;
+    var v = Math.round(maxV - (pct/100)*(maxV-minV));
+    grid += '<line x1="'+pad.left+'" y1="'+y.toFixed(1)+'" x2="'+(W-pad.right)+'" y2="'+y.toFixed(1)+'" stroke="#1c2a3a" stroke-width="1"/>';
+    grid += '<text x="'+(W-pad.right+4)+'" y="'+(y+4).toFixed(1)+'" font-size="8" fill="#4a6080" font-family="DM Mono">'+v+'</text>';
+  });
+
+  // X labels
+  var xlabels = '';
+  data.labels.forEach(function(l,i){
+    xlabels += '<text x="'+xPos(i).toFixed(1)+'" y="'+(H-4)+'" font-size="9" fill="#4a6080" text-anchor="middle" font-family="DM Mono">'+l+'</text>';
+  });
+
+  // Data points (value)
+  var vDots = data.valeur.map(function(v,i){
+    var x=xPos(i).toFixed(1), y=yPosV(v).toFixed(1);
+    return '<circle class="chart-dot" cx="'+x+'" cy="'+y+'" r="4" fill="var(--gold)" stroke="var(--card)" stroke-width="2" data-i="'+i+'" style="cursor:pointer"/>';
+  }).join('');
+
+  svg.innerHTML =
+    '<defs>'+
+      '<linearGradient id="vGrad" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0%" stop-color="#f0b429" stop-opacity=".3"/>'+
+        '<stop offset="100%" stop-color="#f0b429" stop-opacity="0"/>'+
+      '</linearGradient>'+
+    '</defs>'+
+    grid + xlabels +
+    '<path d="'+vArea+'" fill="url(#vGrad)"/>'+
+    '<path d="'+vPath+'" fill="none" stroke="#f0b429" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '<path d="'+bPath+'" fill="none" stroke="var(--electric)" stroke-width="1.5" stroke-dasharray="4 3" stroke-linecap="round" stroke-linejoin="round"/>'+
+    vDots;
+
+  // Tooltip
+  svg.querySelectorAll('.chart-dot').forEach(function(dot){
+    dot.addEventListener('mouseover', function(e){
+      var i = parseInt(dot.getAttribute('data-i'));
+      var tt = document.getElementById('chart-tooltip');
+      tt.innerHTML = '<strong>'+data.labels[i]+'</strong><br>Valeur: '+data.valeur[i].toLocaleString()+' EUR<br>Buts: '+data.buts[i];
+      tt.style.opacity = '1';
+      tt.style.left = (dot.cx.baseVal.value/600*100)+'%';
+      tt.style.top = '0';
+    });
+    dot.addEventListener('mouseout', function(){
+      document.getElementById('chart-tooltip').style.opacity='0';
+    });
+  });
+}
+
+// ── XP SOURCES ──
+var XP_SOURCES = [
+  {icon:'26BD',label:'But marque',val:'+50 XP'},
+  {icon:'1F3AF',label:'Assist',val:'+30 XP'},
+  {icon:'1F3C6',label:'Victoire equipe',val:'+100 XP'},
+  {icon:'2705',label:'Presence validee',val:'+75 XP'},
+  {icon:'1F3AE',label:'Mini-jeu complete',val:'+25 XP'},
+  {icon:'1F451',label:'Homme du match',val:'+200 XP'},
+];
+function buildXPSources(){
+  var wrap = document.getElementById('xp-sources');
+  if(!wrap) return;
+  XP_SOURCES.forEach(function(s){
+    var d = document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--panel2);border:1px solid var(--border);border-radius:8px';
+    d.innerHTML='<span style="font-size:16px">'+String.fromCodePoint(parseInt(s.icon,16))+'</span>'+
+      '<span style="font-size:12px;color:var(--text);flex:1">'+s.label+'</span>'+
+      '<span style="font-family:DM Mono,monospace;font-size:12px;color:var(--green);font-weight:700">'+s.val+'</span>';
+    wrap.appendChild(d);
+  });
+}
+
+// ── REWARDS ──
+var REWARDS = [
+  {icon:'1F4DD',name:'Inscription',amount:'+500 LC',condition:'A la creation du compte',done:true},
+  {icon:'1F3AF',name:'Premier but',amount:'+200 LC',condition:'Marquer son 1er but',done:true},
+  {icon:'26A1',name:'Niveau Initie',amount:'+800 LC',condition:'Atteindre le niveau Initie',done:true},
+  {icon:'1F4AA',name:'Niveau Apprenti',amount:'+1 200 LC',condition:'Atteindre le niveau Apprenti',done:true},
+  {icon:'2764',name:'Niveau Confirme',amount:'+2 000 LC',condition:'Atteindre le niveau Confirme',done:true},
+  {icon:'1F48E',name:'Niveau Elite',amount:'+3 000 LC',condition:'Atteindre le niveau Elite',done:false},
+  {icon:'1F451',name:'Niveau Legendaire',amount:'+5 000 LC',condition:'Atteindre le niveau Legendaire',done:false},
+  {icon:'1F525',name:'Niveau ICON',amount:'+10 000 LC',condition:'Atteindre le statut ICON',done:false},
+  {icon:'1F3C6',name:'Champion',amount:'+3 000 LC',condition:'Gagner une ligue',done:false},
+  {icon:'1F525',name:'Hat-trick',amount:'+500 LC',condition:'Marquer 3 buts en 1 match',done:false},
+  {icon:'1F91D',name:'Top Assist',amount:'+800 LC',condition:'Meilleur passeur de la ligue',done:false},
+  {icon:'2B50',name:'Homme du match',amount:'+200 LC',condition:'Note 10 en match',done:true},
+  {icon:'1F4F1',name:'Communaute',amount:'+300 LC',condition:'100 followers',done:false},
+];
+function buildRewards(){
+  var wrap = document.getElementById('rewards-grid');
+  if(!wrap) return;
+  REWARDS.forEach(function(r){
+    var card = document.createElement('div');
+    card.className='reward-card '+(r.done?'unlocked':'locked');
+    card.innerHTML=
+      '<div class="rc-icon">'+String.fromCodePoint(parseInt(r.icon,16))+'</div>'+
+      '<div class="rc-name">'+r.name+'</div>'+
+      '<div class="rc-amount">'+r.amount+'</div>'+
+      '<div class="rc-condition">'+r.condition+'</div>'+
+      '<span class="rc-badge '+(r.done?'rb-done':'rb-lock')+'">'+(r.done?'OBTENU':'VERROUILLE')+'</span>';
+    wrap.appendChild(card);
+  });
+}
+
+// ── TRANSACTIONS ──
+var TRANSACTIONS = [
+  {type:'in', icon:'26BD',label:'But marque vs Equipe Rouge',time:'Aujourd hui 18h',amount:'+50 LC'},
+  {type:'in', icon:'26BD',label:'But marque vs Equipe Rouge',time:'Aujourd hui 18h',amount:'+50 LC'},
+  {type:'in', icon:'1F3C6',label:'Victoire Equipe Bleue (M8)',time:'Aujourd hui 18h',amount:'+100 LC'},
+  {type:'in', icon:'2705',label:'Presence validee par JNR',time:'Hier 20h',amount:'+75 LC'},
+  {type:'out',icon:'1F3DF',label:'Ouverture ligue THE LOCK Ed.I',time:'12 Mai',amount:'-1 000 LC'},
+  {type:'in', icon:'1F451',label:'Homme du match M7',time:'10 Mai',amount:'+200 LC'},
+  {type:'in', icon:'26A1',label:'Bonus niveau Confirme',time:'8 Mai',amount:'+1 000 LC'},
+  {type:'out',icon:'1F504',label:'Transfert Eros (mercato)',time:'7 Mai',amount:'-400 LC'},
+  {type:'in', icon:'1F4DD',label:'Bonus inscription',time:'1 Mai',amount:'+500 LC'},
+];
+function buildTx(){
+  var wrap = document.getElementById('tx-list');
+  if(!wrap) return;
+  TRANSACTIONS.forEach(function(t){
+    var item = document.createElement('div');
+    item.className='tx-item';
+    item.innerHTML=
+      '<div class="tx-icon tx-'+(t.type==='in'?'in':'out')+'">'+String.fromCodePoint(parseInt(t.icon,16))+'</div>'+
+      '<div class="tx-info"><div class="tx-label">'+t.label+'</div><div class="tx-time">'+t.time+'</div></div>'+
+      '<div class="tx-amount tx-'+(t.type==='in'?'pos':'neg')+'">'+t.amount+'</div>';
+    wrap.appendChild(item);
+  });
+}
+
+// ── LEAGUE PURCHASE ──
+function buyLeague(name, cost){
+  var balance = 4250;
+  if(cost > balance){
+    alert('Solde insuffisant. Il te manque '+(cost-balance)+' LC.');
+    return;
+  }
+  if(window.confirm('Creer une ligue '+name+' pour '+cost+' LC ?')){
+    alert('Ligue creee ! Nouveau solde: '+(balance-cost)+' LC.');
+  }
+}
+
+// ── INIT ──
+drawChart();
+buildXPSources();
+buildRewards();
+buildTx();
+
+// ── 7 LEVELS ──
+var LEVELS = [
+  {key:'recrue',    name:'RECRUE',     xp:0,     next:500,   color:'#4a6080', icon:'1F331', reward:'500 LC',   benefit:'Acces basique',          unlocked:true,  current:false},
+  {key:'initie',    name:'INITIE',     xp:500,   next:1500,  color:'#22c55e', icon:'26A1',  reward:'800 LC',   benefit:'Mini-jeux debloqués',    unlocked:true,  current:false},
+  {key:'apprenti',  name:'APPRENTI',   xp:1500,  next:3000,  color:'#00d4ff', icon:'1F4AA', reward:'1 200 LC', benefit:'Capacite secondaire',     unlocked:true,  current:false},
+  {key:'confirme',  name:'CONFIRME',   xp:3000,  next:6000,  color:'#4fa3ff', icon:'2764',  reward:'2 000 LC', benefit:'Capacite custom',         unlocked:true,  current:true},
+  {key:'elite',     name:'ELITE',      xp:6000,  next:10000, color:'#a855f7', icon:'1F48E', reward:'3 000 LC', benefit:'Badge exclusif',          unlocked:false, current:false},
+  {key:'legendaire',name:'LEGENDAIRE', xp:10000, next:20000, color:'#f0b429', icon:'1F451', reward:'5 000 LC', benefit:'3eme capacite',           unlocked:false, current:false},
+  {key:'icon',      name:'ICON',       xp:20000, next:null,  color:'#ff2d55', icon:'1F525', reward:'10 000 LC','benefit':'Statut mythique THE LOCK',unlocked:false, current:false},
+];
+
+var MY_XP = 6500;
+
+function buildLevels(){
+  var wrap = document.getElementById('levels-wrap');
+  if(!wrap) return;
+  LEVELS.forEach(function(lv){
+    var pct = 0;
+    if(lv.current){
+      pct = Math.min(100, Math.round((MY_XP - lv.xp) / (lv.next - lv.xp) * 100));
+    } else if(lv.unlocked && !lv.current){
+      pct = 100;
+    }
+
+    var row = document.createElement('div');
+    row.style.cssText = 'background:var(--panel2);border:2px solid '+(lv.current?lv.color:(lv.unlocked?lv.color+'44':'var(--border)'))+';border-radius:12px;padding:12px 14px;position:relative;overflow:hidden;transition:all .2s;cursor:pointer';
+    if(lv.current) row.style.background = 'rgba('+hexToRgb(lv.color)+',.05)';
+
+    var icon = String.fromCodePoint(parseInt(lv.icon,16));
+    var xpText = lv.current ? (MY_XP+' / '+lv.next+' XP') : (lv.unlocked ? lv.xp+' XP' : lv.xp+' XP requis');
+    var statusBadge = lv.current
+      ? '<span style="font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:10px;background:'+lv.color+'22;color:'+lv.color+';border:1px solid '+lv.color+'44">EN COURS</span>'
+      : lv.unlocked
+        ? '<span style="font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:10px;background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)">OBTENU</span>'
+        : '<span style="font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:10px;background:rgba(74,96,128,.1);color:var(--muted);border:1px solid var(--border)">VERROUILLE</span>';
+
+    row.innerHTML =
+      '<div style="display:flex;align-items:center;gap:12px;margin-bottom:'+(lv.current?'10':'0')+'px">'+
+        '<div style="width:38px;height:38px;border-radius:10px;background:'+lv.color+'22;border:1px solid '+lv.color+'44;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+icon+'</div>'+
+        '<div style="flex:1">'+
+          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">'+
+            '<span style="font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:2px;color:'+(lv.current||lv.unlocked?'white':'var(--muted)')+'">'+lv.name+'</span>'+
+            statusBadge+
+          '</div>'+
+          '<div style="font-size:11px;color:var(--muted)">'+lv.benefit+' · <span style="color:var(--green);font-weight:700">'+lv.reward+'</span></div>'+
+        '</div>'+
+        '<div style="font-family:DM Mono,monospace;font-size:11px;color:var(--muted);text-align:right;flex-shrink:0">'+xpText+'</div>'+
+      '</div>'+
+      (lv.current ?
+        '<div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">'+
+          '<div class="level-fill-anim" data-pct="'+pct+'" style="height:100%;width:0%;background:linear-gradient(90deg,'+lv.color+','+lv.color+'99);border-radius:3px;transition:width 1s ease"></div>'+
+        '</div>'+
+        '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px">'+
+          '<span>'+lv.xp+' XP</span>'+
+          '<span style="color:'+lv.color+';font-weight:700">'+pct+'% complete</span>'+
+          '<span>'+lv.next+' XP</span>'+
+        '</div>'
+      : '') +
+      (lv.key==='icon' ?
+        '<div style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:40px;opacity:.05;pointer-events:none">'+icon+'</div>'
+      : '');
+
+    wrap.appendChild(row);
+  });
+
+  // Animate progress bars
+  setTimeout(function(){
+    document.querySelectorAll('.level-fill-anim').forEach(function(el){
+      el.style.width = el.getAttribute('data-pct')+'%';
+    });
+  }, 400);
+}
+
+function hexToRgb(hex){
+  var r=parseInt(hex.slice(1,3),16);
+  var g=parseInt(hex.slice(3,5),16);
+  var b=parseInt(hex.slice(5,7),16);
+  return r+','+g+','+b;
+}
+
+buildLevels();
+
+function nav(page){
+  var pages={
+    'accueil':'index.html',
+    'inscription':'inscription.html',
+    'profil':'profil.html',
+    'feed':'feed.html',
+    'classement':'classement.html',
+    'ligue':'ligue.html',
+    'economie':'economie.html','minijeux':'minijeux.html','notifications':'notifications.html','coach':'coach.html',
+    'joueurs':'joueurs.html'
+  };
+  if(pages[page]) window.location.href=pages[page];
+}
+
+
+var THE_LOCK_LEVELS = [
+  {key:'recrue',    name:'RECRUE',    xp:0,     color:'#4a6080'},
+  {key:'initie',    name:'INITIE',    xp:500,   color:'#22c55e'},
+  {key:'apprenti',  name:'APPRENTI',  xp:1500,  color:'#00d4ff'},
+  {key:'confirme',  name:'CONFIRME',  xp:3000,  color:'#4fa3ff'},
+  {key:'elite',     name:'ELITE',     xp:6000,  color:'#a855f7'},
+  {key:'legendaire',name:'LEGENDAIRE',xp:10000, color:'#f0b429'},
+  {key:'icon',      name:'ICON',      xp:20000, color:'#ff2d55'}
+];
+function getLevelFromXP(xp){
+  var lv=THE_LOCK_LEVELS[0];
+  THE_LOCK_LEVELS.forEach(function(l){if(xp>=l.xp)lv=l;});
+  return lv;
+}
+
+</script>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">THE <span>LOCK</span></div>
+    <div class="footer-links">
+      <button class="footer-link">A propos</button>
+      <button class="footer-link">CGU</button>
+      <button class="footer-link">Confidentialite</button>
+      <button class="footer-link">Contact</button>
+    </div>
+    <div class="footer-right">THE LOCK · EDITION I · 2026</div>
+  </div>
+</footer>
+</body>
+</html>

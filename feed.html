@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE LOCK · Feed</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#f0b429;--electric:#00d4ff;--danger:#ff2d55;--green:#22c55e;
+  --purple:#a855f7;--ink:#07090f;--panel:#0d1117;--panel2:#111822;
+  --border:#1c2a3a;--text:#e2e8f0;--muted:#4a6080;--card:#0f1923;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);font-family:'DM Sans',sans-serif;color:var(--text);
+  min-height:100vh;
+  background-image:radial-gradient(ellipse at 10% 0%,#0d1a2e 0%,transparent 40%),
+                   radial-gradient(ellipse at 90% 100%,#1a0d1a 0%,transparent 40%);
+}
+
+/* TOPBAR */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(7,9,15,.88);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.tb-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;color:white}
+.tb-logo span{color:var(--gold)}
+.tb-nav{display:flex;gap:2px}
+.tb-link{padding:6px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;color:var(--muted);background:none;border:none;cursor:pointer;border-radius:6px;transition:all .2s}
+.tb-link:hover{color:white;background:rgba(255,255,255,.05)}
+.tb-link.on{color:var(--gold)}
+.tb-right{display:flex;gap:8px;align-items:center}
+.tb-notif{width:32px;height:32px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;position:relative;transition:all .2s}
+.tb-notif:hover{border-color:var(--gold)}
+.notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;background:var(--danger);border-radius:50%;border:1px solid var(--ink)}
+
+/* LAYOUT */
+.layout{max-width:1000px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:240px 1fr 240px;gap:20px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+@media(max-width:900px){.left-col,.right-col{display:none}}
+
+/* LEFT COL */
+.left-col{display:flex;flex-direction:column;gap:12px}
+.mini-profile{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  overflow:hidden;
+}
+.mp-cover{height:50px;background:linear-gradient(135deg,#0d1a2e,#1a0d2e);position:relative}
+.mp-cover::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(240,180,41,.04) 10px,rgba(240,180,41,.04) 11px)}
+.mp-body{padding:0 14px 14px;margin-top:-28px}
+.mp-av{width:48px;height:48px;border-radius:50%;border:2px solid var(--card);box-shadow:0 0 0 1px var(--gold);background:#080c14;margin-bottom:8px}
+.mp-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px}
+.mp-handle{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.mp-stats{display:flex;gap:0;border-top:1px solid var(--border);margin-top:10px;padding-top:10px}
+.mps-item{flex:1;text-align:center}
+.mps-val{font-family:'Bebas Neue',sans-serif;font-size:16px;color:white}
+.mps-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+
+.side-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+.side-title{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;margin-bottom:12px;color:white}
+
+/* Filtres nav */
+.feed-nav{display:flex;flex-direction:column;gap:4px}
+.fn-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;border-radius:8px;cursor:pointer;transition:all .2s;
+  font-size:13px;font-weight:600;color:var(--muted);border:none;background:none;
+  font-family:'DM Sans',sans-serif;width:100%;text-align:left;
+}
+.fn-item:hover{background:rgba(255,255,255,.04);color:white}
+.fn-item.on{background:rgba(240,180,41,.08);color:var(--gold);border:1px solid rgba(240,180,41,.15)}
+.fn-count{margin-left:auto;font-size:11px;background:var(--panel2);padding:1px 7px;border-radius:10px;color:var(--muted)}
+.fn-item.on .fn-count{background:rgba(240,180,41,.15);color:var(--gold)}
+
+/* Suggestions */
+.suggestion-item{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 0;border-bottom:1px solid var(--border);
+}
+.suggestion-item:last-child{border-bottom:none}
+.si-av{width:32px;height:32px;border-radius:50%;background:var(--panel2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px}
+.si-name{font-size:12px;font-weight:700;color:white}
+.si-role{font-size:10px;color:var(--muted)}
+.si-follow{
+  margin-left:auto;padding:3px 10px;font-size:10px;font-weight:700;
+  background:transparent;border:1px solid rgba(240,180,41,.3);color:var(--gold);
+  border-radius:20px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;
+}
+.si-follow:hover{background:rgba(240,180,41,.1)}
+.si-follow.on{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:var(--green)}
+
+/* MAIN FEED */
+.main-col{display:flex;flex-direction:column;gap:16px}
+
+/* Post composer */
+.composer{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:16px;
+}
+.comp-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+.comp-av{width:40px;height:40px;border-radius:50%;background:#080c14;border:1px solid var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px}
+.comp-input{
+  flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:10px;
+  padding:10px 14px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;
+  cursor:pointer;transition:border-color .2s;line-height:1.4;
+}
+.comp-input:hover{border-color:rgba(240,180,41,.3);color:var(--text)}
+.comp-actions{display:flex;gap:8px;flex-wrap:wrap}
+.comp-btn{
+  padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;
+  background:var(--panel2);border:1px solid var(--border);color:var(--muted);
+  border-radius:20px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;
+}
+.comp-btn:hover{border-color:var(--gold);color:var(--gold)}
+.comp-post{
+  margin-left:auto;padding:7px 18px;font-size:12px;font-weight:700;letter-spacing:1px;
+  background:var(--gold);color:#000;border:none;border-radius:20px;cursor:pointer;
+  transition:all .2s;font-family:'DM Sans',sans-serif;
+}
+.comp-post:hover{background:#f8d73b;transform:translateY(-1px)}
+
+/* Feed filters */
+.feed-filters{
+  display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;
+}
+.ff-btn{
+  padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;
+  background:var(--card);border:1px solid var(--border);color:var(--muted);
+  border-radius:20px;cursor:pointer;transition:all .2s;white-space:nowrap;
+  font-family:'DM Sans',sans-serif;flex-shrink:0;
+}
+.ff-btn:hover{border-color:rgba(240,180,41,.3);color:var(--text)}
+.ff-btn.on{background:rgba(240,180,41,.1);border-color:var(--gold);color:var(--gold)}
+
+/* FEED ITEMS */
+.feed-card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  overflow:hidden;transition:border-color .3s;
+  animation:fadeUp .4s ease both;
+}
+.feed-card:hover{border-color:rgba(240,180,41,.2)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.fc-header{padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.fc-av{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  background:var(--panel2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  position:relative;overflow:hidden;
+}
+.fc-av-img{width:100%;height:100%;object-fit:cover}
+.fc-meta{flex:1}
+.fc-name{font-weight:700;font-size:14px;color:white;display:flex;align-items:center;gap:6px}
+.fc-verified{font-size:10px;color:var(--gold)}
+.fc-role{font-size:11px;color:var(--muted);margin-top:1px}
+.fc-time{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-left:auto;white-space:nowrap}
+.fc-more{
+  width:28px;height:28px;border-radius:6px;background:none;border:none;
+  color:var(--muted);cursor:pointer;font-size:16px;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.fc-more:hover{background:var(--panel2);color:white}
+
+/* Type badges */
+.type-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:1px;
+  margin-bottom:8px;
+}
+.tb-match{background:rgba(240,180,41,.12);color:var(--gold);border:1px solid rgba(240,180,41,.25)}
+.tb-valeur{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.tb-ligue{background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.2)}
+.tb-level{background:rgba(0,212,255,.1);color:var(--electric);border:1px solid rgba(0,212,255,.2)}
+.tb-mercato{background:rgba(255,45,85,.1);color:var(--danger);border:1px solid rgba(255,45,85,.2)}
+.tb-post{background:rgba(74,96,128,.1);color:var(--muted);border:1px solid var(--border)}
+
+.fc-body{padding:0 16px 14px}
+.fc-text{font-size:14px;line-height:1.6;color:var(--text)}
+.fc-text strong{color:white;font-weight:700}
+.fc-text .highlight{color:var(--gold);font-weight:700}
+
+/* Match result card */
+.match-result{
+  margin-top:12px;background:var(--panel2);border:1px solid var(--border);
+  border-radius:10px;padding:14px;display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.match-result::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--electric))}
+.mr-team{text-align:center;flex:1}
+.mr-team-name{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px}
+.mr-team-color{width:8px;height:8px;border-radius:50%;margin:0 auto 4px}
+.mr-score{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:4px;color:white;flex:0 0 auto;padding:0 16px}
+.mr-label{font-size:9px;color:var(--muted);letter-spacing:2px;text-align:center;margin-top:4px;text-transform:uppercase}
+
+/* Stats highlight */
+.stats-highlight{
+  display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;
+}
+.sh-item{
+  padding:8px 12px;background:var(--panel2);border:1px solid var(--border);
+  border-radius:8px;text-align:center;flex:1;min-width:60px;
+}
+.sh-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:white;line-height:1}
+.sh-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+
+/* Valeur change */
+.value-change{
+  margin-top:12px;background:var(--panel2);border:1px solid var(--border);
+  border-radius:10px;padding:14px;display:flex;align-items:center;gap:14px;
+}
+.vc-icon{font-size:28px;flex-shrink:0}
+.vc-val{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--gold)}
+.vc-change{font-size:13px;font-weight:700;color:var(--green);margin-top:2px}
+.vc-spark{flex:1}
+.vc-spark svg{width:100%;height:36px}
+
+/* Level up */
+.level-up-card{
+  margin-top:12px;background:linear-gradient(135deg,rgba(0,212,255,.06),rgba(168,85,247,.04));
+  border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:16px;
+  text-align:center;position:relative;overflow:hidden;
+}
+.lu-icon{font-size:36px;margin-bottom:6px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.lu-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--electric)}
+.lu-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.lu-niv{
+  display:inline-block;margin-top:8px;padding:4px 14px;
+  font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;
+  background:rgba(0,212,255,.1);color:var(--electric);border:1px solid rgba(0,212,255,.3);border-radius:20px;
+}
+
+/* Mercato */
+.mercato-card{
+  margin-top:12px;background:var(--panel2);border:1px solid rgba(255,45,85,.2);
+  border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;
+}
+.mc-players{display:flex;align-items:center;gap:6px;flex:1}
+.mc-player{text-align:center}
+.mc-av{width:40px;height:40px;border-radius:50%;background:var(--panel);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;margin:0 auto 4px}
+.mc-name{font-size:10px;font-weight:700;color:white}
+.mc-arrow{font-size:20px;color:var(--danger)}
+.mc-price{text-align:right;flex-shrink:0}
+.mc-price-val{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold)}
+.mc-price-label{font-size:9px;color:var(--muted);letter-spacing:1px}
+
+/* Reactions */
+.fc-footer{
+  padding:10px 16px;border-top:1px solid var(--border);
+  display:flex;gap:4px;align-items:center;
+}
+.react-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 10px;border-radius:6px;background:none;border:none;
+  color:var(--muted);cursor:pointer;transition:all .2s;font-size:12px;font-weight:600;
+  font-family:'DM Sans',sans-serif;
+}
+.react-btn:hover{background:rgba(255,255,255,.04);color:white}
+.react-btn.liked{color:var(--danger)}
+.react-btn.liked:hover{color:var(--danger)}
+.react-count{font-family:'DM Mono',monospace;font-size:11px}
+.fc-footer-right{margin-left:auto;display:flex;gap:4px}
+.share-btn{padding:5px 10px;border-radius:6px;background:none;border:none;color:var(--muted);cursor:pointer;transition:all .2s;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif}
+.share-btn:hover{background:rgba(255,255,255,.04);color:white}
+
+/* Load more */
+.load-more{
+  text-align:center;padding:16px;
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  cursor:pointer;transition:all .2s;font-size:13px;font-weight:700;color:var(--muted);
+}
+.load-more:hover{border-color:var(--gold);color:var(--gold)}
+
+/* RIGHT COL */
+.right-col{display:flex;flex-direction:column;gap:12px}
+
+/* Trending */
+.trend-item{
+  display:flex;align-items:center;gap:10px;padding:8px 0;
+  border-bottom:1px solid var(--border);cursor:pointer;transition:all .2s;
+}
+.trend-item:hover{padding-left:4px}
+.trend-item:last-child{border-bottom:none}
+.ti-num{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--border);width:24px;flex-shrink:0}
+.ti-name{font-weight:700;font-size:13px;color:white}
+.ti-count{font-size:10px;color:var(--muted);margin-top:1px}
+.ti-arrow{margin-left:auto;color:var(--muted);font-size:12px}
+
+/* Live match banner */
+.live-banner{
+  background:linear-gradient(135deg,rgba(255,45,85,.1),rgba(240,180,41,.05));
+  border:1px solid rgba(255,45,85,.3);border-radius:12px;padding:14px;
+  position:relative;overflow:hidden;cursor:pointer;transition:all .2s;
+}
+.live-banner:hover{border-color:rgba(255,45,85,.5)}
+.live-dot{display:inline-block;width:8px;height:8px;background:var(--danger);border-radius:50%;margin-right:6px;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.lb-title{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:white;margin-bottom:6px}
+.lb-score{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:white;text-align:center;margin:8px 0}
+.lb-teams{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="tb-logo" href="index.html">THE <span>LOCK</span></a>
+  <nav class="tb-nav">
+    <button class="tb-link" onclick="nav('accueil')">Accueil</button>
+    <button class="tb-link" onclick="nav('joueurs')">Joueurs</button>
+    <button class="tb-link" onclick="nav('ligue')">Ligues</button>
+    <button class="tb-link" onclick="nav('classement')">Classement</button>
+    <button class="tb-link" onclick="nav('economie')">Economie</button>
+  </nav>
+  <div class="tb-right">
+    <div class="tb-icon" title="Notifications"><span>🔔</span><div class="tb-notif-dot"></div></div>
+    <div class="tb-profile" onclick="nav('profil')">MON PROFIL</div>
+  </div>
+</div>
+
+  <div class="tb-nav">
+    <button class="tb-link">Accueil</button>
+    <button class="tb-link on">Feed</button>
+    <button class="tb-link">Joueurs</button>
+    <button class="tb-link">Ligues</button>
+  </div>
+  <div class="tb-right">
+    <div class="tb-notif">🔔<div class="notif-dot"></div></div>
+    <div class="tb-notif" style="font-size:12px;font-weight:700;color:var(--gold);width:auto;padding:0 10px;border-color:rgba(240,180,41,.3)">@nassim</div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- LEFT COL -->
+  <div class="left-col">
+    <!-- Mini profil -->
+    <div class="mini-profile">
+      <div class="mp-cover"></div>
+      <div class="mp-body">
+        <div class="mp-av" style="width:56px;height:56px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 2px var(--gold),0 0 16px rgba(240,180,41,.3);overflow:hidden;background:#080c14;flex-shrink:0;margin-bottom:8px">
+          <svg width="56" height="56" viewBox="34 30 92 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78 Q108,54 80,50 Q52,54 44,78Z" fill="#1a1a1a"/>
+            <ellipse cx="80" cy="82" rx="36" ry="39" fill="#C68642"/>
+            <ellipse cx="63" cy="80" rx="9" ry="7" fill="white" stroke="#0a0a0a" stroke-width="1.5"/>
+            <ellipse cx="63" cy="80" rx="6" ry="5" fill="#00d4ff"/>
+            <ellipse cx="63" cy="80" rx="3.5" ry="3.5" fill="#040404"/>
+            <circle cx="65" cy="78" r="1.6" fill="white"/>
+            <path d="M54,72 Q63,68 72,72" stroke="#0a0a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <ellipse cx="97" cy="80" rx="9" ry="7" fill="white" stroke="#0a0a0a" stroke-width="1.5"/>
+            <ellipse cx="97" cy="80" rx="6" ry="5" fill="#00d4ff"/>
+            <ellipse cx="97" cy="80" rx="3.5" ry="3.5" fill="#040404"/>
+            <circle cx="99" cy="78" r="1.6" fill="white"/>
+            <path d="M88,72 Q97,68 106,72" stroke="#0a0a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <path d="M76,90 Q80,96 84,90" stroke="#9a6432" stroke-width="1.3" fill="none"/>
+            <path d="M66,100 Q80,98 94,100" stroke="#0a0a0a" stroke-width="1.5" fill="none"/>
+          </svg>
+        </div>
+        <div class="mp-name">NASSIM</div>
+        <div class="mp-handle">@nassim_thelock</div>
+        <div class="mp-stats">
+          <div class="mps-item"><div class="mps-val">248</div><div class="mps-label">Followers</div></div>
+          <div class="mps-item"><div class="mps-val">€8.5k</div><div class="mps-label">Valeur</div></div>
+          <div class="mps-item"><div class="mps-val">7</div><div class="mps-label">Level</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="side-card">
+      <div class="side-title">📰 MON FEED</div>
+      <div class="feed-nav">
+        <button class="fn-item on" onclick="filterFeed('all',this)">🌐 Tout<span class="fn-count">24</span></button>
+        <button class="fn-item" onclick="filterFeed('match',this)">⚽ Matchs<span class="fn-count">8</span></button>
+        <button class="fn-item" onclick="filterFeed('valeur',this)">💹 Valeurs<span class="fn-count">5</span></button>
+        <button class="fn-item" onclick="filterFeed('ligue',this)">🏆 Ligues<span class="fn-count">3</span></button>
+        <button class="fn-item" onclick="filterFeed('level',this)">⚡ Level Up<span class="fn-count">4</span></button>
+        <button class="fn-item" onclick="filterFeed('mercato',this)">🔄 Mercato<span class="fn-count">4</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN COL -->
+  <div class="main-col">
+
+    <!-- Composer -->
+    <div class="composer">
+      <div class="comp-top">
+        <div class="comp-av" style="width:40px;height:40px;border-radius:50%;background:#080c14;border:1px solid var(--gold);box-shadow:0 0 12px rgba(240,180,41,.2);overflow:hidden;flex-shrink:0">
+          <svg width="40" height="40" viewBox="34 30 92 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78 Q108,54 80,50 Q52,54 44,78Z" fill="#1a1a1a"/>
+            <ellipse cx="80" cy="82" rx="36" ry="39" fill="#C68642"/>
+            <ellipse cx="63" cy="80" rx="9" ry="7" fill="white" stroke="#0a0a0a" stroke-width="1.5"/>
+            <ellipse cx="63" cy="80" rx="6" ry="5" fill="#00d4ff"/>
+            <ellipse cx="63" cy="80" rx="3.5" ry="3.5" fill="#040404"/>
+            <circle cx="65" cy="78" r="1.6" fill="white"/>
+            <path d="M88,72 Q97,68 106,72" stroke="#0a0a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <ellipse cx="97" cy="80" rx="9" ry="7" fill="white" stroke="#0a0a0a" stroke-width="1.5"/>
+            <ellipse cx="97" cy="80" rx="6" ry="5" fill="#00d4ff"/>
+            <ellipse cx="97" cy="80" rx="3.5" ry="3.5" fill="#040404"/>
+            <circle cx="99" cy="78" r="1.6" fill="white"/>
+            <path d="M66,100 Q80,98 94,100" stroke="#0a0a0a" stroke-width="1.5" fill="none"/>
+          </svg>
+        </div>
+        <div class="comp-input" onclick="openComposer()" role="button">Partage un moment, un résultat, une stat...</div>
+      </div>
+      <div class="comp-actions">
+        <button class="comp-btn" onclick="shareResult()">⚽ Résultat match</button>
+        <button class="comp-btn" onclick="shareTraining()">🏃 Entraînement</button>
+        <button class="comp-btn" onclick="shareStat()">📊 Stat du jour</button>
+        <button class="comp-post">Publier</button>
+      </div>
+    </div>
+
+    <!-- Feed filters -->
+    <div class="feed-filters">
+      <button class="ff-btn on" onclick="setFeedFilter('all',this)">Tout</button>
+      <button class="ff-btn" onclick="setFeedFilter('follow',this)">Personnes suivies</button>
+      <button class="ff-btn" onclick="setFeedFilter('club',this)">Mon club</button>
+      <button class="ff-btn" onclick="setFeedFilter('ligue',this)">Ma ligue</button>
+      <button class="ff-btn" onclick="setFeedFilter('top',this)">🔥 Tendances</button>
+    </div>
+
+    <!-- FEED ITEMS -->
+    <div id="feed-container"></div>
+
+    <!-- Load more -->
+    <div class="load-more" onclick="loadMore()">Charger plus d'activité ↓</div>
+
+  </div>
+
+  <!-- RIGHT COL -->
+  <div class="right-col">
+
+    <!-- Live match -->
+    <div class="live-banner" onclick="viewLive()">
+      <div class="lb-title"><span class="live-dot"></span>MATCH EN DIRECT</div>
+      <div class="lb-score">3 — 2</div>
+      <div class="lb-teams"><span>🔵 Bleue</span><span>Rouge 🔴</span></div>
+      <div style="text-align:center;font-size:10px;color:var(--muted);margin-top:6px;font-family:'DM Mono',monospace">78' · En cours</div>
+    </div>
+
+    <!-- Tendances -->
+    <div class="side-card">
+      <div class="side-title">🔥 TENDANCES</div>
+      <div class="feed-nav">
+        <div class="trend-item"><div class="ti-num">1</div><div><div class="ti-name">Nassim</div><div class="ti-count">12 buts cette saison</div></div><div class="ti-arrow">→</div></div>
+        <div class="trend-item"><div class="ti-num">2</div><div><div class="ti-name">Yves</div><div class="ti-count">+18% valeur</div></div><div class="ti-arrow">→</div></div>
+        <div class="trend-item"><div class="ti-num">3</div><div><div class="ti-name">Damien</div><div class="ti-count">Hat-trick M8</div></div><div class="ti-arrow">→</div></div>
+        <div class="trend-item"><div class="ti-num">4</div><div><div class="ti-name">Ligue THE LOCK</div><div class="ti-count">Mercato ouvert</div></div><div class="ti-arrow">→</div></div>
+        <div class="trend-item"><div class="ti-num">5</div><div><div class="ti-name">Kaloga 1</div><div class="ti-count">Level Légendaire</div></div><div class="ti-arrow">→</div></div>
+      </div>
+    </div>
+
+    <!-- Suggestions -->
+    <div class="side-card">
+      <div class="side-title">👥 À SUIVRE</div>
+      <div id="suggestions"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  FEED DATA
+// ══════════════════════════════════════
+const FEED=[
+  {
+    id:1,type:'match',
+    user:{name:'NASSIM',handle:'@nassim_thelock',av:'⚡',verified:true},
+    time:'Il y a 2h',
+    text:'Match de fou ce soir 🔥 On a souffert mais on a tenu bon jusqu\'au bout. <span class="highlight">2 buts</span> et <span class="highlight">1 assist</span> pour ma part.',
+    matchData:{team1:'Équipe Bleue',team2:'Équipe Rouge',score1:3,score2:2,winner:1},
+    stats:[{v:'2',l:'Buts'},{v:'1',l:'Assist'},{v:'9.5',l:'Note'},{v:'84%',l:'Passes'}],
+    likes:42,comments:8,shares:3,liked:false,
+  },
+  {
+    id:2,type:'valeur',
+    user:{name:'THE LOCK',handle:'@thelock_official',av:'🔒',verified:true},
+    time:'Il y a 3h',
+    text:'<strong>Nassim</strong> vient d\'enregistrer une hausse de sa valeur boursière suite à ses performances exceptionnelles lors du match M8.',
+    valueData:{name:'Nassim',old:'€7,500',new:'€8,500',change:'+13.3%',up:true},
+    likes:28,comments:4,shares:6,liked:true,
+  },
+  {
+    id:3,type:'level',
+    user:{name:'THE LOCK',handle:'@thelock_official',av:'🔒',verified:true},
+    time:'Il y a 5h',
+    text:'<strong>Kaloga 1</strong> vient d\'atteindre le niveau <strong>LÉGENDAIRE</strong> sur sa capacité principale après 6 mois de progression constante. 🏆',
+    levelData:{player:'Kaloga 1',capa:'QI TACTIQUE',niveau:'LÉGENDAIRE'},
+    likes:64,comments:12,shares:9,liked:false,
+  },
+  {
+    id:4,type:'mercato',
+    user:{name:'JNR',handle:'@jnr_coach',av:'🧠',verified:true},
+    time:'Il y a 8h',
+    text:'🔄 Transfert officiel ! <strong>Éros</strong> rejoint l\'Équipe Bleue en échange de <strong>Matthieu</strong> lors de la fenêtre mercato de la Ligue THE LOCK.',
+    mercatoData:{from:{name:'Éros',av:'🔥'},to:{name:'Matthieu',av:'⚽'},price:'€2,400'},
+    likes:35,comments:18,shares:5,liked:false,
+  },
+  {
+    id:5,type:'match',
+    user:{name:'DAMIEN',handle:'@damien_lock',av:'💥',verified:false},
+    time:'Il y a 1j',
+    text:'HAT-TRICK ! 🎩🎩🎩 Incroyable soirée, je ne pouvais pas manquer un seul tir ce soir. On continue comme ça !',
+    matchData:{team1:'Équipe Bleue',team2:'Équipe Rouge',score1:4,score2:1,winner:1},
+    stats:[{v:'3',l:'Buts'},{v:'2',l:'Assist'},{v:'10',l:'Note'},{v:'91%',l:'Passes'}],
+    likes:87,comments:24,shares:12,liked:true,
+  },
+  {
+    id:6,type:'ligue',
+    user:{name:'THE LOCK',handle:'@thelock_official',av:'🔒',verified:true},
+    time:'Il y a 2j',
+    text:'🏆 <strong>Ligue THE LOCK · Édition I</strong> — La fenêtre mercato est maintenant ouverte pour 72 heures. Les coachs peuvent démarcher, trader et recruter librement.',
+    likes:52,comments:16,shares:22,liked:false,
+  },
+  {
+    id:7,type:'post',
+    user:{name:'YVES',handle:'@yves_lock',av:'👑',verified:false},
+    time:'Il y a 3j',
+    text:'Petite pensée pour tous ceux qui doutaient 🙏 Valeur à <span class="highlight">€9,200</span> aujourd\'hui. Le travail paye toujours. 💪',
+    likes:94,comments:31,shares:8,liked:false,
+  },
+];
+
+const SUGGESTIONS=[
+  {name:'YVES',handle:'@yves_lock',av:'👑',role:'Attaquant · 10.0'},
+  {name:'DAMIEN',handle:'@damien_lock',av:'💥',role:'Attaquant · 9.5'},
+  {name:'KALOGA 1',handle:'@kaloga1',av:'⚡',role:'Milieu · 8.5'},
+];
+
+// ══════════════════════════════════════
+//  BUILD FEED
+// ══════════════════════════════════════
+let currentFilter='all';
+let currentFeedFilter='all';
+
+function buildFeedCard(item){
+  const card=document.createElement('div');
+  card.className='feed-card';
+  card.dataset.type=item.type;
+  card.style.animationDelay=(FEED.indexOf(item)*0.06)+'s';
+
+  // Type badge
+  const badges={
+    match:'<span class="type-badge tb-match">⚽ MATCH</span>',
+    valeur:'<span class="type-badge tb-valeur">💹 VALEUR</span>',
+    ligue:'<span class="type-badge tb-ligue">🏆 LIGUE</span>',
+    level:'<span class="type-badge tb-level">⚡ LEVEL UP</span>',
+    mercato:'<span class="type-badge tb-mercato">🔄 MERCATO</span>',
+    post:'<span class="type-badge tb-post">💬 POST</span>',
+  };
+
+  // Special content
+  let specialContent='';
+
+  if(item.type==='match'&&item.matchData){
+    const md=item.matchData;
+    const w1=md.winner===1?'color:var(--gold)':'color:var(--muted)';
+    const w2=md.winner===2?'color:var(--gold)':'color:var(--muted)';
+    specialContent+=`
+      <div class="match-result">
+        <div class="mr-team">
+          <div class="mr-team-color" style="background:#4fa3ff"></div>
+          <div class="mr-team-name" style="${w1}">${md.team1}</div>
+        </div>
+        <div>
+          <div class="mr-score">${md.score1} — ${md.score2}</div>
+          <div class="mr-label">Score final</div>
+        </div>
+        <div class="mr-team">
+          <div class="mr-team-color" style="background:#ff6b6b"></div>
+          <div class="mr-team-name" style="${w2}">${md.team2}</div>
+        </div>
+      </div>`;
+    if(item.stats){
+      specialContent+='<div class="stats-highlight">';
+      item.stats.forEach(s=>{
+        specialContent+=`<div class="sh-item"><div class="sh-val">${s.v}</div><div class="sh-label">${s.l}</div></div>`;
+      });
+      specialContent+='</div>';
+    }
+  }
+
+  if(item.type==='valeur'&&item.valueData){
+    const vd=item.valueData;
+    specialContent+=`
+      <div class="value-change">
+        <div class="vc-icon">📈</div>
+        <div>
+          <div class="vc-val">${vd.new}</div>
+          <div class="vc-change">▲ ${vd.change} · était ${vd.old}</div>
+        </div>
+        <div class="vc-spark">
+          <svg viewBox="0 0 100 36" preserveAspectRatio="none">
+            <defs><linearGradient id="vg${item.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22c55e" stop-opacity=".3"/><stop offset="100%" stop-color="#22c55e" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0,30 L20,26 L40,28 L60,18 L80,12 L100,4" fill="none" stroke="#22c55e" stroke-width="2"/>
+            <path d="M0,30 L20,26 L40,28 L60,18 L80,12 L100,4 L100,36 L0,36Z" fill="url(#vg${item.id})"/>
+          </svg>
+        </div>
+      </div>`;
+  }
+
+  if(item.type==='level'&&item.levelData){
+    const ld=item.levelData;
+    specialContent+=`
+      <div class="level-up-card">
+        <div class="lu-icon">👑</div>
+        <div class="lu-title">LEVEL UP !</div>
+        <div class="lu-sub">${ld.capa}</div>
+        <div class="lu-niv">${ld.niveau}</div>
+      </div>`;
+  }
+
+  if(item.type==='mercato'&&item.mercatoData){
+    const md=item.mercatoData;
+    specialContent+=`
+      <div class="mercato-card">
+        <div class="mc-players">
+          <div class="mc-player"><div class="mc-av">${md.from.av}</div><div class="mc-name">${md.from.name}</div></div>
+          <div class="mc-arrow">⇄</div>
+          <div class="mc-player"><div class="mc-av">${md.to.av}</div><div class="mc-name">${md.to.name}</div></div>
+        </div>
+        <div class="mc-price"><div class="mc-price-val">${md.price}</div><div class="mc-price-label">TRANSFERT</div></div>
+      </div>`;
+  }
+
+  card.innerHTML=`
+    <div class="fc-header">
+      <div class="fc-av">${item.user.av}</div>
+      <div class="fc-meta">
+        <div class="fc-name">${item.user.name}${item.user.verified?'<span class="fc-verified">✦ THE LOCK</span>':''}</div>
+        <div class="fc-role">${item.user.handle}</div>
+      </div>
+      <div class="fc-time">${item.time}</div>
+      <button class="fc-more">···</button>
+    </div>
+    <div class="fc-body">
+      ${badges[item.type]||''}
+      <div class="fc-text">${item.text}</div>
+      ${specialContent}
+    </div>
+    <div class="fc-footer">
+      <button class="react-btn${item.liked?' liked':''}" onclick="toggleLike(this,${item.id})">
+        ${item.liked?'❤️':'🤍'} <span class="react-count">${item.likes}</span>
+      </button>
+      <button class="react-btn" onclick="openComments(${item.id})">💬 <span class="react-count">${item.comments}</span></button>
+      <button class="react-btn">🔁 <span class="react-count">${item.shares}</span></button>
+      <div class="fc-footer-right">
+        <button class="share-btn" onclick="shareItem(${item.id})">↗ Partager</button>
+      </div>
+    </div>`;
+
+  return card;
+}
+
+function renderFeed(filter='all'){
+  const container=document.getElementById('feed-container');
+  container.innerHTML='';
+  const items=filter==='all'?FEED:FEED.filter(f=>f.type===filter);
+  items.forEach((item,i)=>{
+    const card=buildFeedCard(item);
+    card.style.animationDelay=(i*0.07)+'s';
+    container.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════
+//  SUGGESTIONS
+// ══════════════════════════════════════
+function buildSuggestions(){
+  const wrap=document.getElementById('suggestions');
+  SUGGESTIONS.forEach(s=>{
+    const item=document.createElement('div');
+    item.className='suggestion-item';
+    item.innerHTML=`
+      <div class="si-av">${s.av}</div>
+      <div><div class="si-name">${s.name}</div><div class="si-role">${s.role}</div></div>
+      <button class="si-follow" onclick="followSug(this)">+ Suivre</button>`;
+    wrap.appendChild(item);
+  });
+}
+
+// ══════════════════════════════════════
+//  INTERACTIONS
+// ══════════════════════════════════════
+function toggleLike(btn,id){
+  const item=FEED.find(f=>f.id===id);
+  if(!item)return;
+  item.liked=!item.liked;
+  item.likes+=item.liked?1:-1;
+  btn.classList.toggle('liked',item.liked);
+  btn.innerHTML=`${item.liked?'❤️':'🤍'} <span class="react-count">${item.likes}</span>`;
+}
+function filterFeed(type,btn){
+  currentFilter=type;
+  document.querySelectorAll('.fn-item').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderFeed(type==='all'?'all':type);
+}
+function setFeedFilter(type,btn){
+  currentFeedFilter=type;
+  document.querySelectorAll('.ff-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderFeed();
+}
+function followSug(btn){
+  btn.classList.toggle('on');
+  btn.textContent=btn.classList.contains('on')?'✓ Suivi':'+ Suivre';
+}
+function openComposer(){alert('✏️ Compositeur de post — à connecter au backend.')}
+function shareResult(){alert('⚽ Partager un résultat de match.')}
+function shareTraining(){alert('🏃 Partager un entraînement.')}
+function shareStat(){alert('📊 Partager une stat.')}
+function openComments(id){alert(`💬 Commentaires du post #${id}`)}
+function shareItem(id){alert(`↗ Partager le post #${id}`)}
+function viewLive(){alert('📺 Vue du match en direct — page dédiée à venir.')}
+function loadMore(){
+  const container=document.getElementById('feed-container');
+  const placeholder=document.createElement('div');
+  placeholder.className='feed-card';
+  placeholder.style.padding='20px';placeholder.style.textAlign='center';
+  placeholder.style.color='var(--muted)';placeholder.style.fontSize='13px';
+  placeholder.textContent='Chargement... (connecter à la base de données)';
+  container.appendChild(placeholder);
+}
+
+// ── INIT ──
+renderFeed();
+buildSuggestions();
+
+function nav(page){
+  var pages={
+    'accueil':'index.html',
+    'inscription':'inscription.html',
+    'profil':'profil.html',
+    'feed':'feed.html',
+    'classement':'classement.html',
+    'ligue':'ligue.html',
+    'economie':'economie.html','minijeux':'minijeux.html','notifications':'notifications.html','coach':'coach.html',
+    'joueurs':'joueurs.html'
+  };
+  if(pages[page]) window.location.href=pages[page];
+}
+
+
+var THE_LOCK_LEVELS = [
+  {key:'recrue',    name:'RECRUE',    xp:0,     color:'#4a6080'},
+  {key:'initie',    name:'INITIE',    xp:500,   color:'#22c55e'},
+  {key:'apprenti',  name:'APPRENTI',  xp:1500,  color:'#00d4ff'},
+  {key:'confirme',  name:'CONFIRME',  xp:3000,  color:'#4fa3ff'},
+  {key:'elite',     name:'ELITE',     xp:6000,  color:'#a855f7'},
+  {key:'legendaire',name:'LEGENDAIRE',xp:10000, color:'#f0b429'},
+  {key:'icon',      name:'ICON',      xp:20000, color:'#ff2d55'}
+];
+function getLevelFromXP(xp){
+  var lv=THE_LOCK_LEVELS[0];
+  THE_LOCK_LEVELS.forEach(function(l){if(xp>=l.xp)lv=l;});
+  return lv;
+}
+
+</script>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">THE <span>LOCK</span></div>
+    <div class="footer-links">
+      <button class="footer-link">A propos</button>
+      <button class="footer-link">CGU</button>
+      <button class="footer-link">Confidentialite</button>
+      <button class="footer-link">Contact</button>
+    </div>
+    <div class="footer-right">THE LOCK · EDITION I · 2026</div>
+  </div>
+</footer>
+</body>
+</html>

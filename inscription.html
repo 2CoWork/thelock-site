@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE LOCK · Inscription</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#f0b429;--electric:#00d4ff;--danger:#ff2d55;--purple:#a855f7;--green:#22c55e;--ink:#07080f;--panel:#0c1018;--border:#1a2535}
+html,body{min-height:100%;background:var(--ink);font-family:'Rajdhani',sans-serif;color:white}
+body{display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:24px 16px 40px;
+  background:radial-gradient(ellipse at 20% 20%,#0d1a2e,var(--ink) 50%),radial-gradient(ellipse at 80% 80%,#1a0d1a,transparent 50%)}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;color:white;margin-bottom:20px;text-align:center}
+.logo span{color:var(--gold)}
+
+/* PROGRESS */
+.pw{width:100%;max-width:580px;margin-bottom:24px}
+.ps{display:flex;align-items:center;margin-bottom:8px}
+.sd{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:13px;border:2px solid var(--border);color:#334;background:var(--panel);transition:all .4s;flex-shrink:0;z-index:2}
+.sd.done{background:var(--green);border-color:var(--green);color:#000}
+.sd.active{background:var(--gold);border-color:var(--gold);color:#000;box-shadow:0 0 18px rgba(240,180,41,.4)}
+.sl{flex:1;height:2px;background:var(--border);transition:background .4s}
+.sl.done{background:var(--green)}
+.slabels{display:flex;justify-content:space-between}
+.slabel{font-size:8px;letter-spacing:1.5px;color:#334;text-transform:uppercase;text-align:center;flex:1;transition:color .3s}
+.slabel.active{color:var(--gold)}.slabel.done{color:var(--green)}
+
+/* CARD */
+.card{width:100%;max-width:580px;background:var(--panel);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.ch{padding:24px 28px 18px;border-bottom:1px solid var(--border)}
+.ce{font-size:10px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:4px}
+.ct{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:3px}
+.cs{font-size:12px;color:#3a4a5a;margin-top:2px}
+.cb{padding:24px 28px}
+
+/* STEPS */
+.step{display:none}
+.step.active{display:block;animation:si .4s cubic-bezier(.22,1,.36,1)}
+@keyframes si{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+
+/* FIELDS */
+.field{margin-bottom:14px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field label{display:block;font-size:10px;letter-spacing:3px;color:#2a3a4a;text-transform:uppercase;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:11px 13px;background:#0d1520;border:1px solid var(--border);border-radius:8px;color:white;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;outline:none;transition:border-color .2s;appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,180,41,.08)}
+.field input::placeholder,.field textarea::placeholder{color:#1e2d3d}
+.err{font-size:11px;color:var(--danger);margin-top:5px;display:none}
+.err.show{display:block}
+
+/* AVATAR */
+.avcenter{display:flex;flex-direction:column;align-items:center;margin-bottom:16px}
+.avring{width:140px;height:140px;border-radius:50%;border:3px solid var(--gold);box-shadow:0 0 28px rgba(240,180,41,.25);overflow:hidden;display:flex;align-items:center;justify-content:center;background:#080c14;cursor:pointer;transition:transform .2s,box-shadow .2s;margin-bottom:8px}
+.avring:hover{transform:scale(1.04);box-shadow:0 0 40px rgba(240,180,41,.4)}
+.avhint{font-size:9px;letter-spacing:3px;color:#2a3a4a;text-transform:uppercase}
+.avgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.avo{background:#0d1520;border:1px solid var(--border);border-radius:10px;padding:10px}
+.avo.full{grid-column:1/-1}
+.avol{font-size:9px;letter-spacing:2px;color:#2a3a4a;text-transform:uppercase;display:block;margin-bottom:7px}
+
+/* GENDER TOGGLE */
+.grow{display:flex;gap:6px;margin-bottom:14px}
+.gbtn{flex:1;padding:8px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;background:#0d1520;border:2px solid var(--border);border-radius:8px;color:#445;cursor:pointer;transition:all .2s}
+.gbtn.on{border-color:var(--gold);color:var(--gold);background:rgba(240,180,41,.07)}
+
+/* SWATCHES & PILLS */
+.swrow{display:flex;gap:5px;flex-wrap:wrap}
+.sw{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:all .18s;flex-shrink:0}
+.sw:hover{transform:scale(1.2)}
+.sw.on{border-color:white;transform:scale(1.18);box-shadow:0 0 8px rgba(255,255,255,.3)}
+.prow{display:flex;gap:5px;flex-wrap:wrap}
+.pill{padding:3px 9px;font-size:9px;letter-spacing:1px;font-weight:700;background:#111820;border:1px solid var(--border);border-radius:20px;color:#445;cursor:pointer;transition:all .18s;font-family:'Rajdhani',sans-serif}
+.pill:hover{border-color:#2a3a4a;color:#aaa}
+.pill.on{background:rgba(240,180,41,.1);border-color:var(--gold);color:var(--gold)}
+
+/* POSTES */
+.poste-cats{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.pcat{padding:5px 12px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;background:#0d1520;border:1px solid var(--border);border-radius:6px;color:#445;cursor:pointer;transition:all .2s}
+.pcat.on{background:rgba(240,180,41,.1);border-color:var(--gold);color:var(--gold)}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pbtn{padding:10px 6px;background:#0d1520;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .22s;text-align:center}
+.pbtn:hover{border-color:#2a3a4a;background:#111820}
+.pbtn.on{border-color:var(--gold);background:rgba(240,180,41,.07);box-shadow:0 0 12px rgba(240,180,41,.12)}
+.picon{font-size:20px;margin-bottom:3px}
+.pname{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;color:white}
+.psub{font-size:8px;letter-spacing:1px;color:#334;text-transform:uppercase;margin-top:2px}
+.pcnt{font-size:11px;color:#334;margin-top:10px;text-align:center;letter-spacing:1px}
+
+/* CAPACITÉS */
+.csec{margin-bottom:22px}
+.chead{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.chtitle{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px}
+.cbadge{font-size:9px;padding:2px 8px;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1px}
+.cbmain{background:rgba(240,180,41,.12);color:var(--gold);border:1px solid rgba(240,180,41,.25)}
+.cbsec{background:rgba(0,212,255,.1);color:var(--electric);border:1px solid rgba(0,212,255,.2)}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
+.ccard{padding:11px;background:#0d1520;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .22s;position:relative;overflow:hidden}
+.ccard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .3s}
+.ccard:hover{border-color:#2a3a4a}
+.ccard.on-main{border-color:var(--gold);background:rgba(240,180,41,.06)}
+.ccard.on-main::before{background:var(--gold);opacity:1}
+.ccard.on-sec{border-color:var(--electric);background:rgba(0,212,255,.05)}
+.ccard.on-sec::before{background:var(--electric);opacity:1}
+.ce2{font-size:18px;margin-bottom:4px}
+.cn{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;color:white;margin-bottom:2px}
+.cd{font-size:9px;color:#334;line-height:1.4}
+.lockbox{padding:14px;background:#080c12;border:2px dashed #1a2535;border-radius:10px;text-align:center;margin-bottom:10px}
+.lockicon{font-size:22px;margin-bottom:5px}
+.locktitle{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;color:#1e2d3d}
+.locksub{font-size:9px;color:#161e2a;margin-top:3px;letter-spacing:.5px}
+.nrow{display:flex;gap:7px;margin-top:10px}
+.nbtn{flex:1;padding:9px 6px;border-radius:8px;cursor:pointer;border:2px solid var(--border);background:#0d1520;text-align:center;transition:all .22s}
+.nbtn:hover{border-color:#2a3a4a}
+.nbtn .ni{font-size:16px;margin-bottom:3px}
+.nbtn .nn{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px}
+.nbtn .ns{font-size:8px;letter-spacing:1px;color:#334;text-transform:uppercase;margin-top:2px}
+.nbtn.nv-e{border-color:#22c55e;background:rgba(34,197,94,.07)}
+.nbtn.nv-c{border-color:var(--electric);background:rgba(0,212,255,.05)}
+.nbtn.nv-l{border-color:var(--gold);background:rgba(240,180,41,.07)}
+
+/* RECAP */
+.rcap{background:linear-gradient(135deg,#0d1520,#111820);border:1px solid var(--border);border-radius:16px;overflow:hidden;position:relative}
+.rcap::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--electric),var(--purple))}
+.rtop{padding:20px;display:flex;gap:16px;align-items:center;border-bottom:1px solid var(--border)}
+.rav{width:72px;height:72px;border-radius:50%;border:2px solid var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#080c12;box-shadow:0 0 18px rgba(240,180,41,.2)}
+.rpseudo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px}
+.rmeta{font-size:11px;color:#3a4a5a;letter-spacing:1.5px;margin-top:2px}
+.rtags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.rtag{font-size:8px;letter-spacing:2px;padding:2px 7px;border-radius:4px;background:rgba(240,180,41,.1);color:var(--gold);border:1px solid rgba(240,180,41,.2);font-weight:700}
+.rcapas{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rcapa{padding:11px;border-radius:9px;border:1px solid}
+.rcapa.mn{border-color:rgba(240,180,41,.3);background:rgba(240,180,41,.04)}
+.rcapa.sc{border-color:rgba(0,212,255,.2);background:rgba(0,212,255,.03)}
+.rcl{font-size:8px;letter-spacing:3px;text-transform:uppercase;margin-bottom:3px}
+.rcl.mn{color:var(--gold)}.rcl.sc{color:var(--electric)}
+.rcn{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px}
+.rcnv{font-size:9px;color:#3a4a5a;margin-top:2px}
+
+/* MAIL */
+.mailscreen{display:flex;flex-direction:column;align-items:center;text-align:center;padding:16px 0}
+.mailicon{font-size:56px;margin-bottom:14px;animation:mb .6s ease}
+@keyframes mb{from{transform:scale(0) rotate(-10deg)}to{transform:scale(1) rotate(0)}}
+.mailtitle{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;margin-bottom:8px}
+.mailsub{font-size:13px;color:#3a4a5a;line-height:1.6;max-width:340px;margin:0 auto 16px}
+.mailaddr{background:#080c12;border:1px solid var(--border);border-radius:8px;padding:9px 18px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--gold);margin-bottom:18px}
+.mailsteps{display:flex;flex-direction:column;gap:8px;width:100%;max-width:300px;background:#080c12;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:18px}
+.mstep{display:flex;align-items:center;gap:10px;font-size:12px;color:#3a4a5a}
+.mnum{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:11px;background:rgba(240,180,41,.1);color:var(--gold);border:1px solid rgba(240,180,41,.2)}
+.btnsim{padding:10px 22px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;background:transparent;border:1.5px solid var(--border);color:#445;border-radius:8px;cursor:pointer;transition:all .2s;margin-bottom:8px}
+.btnsim:hover{border-color:var(--electric);color:var(--electric)}
+
+/* CONFIRMED */
+.confscreen{display:flex;flex-direction:column;align-items:center;text-align:center;padding:16px 0}
+.conficon{font-size:60px;margin-bottom:14px;animation:cp .5s cubic-bezier(.22,1,.36,1)}
+@keyframes cp{from{transform:scale(0)}to{transform:scale(1)}}
+.conftitle{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:4px;color:var(--green);margin-bottom:6px}
+.confsub{font-size:13px;color:#3a4a5a;line-height:1.6;margin-bottom:20px}
+
+/* BUTTONS */
+.brow{display:flex;gap:10px;margin-top:20px}
+.btn{padding:12px 22px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;border-radius:8px;cursor:pointer;transition:all .22s;border:none;flex:1}
+.btn-next{background:var(--gold);color:#000;box-shadow:0 4px 18px rgba(240,180,41,.22)}
+.btn-next:hover{background:#f8d73b;transform:translateY(-2px)}
+.btn-back{background:transparent;border:1.5px solid var(--border);color:#445;flex:0 0 auto;padding:12px 18px}
+.btn-back:hover{border-color:#2a3a4a;color:white}
+.btn-sub{background:linear-gradient(135deg,var(--gold),#f59e0b);color:#000;font-size:16px;box-shadow:0 4px 22px rgba(240,180,41,.28)}
+.btn-sub:hover{transform:translateY(-2px);box-shadow:0 10px 34px rgba(240,180,41,.48)}
+
+/* Mail info box */
+.mailinfo{margin-top:14px;padding:12px;background:#080c12;border:1px solid var(--border);border-radius:10px;display:flex;gap:10px;align-items:flex-start}
+.miicon{font-size:20px;flex-shrink:0}
+.mititle{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;margin-bottom:3px}
+.misub{font-size:11px;color:#3a4a5a;line-height:1.5}
+
+/* ── UNIFIED TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(7,9,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid #1c2a3a;padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tb-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;color:white;flex-shrink:0;text-decoration:none}
+.tb-logo span{color:#f0b429}
+.tb-nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tb-nav::-webkit-scrollbar{display:none}
+.tb-link{padding:6px 12px;font-size:12px;font-weight:600;letter-spacing:.5px;color:#4a6080;background:none;border:none;cursor:pointer;border-radius:6px;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.tb-link:hover{color:white;background:rgba(255,255,255,.05)}
+.tb-link.on{color:#f0b429}
+.tb-right{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.tb-icon{width:34px;height:34px;border-radius:8px;background:#111822;border:1px solid #1c2a3a;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;position:relative;transition:all .2s;text-decoration:none}
+.tb-icon:hover{border-color:#f0b429}
+.tb-notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;background:#ff2d55;border-radius:50%;border:1px solid #07090f}
+.tb-profile{padding:0 12px;height:34px;border-radius:8px;background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.2);display:flex;align-items:center;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:#f0b429;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tb-profile:hover{background:rgba(240,180,41,.18)}
+
+/* ── UNIFIED FOOTER ── */
+.site-footer{background:#07090f;border-top:1px solid #1c2a3a;padding:24px 20px;margin-top:40px}
+.footer-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:4px;color:white}
+.footer-logo span{color:#f0b429}
+.footer-links{display:flex;gap:16px;flex-wrap:wrap}
+.footer-link{font-size:11px;color:#4a6080;letter-spacing:1px;cursor:pointer;transition:color .2s;background:none;border:none;font-family:'DM Sans',sans-serif}
+.footer-link:hover{color:#f0b429}
+.footer-right{font-size:11px;color:#2a3a4a;font-family:'DM Mono',monospace;letter-spacing:.5px}
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="tb-logo" href="index.html">THE <span>LOCK</span></a>
+  <nav class="tb-nav">
+    <button class="tb-link" onclick="nav('accueil')">Accueil</button>
+    <button class="tb-link" onclick="nav('joueurs')">Joueurs</button>
+    <button class="tb-link" onclick="nav('ligue')">Ligues</button>
+    <button class="tb-link" onclick="nav('classement')">Classement</button>
+    <button class="tb-link" onclick="nav('economie')">Economie</button>
+  </nav>
+  <div class="tb-right">
+    <div class="tb-icon" title="Notifications"><span>🔔</span><div class="tb-notif-dot"></div></div>
+    <div class="tb-profile" onclick="nav('profil')">MON PROFIL</div>
+  </div>
+</div>
+
+<div class="logo">THE <span>LOCK</span> · INSCRIPTION</div>
+
+<!-- PROGRESS -->
+<div class="pw">
+  <div class="ps" id="prog-dots"></div>
+  <div class="slabels" id="prog-labels"></div>
+</div>
+
+<div class="card">
+
+  <!-- ══ STEP 1 : IDENTITÉ ══ -->
+  <div class="step active" id="step-1">
+    <div class="ch"><div class="ce">⚡ Étape 1 / 5</div><div class="ct">TON IDENTITÉ</div><div class="cs">Les infos de base pour rejoindre THE LOCK</div></div>
+    <div class="cb">
+      <div class="fr">
+        <div class="field"><label>Pseudo *</label><input id="pseudo" type="text" placeholder="SHADOW · KING..."><div class="err" id="err-pseudo">Pseudo requis</div></div>
+        <div class="field"><label>Âge *</label><input id="age" type="number" placeholder="Ex: 22" min="14" max="60"><div class="err" id="err-age">Âge invalide</div></div>
+      </div>
+      <div class="field"><label>Adresse mail *</label><input id="mail" type="email" placeholder="ton@mail.com"><div class="err" id="err-mail">Email invalide</div></div>
+      <div class="fr">
+        <div class="field"><label>Mot de passe *</label><input id="pass" type="password" placeholder="8 caractères min."></div>
+        <div class="field"><label>Confirmer *</label><input id="pass2" type="password" placeholder="••••••••"><div class="err" id="err-pass">Mots de passe différents</div></div>
+      </div>
+      <div class="brow"><button class="btn btn-next" onclick="goNext(1)">CONTINUER →</button></div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2 : AVATAR ══ -->
+  <div class="step" id="step-2">
+    <div class="ch"><div class="ce">🎨 Étape 2 / 5</div><div class="ct">TON AVATAR</div><div class="cs">Crée ton personnage Blue Lock</div></div>
+    <div class="cb">
+      <!-- Gender -->
+      <div class="grow">
+        <button class="gbtn on" onclick="setGender('M',this)">♂ HOMME</button>
+        <button class="gbtn" onclick="setGender('F',this)">♀ FEMME</button>
+      </div>
+      <!-- Preview -->
+      <div class="avcenter">
+        <div class="avring" onclick="rndAv()" title="Randomiser">
+          <svg id="av-svg" width="136" height="136" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div class="avhint">🎲 Clique pour randomiser</div>
+      </div>
+      <!-- Options -->
+      <div class="avgrid" id="av-opts"></div>
+      <div class="brow">
+        <button class="btn btn-back" onclick="goBack(2)">←</button>
+        <button class="btn btn-next" onclick="goNext(2)">CONTINUER →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 3 : POSTES ══ -->
+  <div class="step" id="step-3">
+    <div class="ch"><div class="ce">⚽ Étape 3 / 5</div><div class="ct">TES POSTES</div><div class="cs">Jusqu'à 5 postes · Les capacités s'adaptent</div></div>
+    <div class="cb">
+      <div class="poste-cats" id="pcat-row"></div>
+      <div class="pgrid" id="pgrid"></div>
+      <div class="pcnt" id="pcnt">0 / 5 postes sélectionnés</div>
+      <div class="err" id="err-poste" style="text-align:center;margin-top:8px">Choisis au moins 1 poste</div>
+      <div class="brow">
+        <button class="btn btn-back" onclick="goBack(3)">←</button>
+        <button class="btn btn-next" onclick="goNext(3)">CONTINUER →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 4 : CAPACITÉS ══ -->
+  <div class="step" id="step-4">
+    <div class="ch"><div class="ce">⚡ Étape 4 / 5</div><div class="ct">TES SUPER CAPACITÉS</div><div class="cs">Basées sur tes postes · Ton arme secrète</div></div>
+    <div class="cb">
+      <!-- Principale -->
+      <div class="csec">
+        <div class="chead"><div class="chtitle">CAPACITÉ PRINCIPALE</div><span class="cbadge cbmain">OBLIGATOIRE</span></div>
+        <div id="c-main-content"></div>
+        <div style="margin-top:12px"><div style="font-size:9px;letter-spacing:3px;color:#2a3a4a;text-transform:uppercase;margin-bottom:7px">Niveau de maîtrise</div><div class="nrow" id="niv-main"></div></div>
+        <div class="err" id="err-capa">Sélectionne une capacité principale</div>
+      </div>
+      <!-- Secondaire -->
+      <div class="csec">
+        <div class="chead"><div class="chtitle">CAPACITÉ SECONDAIRE</div><span class="cbadge cbsec">SECONDAIRE</span></div>
+        <div id="c-sec-content"></div>
+        <div style="margin-top:12px"><div style="font-size:9px;letter-spacing:3px;color:#2a3a4a;text-transform:uppercase;margin-bottom:7px">Niveau de maîtrise</div><div class="nrow" id="niv-sec"></div></div>
+      </div>
+      <!-- Locked -->
+      <div class="lockbox"><div class="lockicon">🔒</div><div class="locktitle">CAPACITÉ CUSTOM · VERROUILLÉE</div><div class="locksub">Atteins le niveau Confirmé pour créer ta capacité unique</div></div>
+      <div class="lockbox" style="margin-top:8px"><div class="lockicon">👑</div><div class="locktitle">CAPACITÉ ULTIME · VERROUILLÉE</div><div class="locksub">Atteins le niveau Légendaire pour débloquer ta 3ème capacité</div></div>
+      <div class="brow">
+        <button class="btn btn-back" onclick="goBack(4)">←</button>
+        <button class="btn btn-next" onclick="goNext(4)">CONTINUER →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 5 : RÉCAP ══ -->
+  <div class="step" id="step-5">
+    <div class="ch"><div class="ce">✅ Étape 5 / 5</div><div class="ct">TA CARTE JOUEUR</div><div class="cs">Vérifie avant de rejoindre THE LOCK</div></div>
+    <div class="cb">
+      <div class="rcap">
+        <div class="rtop">
+          <div class="rav"><svg id="recap-av" width="68" height="68" viewBox="0 0 160 200"></svg></div>
+          <div><div class="rpseudo" id="rc-pseudo">—</div><div class="rmeta" id="rc-meta">—</div><div class="rtags" id="rc-tags"></div></div>
+        </div>
+        <div class="rcapas">
+          <div class="rcapa mn"><div class="rcl mn">⚡ Principale</div><div class="rcn" id="rc-mn">—</div><div class="rcnv" id="rc-mn-nv">—</div></div>
+          <div class="rcapa sc"><div class="rcl sc">◈ Secondaire</div><div class="rcn" id="rc-sc">—</div><div class="rcnv" id="rc-sc-nv">—</div></div>
+        </div>
+      </div>
+      <div class="mailinfo"><div class="miicon">📧</div><div><div class="mititle">VALIDATION PAR MAIL</div><div class="misub">Un lien sera envoyé à <span id="rc-mail" style="color:var(--gold)">—</span>. Clique pour activer ton compte.</div></div></div>
+      <div class="brow">
+        <button class="btn btn-back" onclick="goBack(5)">←</button>
+        <button class="btn btn-sub" onclick="submitForm()">🔒 REJOINDRE THE LOCK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIL ══ -->
+  <div class="step" id="step-mail">
+    <div class="ch"><div class="ce">📧 Confirmation</div><div class="ct">VÉRIFIE TA BOÎTE MAIL</div><div class="cs">Un mail vient d'être envoyé</div></div>
+    <div class="cb">
+      <div class="mailscreen">
+        <div class="mailicon">📬</div>
+        <div class="mailtitle">MAIL ENVOYÉ !</div>
+        <div class="mailsub">Un lien de confirmation a été envoyé à :</div>
+        <div class="mailaddr" id="mail-addr">—</div>
+        <div class="mailsteps">
+          <div class="mstep"><div class="mnum">1</div>Ouvre ta boîte mail</div>
+          <div class="mstep"><div class="mnum">2</div>Cherche le mail de THE LOCK · ÉDITION I</div>
+          <div class="mstep"><div class="mnum">3</div>Clique sur "Confirmer mon inscription"</div>
+          <div class="mstep"><div class="mnum">4</div>Ton compte est activé !</div>
+        </div>
+        <button class="btnsim" onclick="simConfirm()">🔗 SIMULER LE CLIC SUR LE LIEN</button>
+        <div style="font-size:11px;color:#1e2d3d">Mail non reçu ? Vérifie tes spams</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CONFIRMED ══ -->
+  <div class="step" id="step-confirmed">
+    <div class="ch"><div class="ce">🔒 THE LOCK</div><div class="ct">BIENVENUE !</div><div class="cs">Ton compte est activé</div></div>
+    <div class="cb">
+      <div class="confscreen">
+        <div class="conficon">🔒</div>
+        <div class="conftitle" id="conf-title">BIENVENUE !</div>
+        <div class="confsub">Ton compte THE LOCK · ÉDITION I est actif.<br>Accède à ton profil et rejoins l'aventure.</div>
+        <div id="conf-card" style="width:100%;max-width:300px;margin-bottom:20px"></div>
+        <button class="btn btn-next" style="max-width:260px" onclick="alert('→ Redirection vers le profil joueur !')">ACCÉDER À MON PROFIL →</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /card -->
+
+<script>
+// ══════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════
+const SKINS=['#FDBCB4','#F5CBA7','#FAD7A0','#F0C987','#E8B88A','#D4956A','#C68642','#B5724A','#A0522D','#8D5524','#6B3A2A','#4A2912','#2D1508'];
+const HAIR_COLS=['#0a0a0a','#1a1a1a','#2c2c2c','#3d2b1f','#6B3A2A','#8B4513','#A0522D','#C0392B','#E67E22','#FFD700','#f0b429','#4a90d9','#a855f7','#22c55e','#00d4ff','#ff2d55','#ffffff','#888','#2c1810'];
+const EYE_COLS=['#3d2b1f','#8B4513','#A0522D','#00d4ff','#4fa3ff','#1abc9c','#22c55e','#ff2d55','#a855f7','#f0b429','#E67E22','#888','#ffffff'];
+
+// ALL haircuts — no ethnicity filter
+const HAIRCUTS_M=[
+  'Court','Dégradé','Tondu','Rasé','Brosse','Undercut','Frange','Côté Peigné',
+  'Épics','Lisse Arrière','Bouclé Court','Bouclé Long','Ondulé',
+  'Afro','Afro Court','Dégradé Afro','Hi-Top Fade','Temp Fade','Afro Hawk',
+  'Locks','Tresses Cornrows','Box Braids','Twist','Bantu Knots',
+  'Man Bun','Chignon','Long','Long Lisse','Long Bouclé',
+  'Mohawk','Mohawk Afro','Dreadlocks','Undercut Lat.','Two Block'
+];
+const HAIRCUTS_F=[
+  'Court Pixie','Bob Droit','Bob Ondulé','Frange Droite','Undercut F',
+  'Mi-Long Lisse','Mi-Long Ondulé','Mi-Long Bouclé',
+  'Long Lisse','Long Ondulé','Long Bouclé',
+  'Afro','Afro Court','Afro Long','Fro Hawk',
+  'Locks','Tresses Cornrows','Box Braids','Twist Out','Bantu Knots',
+  'Queue Cheval','Queue Haute','Chignon','Chignon Haut','Nattes',
+  'Tresses Latérales','Hime Cut','Twin Tails','Bangs','Undercut Lat.'
+];
+const EYE_STYLES=['Amande','Bridé','Grand','Intense','Doux','Félin','Arrondi','Semi-Bridé'];
+const BROWS=['Droits','Froncés','Arqués','Épais','Fins','Naturels','Épais Froncés','Fins Arqués'];
+const MOUTHS=['Neutre','Sourire','Smirk','Déterminé','Sérieux','Ouvert','Mordu Lèvre'];
+const BEARDS=['Aucune','Bouc','Barbe Courte','Barbe Mi','Barbe Longue','Moustache','Collier','Barbe Taillée','Favori'];
+
+// ALL accessories — no filter
+const ACCS=[
+  'Aucun',
+  // Lunettes
+  'Lunettes Rondes','Lunettes Carrées','Lunettes Sport','Lunettes Soleil','Lunettes Aviateur','Demi-Lune',
+  // Couvre-chefs
+  'Casquette','Casquette Retournée','Bonnet','Duraq','Bandana Tête','Bandana Bouche','Keffieh','Turban','Capuche',
+  // Bijoux
+  'Boucle Oreille G','Deux Boucles','Créoles','Chaîne Or','Chaîne Argent','Collier','Boucle Nez','Piercing Sourcil',
+  // Culturels
+  'Bindi','Tilak','Kohl Yeux',
+  // Sport
+  'Bandeau Sport','Bandeau Cheveux','Protège-dents',
+  // Autres
+  'Masque','Cicatrice Joue','Cicatrice Front','Tatouage Tempe','Marque Sous Oeil'
+];
+const EXTRAS=['Aucun','Taches de Rousseur','Grain de Beauté','Points Sous Yeux','Larme Tatouée','Tatouage Cou','Marque Ethnie'];
+
+const POSTES_CATS=[
+  {key:'terrain',label:'⚽ Terrain',col:'var(--gold)'},
+  {key:'soutien',label:'👑 Soutien',col:'var(--electric)'},
+  {key:'off',label:'📣 Supporters',col:'var(--danger)'},
+];
+const POSTES=[
+  {cat:'terrain',icon:'🥅',name:'Gardien',sub:'GK'},
+  {cat:'terrain',icon:'🛡️',name:'Défenseur Central',sub:'DC'},
+  {cat:'terrain',icon:'🔒',name:'Stoppeur',sub:'STOP'},
+  {cat:'terrain',icon:'💨',name:'Latéral',sub:'LAT'},
+  {cat:'terrain',icon:'🔰',name:'Libero',sub:'LIB'},
+  {cat:'terrain',icon:'⚙️',name:'Milieu Défensif',sub:'MDef'},
+  {cat:'terrain',icon:'🎯',name:'Sentinelle',sub:'SENT'},
+  {cat:'terrain',icon:'🔄',name:'Box-to-Box',sub:'B2B'},
+  {cat:'terrain',icon:'🎭',name:'Milieu Central',sub:'MC'},
+  {cat:'terrain',icon:'🌟',name:'Trequartista',sub:'TREQ'},
+  {cat:'terrain',icon:'🔥',name:'Milieu Offensif',sub:'MOff'},
+  {cat:'terrain',icon:'⚡',name:'Ailier',sub:'AIL'},
+  {cat:'terrain',icon:'🎪',name:'Faux 9',sub:'F9'},
+  {cat:'terrain',icon:'💥',name:'Attaquant',sub:'ATT'},
+  {cat:'soutien',icon:'🧠',name:'Coach',sub:'COACH'},
+  {cat:'soutien',icon:'⚖️',name:'Arbitre',sub:'ARB'},
+  {cat:'soutien',icon:'💊',name:'Staff Médical',sub:'STAFF'},
+  {cat:'off',icon:'📣',name:'Supporter',sub:'SUP'},
+  {cat:'off',icon:'🎺',name:'Chef d\'Ambiance',sub:'CHEF'},
+  {cat:'off',icon:'📸',name:'Photographe',sub:'PHOTO'},
+];
+const CAPAS={
+  terrain:[
+    {e:'👁️',n:'VISION TOTALE',d:'Tu vois le terrain avant les autres. Chaque passe est parfaite.'},
+    {e:'⚡',n:'VITESSE ÉCLAIR',d:'Tes accélérations défient la physique. Impossible à rattraper.'},
+    {e:'🧲',n:'CONTRÔLE ABSOLU',d:'Le ballon colle à ton pied comme une extension de ton corps.'},
+    {e:'🔥',n:'TIR DE FOUDRE',d:'Tes frappes sont imprévisibles. Le gardien ne les voit jamais.'},
+    {e:'🎭',n:'DRIBBLE FANTÔME',d:'Tu passes entre les défenseurs comme s\'ils n\'existaient pas.'},
+    {e:'🧠',n:'QI TACTIQUE',d:'Tu lis le jeu 3 coups à l\'avance. Chaque mouvement est calculé.'},
+    {e:'💪',n:'PHYSIQUE BRUT',d:'Tu domines chaque duel. L\'endurance est ton arme principale.'},
+    {e:'🌀',n:'PIVOT MORTEL',d:'Ton changement de direction est inhumain. Personne ne suit.'},
+    {e:'🎯',n:'PRÉCISION LASER',d:'Passes et centres chirurgicaux. Zéro déchet dans ton jeu.'},
+    {e:'❄️',n:'SANG FROID',d:'La pression n\'existe pas. Plus c\'est tendu, mieux tu joues.'},
+    {e:'🌪️',n:'PRESSING INFERNAL',d:'Tu étouffes l\'adversaire. Ton pressing met tout le monde sous pression.'},
+    {e:'🦁',n:'INSTINCT ANIMAL',d:'Tu anticipes chaque action d\'instinct. Impossible à surprendre.'},
+  ],
+  soutien:[
+    {e:'📋',n:'GÉNIE TACTIQUE',d:'Tes schémas déstabilisent n\'importe quelle défense adverse.'},
+    {e:'🗣️',n:'LEADERSHIP TOTAL',d:'Ta voix donne des ailes à l\'équipe. Tu galvanises en 10 secondes.'},
+    {e:'🔭',n:'ŒIL ANALYTIQUE',d:'Tu détectes la faille adverse avant même qu\'elle n\'apparaisse.'},
+    {e:'🧪',n:'PRÉPARATION PARFAITE',d:'Ton équipe arrive en pleine forme. Chaque détail est anticipé.'},
+    {e:'⚖️',n:'AUTORITÉ NATURELLE',d:'Ton arbitrage est implacable. Chaque décision est respectée.'},
+    {e:'🩺',n:'MAIN DE GUÉRISSEUR',d:'Tu remets les joueurs sur pied en un temps record.'},
+  ],
+  off:[
+    {e:'🔊',n:'DOUZIÈME HOMME',d:'Ta voix seule fait trembler l\'adversaire. Le stade vibre.'},
+    {e:'🎺',n:'CHEF D\'AMBIANCE',d:'Tu orchestres les chants. Tout le monde te suit naturellement.'},
+    {e:'👁️',n:'ŒIL DE L\'AIGLE',d:'Tu analyses le match mieux que le coach. Rien ne t\'échappe.'},
+    {e:'❤️',n:'FIDÈLE ABSOLU',d:'Présent peu importe le score. Ta loyauté est une force.'},
+    {e:'📸',n:'MÉMOIRE DU CLUB',d:'Tu immortalises chaque moment clé. L\'histoire c\'est toi.'},
+    {e:'📱',n:'MAESTRO DES RÉSEAUX',d:'Tu fais vibrer la communauté avant, pendant et après le match.'},
+  ],
+};
+const NIVEAUX=[
+  {key:'eveille',icon:'🌱',name:'ÉVEILLÉ',sub:'Débutant',cls:'nv-e'},
+  {key:'confirme',icon:'⚡',name:'CONFIRMÉ',sub:'Intermédiaire',cls:'nv-c'},
+  {key:'legendaire',icon:'👑',name:'LÉGENDAIRE',sub:'Élite',cls:'nv-l'},
+];
+const NIV_LBL={eveille:'🌱 Éveillé',confirme:'⚡ Confirmé',legendaire:'👑 Légendaire'};
+
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+const S={
+  pseudo:'',age:'',mail:'',
+  gender:'M',
+  av:{skin:SKINS[3],hair:HAIR_COLS[0],hcut:0,eye:EYE_COLS[3],estyle:0,brow:0,mouth:0,beard:0,acc:0,extra:0},
+  postes:[],activeCat:'terrain',
+  mn:{id:null,name:'',niv:'eveille'},
+  sc:{id:null,name:'',niv:'eveille'},
+  step:1,
+};
+
+// ══════════════════════════════════════════
+//  PROGRESS
+// ══════════════════════════════════════════
+const SLABELS=['Identité','Avatar','Postes','Capacités','Recap'];
+function buildProg(){
+  const dots=document.getElementById('prog-dots'),labels=document.getElementById('prog-labels');
+  dots.innerHTML='';labels.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const d=document.createElement('div');
+    d.className='sd'+(i===S.step?' active':i<S.step?' done':'');
+    d.textContent=i<S.step?'✓':i;
+    dots.appendChild(d);
+    if(i<5){const l=document.createElement('div');l.className='sl'+(i<S.step?' done':'');dots.appendChild(l);}
+    const lb=document.createElement('div');
+    lb.className='slabel'+(i===S.step?' active':i<S.step?' done':'');
+    lb.textContent=SLABELS[i-1];labels.appendChild(lb);
+  }
+}
+function setStep(n){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step-'+n).classList.add('active');
+  S.step=n;buildProg();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goNext(from){if(!validate(from))return;if(from===4)buildRecap();setStep(from+1);}
+function goBack(from){setStep(from-1);}
+
+// ══════════════════════════════════════════
+//  VALIDATE
+// ══════════════════════════════════════════
+function showErr(id,v){const e=document.getElementById(id);if(e)e.classList.toggle('show',v);}
+function validate(step){
+  let ok=true;
+  if(step===1){
+    const p=document.getElementById('pseudo').value.trim();
+    const a=parseInt(document.getElementById('age').value);
+    const m=document.getElementById('mail').value.trim();
+    const pw=document.getElementById('pass').value;
+    const pw2=document.getElementById('pass2').value;
+    showErr('err-pseudo',!p);if(!p)ok=false;else S.pseudo=p;
+    showErr('err-age',!a||a<14||a>60);if(!a||a<14||a>60)ok=false;else S.age=a;
+    showErr('err-mail',!m||!m.includes('@'));if(!m||!m.includes('@'))ok=false;else S.mail=m;
+    showErr('err-pass',pw!==pw2||pw.length<8);if(pw!==pw2||pw.length<8)ok=false;
+  }
+  if(step===3){
+    const none=S.postes.length===0;
+    showErr('err-poste',none);if(none)ok=false;
+    else buildCapas();
+  }
+  if(step===4){
+    const none=S.mn.id===null;
+    showErr('err-capa',none);if(none)ok=false;
+  }
+  return ok;
+}
+
+// ══════════════════════════════════════════
+//  AVATAR
+// ══════════════════════════════════════════
+function mkSw(arr,key,isIdx=false){
+  const row=document.createElement('div');row.className='swrow';
+  arr.forEach((c,i)=>{
+    const s=document.createElement('div');
+    const val=isIdx?i:c;
+    s.className='sw'+(S.av[key]===val?' on':'');
+    s.style.background=isIdx?'var(--border)':c;
+    if(c==='#ffffff')s.style.border='2px solid #444';
+    s.onclick=()=>{S.av[key]=val;buildAvOpts();renderAv()};
+    row.appendChild(s);
+  });
+  return row;
+}
+function mkPill(arr,key){
+  const row=document.createElement('div');row.className='prow';
+  arr.forEach((label,i)=>{
+    const b=document.createElement('button');
+    b.className='pill'+(S.av[key]===i?' on':'');
+    b.textContent=label;
+    b.onclick=()=>{S.av[key]=i;buildAvOpts();renderAv()};
+    row.appendChild(b);
+  });
+  return row;
+}
+function mkBox(label,child,full=false){
+  const b=document.createElement('div');
+  b.className='avo'+(full?' full':'');
+  const l=document.createElement('span');l.className='avol';l.textContent=label;
+  b.appendChild(l);b.appendChild(child);return b;
+}
+function buildAvOpts(){
+  const opts=document.getElementById('av-opts');opts.innerHTML='';
+  const cuts=S.gender==='M'?HAIRCUTS_M:HAIRCUTS_F;
+  opts.appendChild(mkBox('🎨 Teinte peau',mkSw(SKINS,'skin')));
+  opts.appendChild(mkBox('💈 Couleur cheveux',mkSw(HAIR_COLS,'hair')));
+  opts.appendChild(mkBox('✂️ Coupe de cheveux',mkPill(cuts,'hcut'),true));
+  opts.appendChild(mkBox('👁️ Couleur yeux',mkSw(EYE_COLS,'eye')));
+  opts.appendChild(mkBox('👀 Forme des yeux',mkPill(EYE_STYLES,'estyle')));
+  opts.appendChild(mkBox('〰️ Sourcils',mkPill(BROWS,'brow')));
+  opts.appendChild(mkBox('👄 Bouche',mkPill(MOUTHS,'mouth')));
+  if(S.gender==='M') opts.appendChild(mkBox('🧔 Barbe',mkPill(BEARDS,'beard')));
+  opts.appendChild(mkBox('🕶️ Accessoires',mkPill(ACCS,'acc'),true));
+  opts.appendChild(mkBox('⚡ Extras',mkPill(EXTRAS,'extra'),true));
+}
+function setGender(g,btn){
+  S.gender=g;S.av.hcut=0;S.av.beard=0;
+  document.querySelectorAll('.gbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  buildAvOpts();renderAv();
+}
+function rndAv(){
+  const cuts=S.gender==='M'?HAIRCUTS_M:HAIRCUTS_F;
+  S.av.skin=SKINS[~~(Math.random()*SKINS.length)];
+  S.av.hair=HAIR_COLS[~~(Math.random()*HAIR_COLS.length)];
+  S.av.hcut=~~(Math.random()*cuts.length);
+  S.av.eye=EYE_COLS[~~(Math.random()*EYE_COLS.length)];
+  S.av.estyle=~~(Math.random()*EYE_STYLES.length);
+  S.av.brow=~~(Math.random()*BROWS.length);
+  S.av.mouth=~~(Math.random()*MOUTHS.length);
+  S.av.beard=S.gender==='M'?~~(Math.random()*BEARDS.length):0;
+  S.av.acc=~~(Math.random()*ACCS.length);
+  S.av.extra=~~(Math.random()*EXTRAS.length);
+  buildAvOpts();renderAv();
+}
+
+// ── AVATAR SVG BUILD ──
+function dk(h,p){try{const n=parseInt(h.replace('#',''),16);return '#'+[((n>>16)&255),(n>>8)&255,n&255].map(v=>Math.max(0,v-p).toString(16).padStart(2,'0')).join('')}catch{return h}}
+function lt(h,p){try{const n=parseInt(h.replace('#',''),16);return '#'+[((n>>16)&255),(n>>8)&255,n&255].map(v=>Math.min(255,v+p).toString(16).padStart(2,'0')).join('')}catch{return h}}
+
+// Hair paths — viewBox 0 0 160 200, face center cx=80 cy=80 rx=36 ry=42
+// All paths carefully anchored to head, no body overlap
+function getHair(hc,isF){
+  const cuts=isF?HAIRCUTS_F:HAIRCUTS_M;
+  const idx=Math.min(S.av.hcut,cuts.length-1);
+  const name=cuts[idx];
+
+  // Universal hair renderer based on name keywords
+  if(name.includes('Afro Long')||name.includes('Afro Lon')) return `<ellipse cx="80" cy="55" rx="52" ry="46" fill="${hc}"/><ellipse cx="38" cy="68" rx="20" ry="18" fill="${hc}"/><ellipse cx="122" cy="68" rx="20" ry="18" fill="${hc}"/>`;
+  if(name.includes('Afro Court')) return `<ellipse cx="80" cy="60" rx="40" ry="30" fill="${hc}"/>`;
+  if(name.includes('Afro')) return `<ellipse cx="80" cy="56" rx="46" ry="40" fill="${hc}"/><ellipse cx="40" cy="68" rx="18" ry="16" fill="${hc}"/><ellipse cx="120" cy="68" rx="18" ry="16" fill="${hc}"/>`;
+  if(name.includes('Dégradé Afro')) return `<ellipse cx="80" cy="58" rx="42" ry="34" fill="${hc}"/><path d="M42,80 Q44,66 52,62 Q80,57 108,62 Q116,66 118,80" fill="${dk(hc,40)}" opacity=".6"/>`;
+  if(name.includes('Hi-Top')) return `<rect x="50" y="26" width="60" height="38" rx="8" fill="${hc}"/><path d="M44,80 Q44,66 52,62 Q80,57 108,62 Q116,66 116,80" fill="${dk(hc,38)}" opacity=".6"/>`;
+  if(name.includes('Temp Fade')) return `<ellipse cx="80" cy="54" rx="36" ry="28" fill="${hc}"/><path d="M44,80 Q44,68 50,64 Q80,59 110,64 Q116,68 116,80" fill="${dk(hc,42)}" opacity=".55"/>`;
+  if(name.includes('Afro Hawk')) return `<path d="M68,80 Q66,38 70,24 Q80,16 90,24 Q94,38 92,80Z" fill="${hc}"/>`;
+  if(name.includes('Box Braids')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78" fill="${hc}"/>${[-28,-14,0,14,28].map(x=>`<rect x="${78+x}" y="76" width="9" height="55" rx="4" fill="${hc}" stroke="${dk(hc,22)}" stroke-width="1"/>`).join('')}`;
+  if(name.includes('Cornrows')||name.includes('Cornrow')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78" fill="${hc}"/>${[-24,-12,0,12,24].map(x=>`<path d="M${80+x},30 Q${82+x},54 ${80+x},78" fill="none" stroke="${dk(hc,22)}" stroke-width="3.5" stroke-linecap="round"/>`).join('')}`;
+  if(name.includes('Bantu')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78" fill="${hc}"/>${[-22,-8,8,22].map(x=>`<circle cx="${80+x}" cy="${Math.abs(x)>15?44:36}" r="8" fill="${hc}" stroke="${dk(hc,20)}" stroke-width="1"/>`).join('')}`;
+  if(name.includes('Twist Out')||name.includes('Twist')) return `<path d="M44,78 Q42,52 58,40 Q68,32 80,31 Q92,30 102,40 Q118,52 116,78" fill="${hc}"/>${[-20,-8,4,16,28].map(x=>`<path d="M${80+x},78 Q${84+x},100 ${80+x},120" fill="${hc}" stroke="${lt(hc,20)}" stroke-width="5" stroke-dasharray="4 2"/>`).join('')}`;
+  if(name.includes('Locks')||name.includes('Dread')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78" fill="${hc}"/>${[-28,-18,-8,2,12,22,30].map((x,i)=>`<path d="M${80+x},78 Q${82+x},${100+i*5} ${80+x},${125+i*4}" fill="${hc}" stroke="${dk(hc,25)}" stroke-width="4.5" stroke-linecap="round"/>`).join('')}`;
+  if(name.includes('Tresses Lat')||name.includes('Nattes')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78" fill="${hc}"/>${[-16,16].map(x=>`<path d="M${80+x},78 Q${82+x},110 ${80+x},145" fill="${hc}" stroke="${dk(hc,26)}" stroke-width="8" stroke-linecap="round"/>`).join('')}`;
+  if(name.includes('Tresses')||name.includes('Cornrow')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78" fill="${hc}"/>${[-20,-6,8,22].map(x=>`<path d="M${80+x},78 Q${82+x},110 ${80+x},148" fill="${hc}" stroke="${dk(hc,24)}" stroke-width="7"/>`).join('')}`;
+  if(name.includes('Mohawk Afro')) return `<ellipse cx="80" cy="34" rx="12" ry="20" fill="${hc}"/><path d="M44,80 Q44,68 52,64 Q80,59 108,64 Q116,68 116,80" fill="${dk(hc,36)}" opacity=".55"/>`;
+  if(name.includes('Mohawk')) return `<path d="M70,80 Q68,38 72,24 Q80,18 88,24 Q92,38 90,80Z" fill="${hc}"/>`;
+  if(name.includes('Man Bun')||name.includes('Chignon Haut')) return `<path d="M44,80 Q42,52 58,40 Q68,32 80,31 Q92,30 102,40 Q118,52 116,80 Q108,56 80,52 Q52,56 44,80Z" fill="${hc}"/><ellipse cx="80" cy="26" rx="14" ry="12" fill="${hc}"/>`;
+  if(name.includes('Chignon')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78 Q108,54 80,50 Q52,54 44,78Z" fill="${hc}"/><ellipse cx="80" cy="28" rx="16" ry="13" fill="${hc}"/>`;
+  if(name.includes('Queue Haute')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78 Q108,54 80,50 Q52,54 44,78Z" fill="${hc}"/><path d="M80,30 Q90,28 96,32 Q92,48 88,65 Q84,80 82,95 Q78,80 76,65 Q72,48 70,32 Q76,28 80,30Z" fill="${hc}"/>`;
+  if(name.includes('Queue')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78 Q108,54 80,50 Q52,54 44,78Z" fill="${hc}"/><path d="M108,44 Q120,50 122,62 Q118,82 112,102 Q108,88 106,68 Q104,52 108,44Z" fill="${hc}"/>`;
+  if(name.includes('Twin Tails')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78 Q108,54 80,50 Q52,54 44,78Z" fill="${hc}"/><path d="M44,56 Q34,54 30,66 Q28,82 36,96 Q40,82 42,66 Q44,56 44,56Z" fill="${hc}"/><path d="M116,56 Q126,54 130,66 Q132,82 124,96 Q120,82 118,66 Q116,56 116,56Z" fill="${hc}"/>`;
+  if(name.includes('Hime')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78 Q108,54 80,50 Q52,54 44,78Z" fill="${hc}"/><path d="M44,78 Q42,110 44,140 L52,140 Q50,110 52,78" fill="${hc}"/><path d="M116,78 Q118,110 116,140 L108,140 Q110,110 108,78" fill="${hc}"/><path d="M58,38 Q80,44 102,38 Q98,52 80,52 Q62,52 58,38Z" fill="${hc}"/>`;
+  if(name.includes('Bangs')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78 Q108,54 80,50 Q52,54 44,78Z" fill="${hc}"/><path d="M58,38 Q80,46 102,38 Q96,54 80,54 Q64,54 58,38Z" fill="${hc}"/>`;
+  if(name.includes('Long Lisse')||name.includes('Long Lis')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78 Q108,54 80,50 Q52,54 44,78Z" fill="${hc}"/><path d="M44,78 Q40,114 42,160 Q46,178 52,185 L58,185 Q54,175 56,145 Q52,115 44,78Z" fill="${hc}"/><path d="M116,78 Q120,114 118,160 Q114,178 108,185 L102,185 Q106,175 104,145 Q108,115 116,78Z" fill="${hc}"/>`;
+  if(name.includes('Long Ondulé')||name.includes('Long Bou')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78" fill="${hc}"/>${[-38,-24,-10,10,24,36].map(x=>`<ellipse cx="${80+x}" cy="${122+Math.abs(x/2)}" rx="12" ry="16" fill="${hc}"/>`).join('')}`;
+  if(name.includes('Long')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78 Q108,54 80,50 Q52,54 44,78Z" fill="${hc}"/><path d="M44,78 Q42,112 44,155 Q48,172 54,178 L60,178 Q56,168 58,138 Q54,112 44,78Z" fill="${hc}"/><path d="M116,78 Q118,112 116,155 Q112,172 106,178 L100,178 Q104,168 102,138 Q106,112 116,78Z" fill="${hc}"/>`;
+  if(name.includes('Mi-Long')) return `<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78 Q108,54 80,50 Q52,54 44,78Z" fill="${hc}"/><path d="M44,78 Q42,106 46,128 Q52,138 58,140 L62,138 Q58,128 58,108 Q54,90 44,78Z" fill="${hc}"/><path d="M116,78 Q118,106 114,128 Q108,138 102,140 L98,138 Q102,128 102,108 Q106,90 116,78Z" fill="${hc}"/>`;
+  if(name.includes('Bob')) return `<path d="M44,80 Q42,52 58,40 Q68,32 80,31 Q92,30 102,40 Q118,52 116,80 Q108,58 80,54 Q52,58 44,80Z" fill="${hc}"/><path d="M44,80 Q42,96 46,108 Q60,118 80,120 Q100,118 114,108 Q118,96 116,80" fill="${hc}"/>`;
+  if(name.includes('Pixie')) return `<path d="M44,80 Q42,52 58,40 Q68,32 80,31 Q92,30 102,40 Q118,52 116,80 Q108,56 80,52 Q52,56 44,80Z" fill="${hc}"/>`;
+  if(name.includes('Undercut Lat')) return `<path d="M44,82 Q42,54 58,42 Q68,34 80,33 Q92,32 102,42 Q118,54 116,82" fill="${hc}"/><path d="M44,82 Q46,72 54,68 Q80,63 106,68 Q114,72 116,82" fill="${dk(hc,36)}" opacity=".55"/>`;
+  if(name.includes('Undercut')) return `<path d="M44,82 Q42,52 58,40 Q68,32 80,31 Q92,30 102,40 Q118,52 116,82" fill="${hc}"/><path d="M44,82 Q46,72 54,68 Q80,63 106,68 Q114,72 116,82" fill="${dk(hc,38)}" opacity=".6"/>`;
+  if(name.includes('Épics')||name.includes('Epics')) return `<path d="M46,80 Q44,52 56,40 Q48,28 60,34 Q62,22 70,32 Q74,18 80,28 Q86,18 90,30 Q98,22 100,34 Q112,28 104,40 Q116,52 114,80" fill="${hc}" stroke="${dk(hc,20)}" stroke-width="1"/>`;
+  if(name.includes('Brosse')) return `<path d="M44,80 Q42,52 58,40 Q68,32 80,31 Q92,30 102,40 Q118,52 116,80 Q108,56 80,52 Q52,56 44,80Z" fill="${hc}"/><path d="M58,40 Q80,35 102,40 Q100,46 80,45 Q60,46 58,40Z" fill="${lt(hc,20)}" opacity=".5"/>`;
+  if(name.includes('Frange')) return `<path d="M44,80 Q42,52 58,40 Q68,32 80,31 Q92,30 102,40 Q118,52 116,80 Q108,56 80,52 Q52,56 44,80Z" fill="${hc}"/><path d="M56,40 Q80,46 104,40 Q100,54 80,54 Q60,54 56,40Z" fill="${hc}"/>`;
+  if(name.includes('Côté')||name.includes('Two Block')) return `<path d="M44,80 Q42,52 58,40 Q68,32 80,31 Q92,30 102,40 Q118,52 116,80" fill="${hc}"/><path d="M44,80 Q44,62 52,56 Q80,50 116,80" fill="${dk(hc,30)}" opacity=".5"/>`;
+  if(name.includes('Rasé')||name.includes('Tondu')) return `<path d="M46,82 Q44,60 60,48 Q70,40 80,39 Q90,38 100,48 Q116,60 114,82" fill="${hc}" opacity=".3"/>`;
+  if(name.includes('Dégradé')) return `<path d="M44,82 Q42,52 58,40 Q68,32 80,31 Q92,30 102,40 Q118,52 116,82 Q108,58 80,54 Q52,58 44,82Z" fill="${hc}"/><path d="M44,82 Q46,70 56,66 Q80,61 104,66 Q114,70 116,82" fill="${dk(hc,34)}" opacity=".5"/>`;
+  // default: court/lisse
+  return `<path d="M44,80 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,80 Q108,54 80,50 Q52,54 44,80Z" fill="${hc}"/>`;
+}
+
+function buildEyeSVG(cx,cy,estyle,eyeCol,brow,isR=false){
+  const ey=[7,5,9,7,8,7,9,6][estyle]||7;
+  const ex=[9,8,10,9,9,10,9,9][estyle]||9;
+  const bridé=estyle===1||estyle===7;
+  const bw=[2.5,2.5,2,3.5,1.5,2,3.5,1.5][brow]||2.5;
+  const bdy=[-1,-4,1,-5,0,-1,-5,2][brow]||0;
+  const sign=isR?1:-1;
+  return `
+    <ellipse cx="${cx}" cy="${cy}" rx="${ex}" ry="${ey}" fill="white" stroke="#0a0a0a" stroke-width="1.5"/>
+    <ellipse cx="${cx}" cy="${cy}" rx="${Math.max(3,ex-3)}" ry="${Math.max(2,ey-2)}" fill="${eyeCol}"/>
+    <ellipse cx="${cx}" cy="${cy}" rx="${Math.max(1.5,ex-5)}" ry="${Math.max(1,ey-4)}" fill="#040404"/>
+    <circle cx="${cx+sign*1.5}" cy="${cy-1.5}" r="1.6" fill="white"/>
+    ${bridé?`<path d="M${cx-ex},${cy-ey+1} Q${cx},${cy-ey-2} ${cx+ex},${cy-ey+1}" stroke="#0a0a0a" stroke-width="1.5" fill="none"/>`:''}
+    <path d="M${cx-ex-1},${cy-ey-5+bdy} Q${cx},${cy-ey-9+bdy} ${cx+ex+1},${cy-ey-5+bdy}" stroke="#0a0a0a" stroke-width="${bw}" fill="none" stroke-linecap="round"/>
+  `;
+}
+
+function buildMouthSVG(cy){
+  switch(S.av.mouth){
+    case 0:return `<path d="M65,${cy} Q80,${cy-1} 95,${cy}" stroke="#0a0a0a" stroke-width="1.5" fill="none"/>`;
+    case 1:return `<path d="M65,${cy} Q80,${cy+7} 95,${cy}" stroke="#0a0a0a" stroke-width="1.5" fill="none"/><path d="M65,${cy} Q80,${cy+7} 95,${cy}" fill="${dk(S.av.skin,18)}" opacity=".3"/>`;
+    case 2:return `<path d="M68,${cy} Q80,${cy+5} 92,${cy-2}" stroke="#0a0a0a" stroke-width="1.5" fill="none"/>`;
+    case 3:return `<path d="M65,${cy+1} Q80,${cy-1} 95,${cy+1}" stroke="#0a0a0a" stroke-width="2" fill="none"/>`;
+    case 4:return `<path d="M65,${cy} Q80,${cy-2} 95,${cy}" stroke="#0a0a0a" stroke-width="1.8" fill="none"/>`;
+    case 5:return `<path d="M68,${cy} Q80,${cy+8} 92,${cy}" stroke="#0a0a0a" stroke-width="1.5" fill="none"/><line x1="80" y1="${cy}" x2="80" y2="${cy+8}" stroke="#0a0a0a" stroke-width="1" opacity=".3"/>`;
+    case 6:return `<path d="M68,${cy-1} Q72,${cy+3} 68,${cy+4}" stroke="#0a0a0a" stroke-width="1.5" fill="none"/><path d="M65,${cy+1} Q80,${cy+5} 95,${cy+1}" stroke="#0a0a0a" stroke-width="1.5" fill="none"/>`;
+    default:return `<path d="M66,${cy} Q80,${cy-1} 94,${cy}" stroke="#0a0a0a" stroke-width="1.5" fill="none"/>`;
+  }
+}
+
+function buildBeardSVG(chin){
+  if(S.gender==='F')return '';
+  const sk=S.av.skin;
+  const beards=['',
+    `<ellipse cx="80" cy="${chin}" rx="10" ry="7" fill="${dk(sk,30)}" opacity=".65"/>`,
+    `<path d="M60,${chin-8} Q80,${chin+5} 100,${chin-8} Q100,${chin+5} 80,${chin+8} Q60,${chin+5} 60,${chin-8}Z" fill="${dk(sk,22)}" opacity=".5"/>`,
+    `<path d="M58,${chin-10} Q80,${chin+8} 102,${chin-10} Q104,${chin+8} 80,${chin+16} Q56,${chin+8} 58,${chin-10}Z" fill="${dk(sk,18)}" opacity=".52"/>`,
+    `<path d="M56,${chin-12} Q80,${chin+10} 104,${chin-12} Q106,${chin+18} 80,${chin+34} Q54,${chin+18} 56,${chin-12}Z" fill="${dk(sk,16)}" opacity=".54"/>`,
+    `<path d="M64,${chin-14} Q72,${chin-10} 80,${chin-12} Q88,${chin-10} 96,${chin-14} Q92,${chin-6} 80,${chin-8} Q68,${chin-6} 64,${chin-14}Z" fill="${dk(sk,28)}" opacity=".65"/>`,
+    `<path d="M56,${chin-10} Q56,${chin+4} 66,${chin+8} Q80,${chin+10} 94,${chin+8} Q104,${chin+4} 104,${chin-10} Q100,${chin-2} 80,${chin} Q60,${chin-2} 56,${chin-10}Z" fill="${dk(sk,20)}" opacity=".5"/>`,
+    `<path d="M58,${chin-10} Q80,${chin+6} 102,${chin-10} Q102,${chin+4} 80,${chin+12} Q58,${chin+4} 58,${chin-10}Z" fill="${dk(sk,24)}" opacity=".52"/>`,
+    `<path d="M60,${chin-4} Q60,${chin+8} 68,${chin+12} Q80,${chin+14} 92,${chin+12} Q100,${chin+8} 100,${chin-4} Q96,${chin+4} 80,${chin+6} Q64,${chin+4} 60,${chin-4}Z" fill="${dk(sk,22)}" opacity=".48"/>`,
+  ];
+  return beards[S.av.beard]||'';
+}
+
+function buildAccSVG(){
+  const name=ACCS[S.av.acc]||'Aucun';
+  if(name==='Aucun')return '';
+  const ec=S.av.eye,hc=S.av.hair,gc=S.av.skin;
+  const accMap={
+    'Lunettes Rondes':`<ellipse cx="65" cy="82" rx="13" ry="10" fill="none" stroke="#888" stroke-width="2"/><ellipse cx="95" cy="82" rx="13" ry="10" fill="none" stroke="#888" stroke-width="2"/><line x1="78" y1="82" x2="82" y2="82" stroke="#888" stroke-width="2"/><line x1="38" y1="80" x2="52" y2="82" stroke="#888" stroke-width="1.5"/><line x1="108" y1="82" x2="122" y2="80" stroke="#888" stroke-width="1.5"/>`,
+    'Lunettes Carrées':`<rect x="52" y="74" width="24" height="16" rx="3" fill="none" stroke="#888" stroke-width="2"/><rect x="82" y="74" width="24" height="16" rx="3" fill="none" stroke="#888" stroke-width="2"/><line x1="76" y1="82" x2="82" y2="82" stroke="#888" stroke-width="2"/>`,
+    'Lunettes Sport':`<rect x="52" y="75" width="26" height="15" rx="4" fill="none" stroke="${ec}" stroke-width="2"/><rect x="82" y="75" width="26" height="15" rx="4" fill="none" stroke="${ec}" stroke-width="2"/><line x1="78" y1="82" x2="82" y2="82" stroke="${ec}" stroke-width="2"/>`,
+    'Lunettes Soleil':`<rect x="51" y="76" width="26" height="14" rx="7" fill="${dk(ec,20)}" opacity=".85"/><rect x="81" y="76" width="26" height="14" rx="7" fill="${dk(ec,20)}" opacity=".85"/><line x1="77" y1="83" x2="81" y2="83" stroke="#666" stroke-width="2"/>`,
+    'Lunettes Aviateur':`<ellipse cx="65" cy="83" rx="14" ry="9" fill="${dk(ec,30)}" opacity=".75"/><ellipse cx="95" cy="83" rx="14" ry="9" fill="${dk(ec,30)}" opacity=".75"/><line x1="51" y1="81" x2="38" y2="79" stroke="#888" stroke-width="1.5"/>`,
+    'Demi-Lune':`<path d="M52,82 Q65,76 78,82" fill="none" stroke="#888" stroke-width="2"/><path d="M82,82 Q95,76 108,82" fill="none" stroke="#888" stroke-width="2"/>`,
+    'Casquette':`<path d="M40,68 Q80,55 120,68 Q120,78 80,80 Q40,78 40,68Z" fill="${hc}"/><path d="M40,68 Q26,72 24,76 Q38,76 40,68Z" fill="${hc}" stroke="${dk(hc,20)}" stroke-width="1"/>`,
+    'Casquette Retournée':`<path d="M40,68 Q80,55 120,68 Q120,78 80,80 Q40,78 40,68Z" fill="${hc}"/><path d="M120,68 Q134,72 136,76 Q122,76 120,68Z" fill="${hc}" stroke="${dk(hc,20)}" stroke-width="1"/>`,
+    'Bonnet':`<path d="M40,70 Q42,44 58,34 Q68,26 80,26 Q92,25 102,34 Q118,44 120,70 Q110,50 80,46 Q50,50 40,70Z" fill="${hc}"/><path d="M40,70 Q80,64 120,70 Q118,76 80,78 Q42,76 40,70Z" fill="${lt(hc,20)}" opacity=".4"/>`,
+    'Duraq':`<path d="M40,70 Q80,60 120,70 Q118,82 80,84 Q42,82 40,70Z" fill="${hc}" opacity=".75"/>`,
+    'Bandana Tête':`<path d="M40,74 Q80,68 120,74 Q118,80 80,82 Q42,80 40,74Z" fill="${ec}" opacity=".85"/>`,
+    'Bandana Bouche':`<path d="M54,104 Q80,114 106,104 Q104,122 80,124 Q56,122 54,104Z" fill="${ec}" opacity=".85"/>`,
+    'Keffieh':`<path d="M32,68 Q36,44 52,32 Q66,22 80,22 Q94,21 108,32 Q124,44 128,68 Q118,48 80,44 Q42,48 32,68Z" fill="${hc}" opacity=".9"/><path d="M32,68 Q28,95 33,125" fill="none" stroke="${hc}" stroke-width="10" opacity=".85"/>`,
+    'Turban':`<path d="M36,70 Q40,42 56,30 Q66,22 80,22 Q94,21 104,30 Q120,42 124,70 Q114,50 80,46 Q46,50 36,70Z" fill="${hc}"/>`,
+    'Capuche':`<path d="M28,70 Q32,46 50,34 Q64,24 80,24 Q96,23 110,34 Q128,46 132,70 Q122,56 80,52 Q38,56 28,70Z" fill="${hc}" opacity=".88"/><path d="M28,70 Q26,96 30,115" fill="none" stroke="${hc}" stroke-width="12" opacity=".88"/><path d="M132,70 Q134,96 130,115" fill="none" stroke="${hc}" stroke-width="12" opacity=".88"/>`,
+    'Boucle Oreille G':`<circle cx="38" cy="90" r="3.5" fill="#f0b429"/>`,
+    'Deux Boucles':`<circle cx="38" cy="90" r="3.5" fill="#f0b429"/><circle cx="122" cy="90" r="3.5" fill="#f0b429"/>`,
+    'Créoles':`<circle cx="38" cy="92" r="6" fill="none" stroke="#f0b429" stroke-width="2.5"/><circle cx="122" cy="92" r="6" fill="none" stroke="#f0b429" stroke-width="2.5"/>`,
+    'Chaîne Or':`<path d="M58,132 Q80,138 102,132" stroke="#f0b429" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
+    'Chaîne Argent':`<path d="M60,132 Q80,138 100,132" stroke="#bbb" stroke-width="2" fill="none"/>`,
+    'Collier':`<path d="M56,128 Q80,136 104,128" stroke="#f0b429" stroke-width="2.5" fill="none"/><circle cx="80" cy="138" r="3" fill="#f0b429"/>`,
+    'Boucle Nez':`<path d="M76,105 Q80,108 84,105" fill="none" stroke="#f0b429" stroke-width="2" stroke-linecap="round"/>`,
+    'Piercing Sourcil':`<circle cx="65" cy="70" r="2" fill="#888"/><circle cx="65" cy="75" r="2" fill="#888"/>`,
+    'Bindi':`<circle cx="80" cy="58" r="4" fill="${ec}"/>`,
+    'Tilak':`<line x1="80" y1="54" x2="80" y2="68" stroke="#f0b429" stroke-width="2.5"/>${[-4,4].map(x=>`<line x1="${80+x}" y1="58" x2="${80+x}" y2="68" stroke="#f0b429" stroke-width="1.5"/>`).join('')}`,
+    'Kohl Yeux':`<path d="M50,82 Q65,87 80,85 Q95,87 110,82" stroke="#0a0a0a" stroke-width="2.5" fill="none" opacity=".65"/>`,
+    'Bandeau Sport':`<path d="M40,73 Q80,67 120,73 Q118,79 80,81 Q42,79 40,73Z" fill="${ec}" opacity=".75"/>`,
+    'Bandeau Cheveux':`<path d="M40,68 Q80,62 120,68 Q118,72 80,74 Q42,72 40,68Z" fill="${hc}" opacity=".8"/>`,
+    'Protège-dents':`<path d="M64,112 Q80,118 96,112 Q94,120 80,121 Q66,120 64,112Z" fill="white" opacity=".8" stroke="#ddd" stroke-width="1"/>`,
+    'Masque':`<path d="M54,98 Q80,108 106,98 Q104,120 80,122 Q56,120 54,98Z" fill="white" stroke="#ddd" stroke-width="1.5"/>`,
+    'Cicatrice Joue':`<line x1="97" y1="80" x2="105" y2="98" stroke="${dk(gc,50)}" stroke-width="2" stroke-linecap="round"/>`,
+    'Cicatrice Front':`<line x1="76" y1="56" x2="84" y2="70" stroke="${dk(gc,50)}" stroke-width="2" stroke-linecap="round"/>`,
+    'Tatouage Tempe':`<circle cx="42" cy="76" r="2.5" fill="#0a0a3a" opacity=".7"/><circle cx="44" cy="84" r="2" fill="#0a0a3a" opacity=".6"/>`,
+    'Marque Sous Oeil':`<path d="M56,96 Q60,90 64,96" stroke="${dk(gc,50)}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
+  };
+  return accMap[name]||'';
+}
+
+function buildExtraSVG(){
+  switch(S.av.extra){
+    case 1:return `${[58,66,74,86,94,102,110].map(x=>`<circle cx="${x}" cy="${76+Math.sin(x*.3)*2}" r="1.8" fill="${dk(S.av.skin,38)}" opacity=".6"/>`).join('')}`;
+    case 2:return `<circle cx="110" cy="90" r="3.5" fill="${dk(S.av.skin,35)}" opacity=".7"/>`;
+    case 3:return `<circle cx="65" cy="96" r="2" fill="#0a0a0a" opacity=".6"/><circle cx="95" cy="96" r="2" fill="#0a0a0a" opacity=".6"/>`;
+    case 4:return `<path d="M108" y1="95" x2="112" y2="105 L114,98 Z" stroke="#22c55e" stroke-width="1.5" fill="none"/>`;
+    case 5:return `<path d="M74,130 Q80,134 86,130" stroke="#0a0a0a" stroke-width="1.5" fill="none" opacity=".5"/>`;
+    case 6:return `<circle cx="80" cy="58" r="3.5" fill="#ff2d55" opacity=".8"/>`;
+    default:return '';
+  }
+}
+
+function buildAvSVG(av){
+  const{skin,hair,eye,estyle,brow,mouth}=av;
+  const isF=S.gender==='F';
+  const fRx=isF?33:36;const fRy=isF?41:39;
+  const faceCy=82;
+  const eyeY=faceCy-4;const mouthY=faceCy+30;const chinY=faceCy+fRy+2;
+  const hairSVG=getHair(hair,isF);
+  return `
+    ${hairSVG}
+    <ellipse cx="80" cy="${faceCy}" rx="${fRx}" ry="${fRy}" fill="${skin}"/>
+    <path d="M${80-fRx+5},${faceCy+fRy*0.45} Q80,${faceCy+fRy+9} ${80+fRx-5},${faceCy+fRy*0.45}" fill="${skin}"/>
+    <ellipse cx="${80-fRx-3}" cy="${faceCy+5}" rx="6" ry="9" fill="${skin}"/>
+    <ellipse cx="${80+fRx+3}" cy="${faceCy+5}" rx="6" ry="9" fill="${skin}"/>
+    ${buildEyeSVG(63,eyeY,estyle,eye,brow,false)}
+    ${buildEyeSVG(97,eyeY,estyle,eye,brow,true)}
+    <path d="M76,${faceCy+14} Q80,${faceCy+20} 84,${faceCy+14}" stroke="${dk(skin,28)}" stroke-width="1.3" fill="none"/>
+    <ellipse cx="76" cy="${faceCy+17}" rx="3" ry="2" fill="${dk(skin,12)}" opacity=".3"/>
+    <ellipse cx="84" cy="${faceCy+17}" rx="3" ry="2" fill="${dk(skin,12)}" opacity=".3"/>
+    ${isF?`<ellipse cx="55" cy="${faceCy+12}" rx="9" ry="5" fill="#ff8888" opacity=".15"/><ellipse cx="105" cy="${faceCy+12}" rx="9" ry="5" fill="#ff8888" opacity=".15"/>`:''}
+    ${buildMouthSVG(mouthY)}
+    ${buildBeardSVG(chinY)}
+    ${buildAccSVG()}
+    ${buildExtraSVG()}
+    <path d="M${80-fRx-3},${faceCy-14} Q${80-fRx+5},${faceCy-26} ${80-fRx+15},${faceCy-32}" fill="${hair}" stroke="#0a0a0a" stroke-width="1" opacity=".85"/>
+    <path d="M${80+fRx+3},${faceCy-14} Q${80+fRx-5},${faceCy-26} ${80+fRx-15},${faceCy-32}" fill="${hair}" stroke="#0a0a0a" stroke-width="1" opacity=".85"/>
+  `;
+}
+
+function renderAv(){
+  const svg=buildAvSVG(S.av);
+  document.getElementById('av-svg').innerHTML=svg;
+  const ra=document.getElementById('recap-av');if(ra)ra.innerHTML=svg;
+}
+
+// ══════════════════════════════════════════
+//  POSTES
+// ══════════════════════════════════════════
+function buildPcats(){
+  const row=document.getElementById('pcat-row');row.innerHTML='';
+  POSTES_CATS.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='pcat'+(S.activeCat===c.key?' on':'');
+    b.textContent=c.label;
+    b.onclick=()=>{S.activeCat=c.key;buildPcats();buildPgrid()};
+    row.appendChild(b);
+  });
+}
+function buildPgrid(){
+  const grid=document.getElementById('pgrid');grid.innerHTML='';
+  POSTES.filter(p=>p.cat===S.activeCat).forEach(p=>{
+    const btn=document.createElement('div');
+    btn.className='pbtn'+(S.postes.includes(p.sub)?' on':'');
+    btn.innerHTML=`<div class="picon">${p.icon}</div><div class="pname">${p.name}</div><div class="psub">${p.sub}</div>`;
+    btn.onclick=()=>{
+      const idx=S.postes.indexOf(p.sub);
+      if(idx>-1){S.postes.splice(idx,1);btn.classList.remove('on')}
+      else if(S.postes.length<5){S.postes.push(p.sub);btn.classList.add('on')}
+      document.getElementById('pcnt').textContent=`${S.postes.length} / 5 postes sélectionnés`;
+    };
+    grid.appendChild(btn);
+  });
+}
+
+// ══════════════════════════════════════════
+//  CAPACITÉS
+// ══════════════════════════════════════════
+function getRolePool(){
+  const tSubs=POSTES.filter(p=>p.cat==='terrain').map(p=>p.sub);
+  const sSubs=POSTES.filter(p=>p.cat==='soutien').map(p=>p.sub);
+  const oSubs=POSTES.filter(p=>p.cat==='off').map(p=>p.sub);
+  let pool=[];
+  if(S.postes.some(p=>tSubs.includes(p))) pool=[...pool,...CAPAS.terrain];
+  if(S.postes.some(p=>sSubs.includes(p))) pool=[...pool,...CAPAS.soutien];
+  if(S.postes.some(p=>oSubs.includes(p))) pool=[...pool,...CAPAS.off];
+  return pool;
+}
+function buildCapas(){
+  buildCapaSection('c-main-content','main');
+  buildCapaSection('c-sec-content','sec');
+  buildNiv('niv-main','mn');
+  buildNiv('niv-sec','sc');
+}
+function buildCapaSection(id,which){
+  const pool=getRolePool();
+  const el=document.getElementById(id);
+  if(!pool.length){el.innerHTML=`<div style="padding:16px;text-align:center;background:#080c12;border:2px dashed #1a2535;border-radius:10px;font-size:12px;color:#2a3a4a;letter-spacing:1px">Retourne choisir tes postes</div>`;return;}
+  const stk=which==='main'?'mn':'sc';
+  const sc=which==='main'?'on-main':'on-sec';
+  const grid=document.createElement('div');grid.className='cgrid';
+  pool.forEach((c,i)=>{
+    const card=document.createElement('div');
+    card.className='ccard'+(S[stk].id===i?' '+sc:'');
+    card.innerHTML=`<div class="ce2">${c.e}</div><div class="cn">${c.n}</div><div class="cd">${c.d}</div>`;
+    card.onclick=()=>{
+      S[stk].id=i;S[stk].name=c.n;
+      grid.querySelectorAll('.ccard').forEach(cc=>cc.classList.remove('on-main','on-sec'));
+      card.classList.add(sc);
+    };
+    grid.appendChild(card);
+  });
+  el.innerHTML='';el.appendChild(grid);
+}
+function buildNiv(id,key){
+  const w=document.getElementById(id);w.innerHTML='';
+  NIVEAUX.forEach(n=>{
+    const b=document.createElement('div');
+    b.className='nbtn'+(S[key].niv===n.key?' '+n.cls:'');
+    b.innerHTML=`<div class="ni">${n.icon}</div><div class="nn">${n.name}</div><div class="ns">${n.sub}</div>`;
+    b.onclick=()=>{S[key].niv=n.key;w.querySelectorAll('.nbtn').forEach(x=>x.className='nbtn');b.classList.add(n.cls)};
+    w.appendChild(b);
+  });
+}
+
+// ══════════════════════════════════════════
+//  RECAP
+// ══════════════════════════════════════════
+function buildRecap(){
+  document.getElementById('rc-pseudo').textContent=S.pseudo.toUpperCase();
+  document.getElementById('rc-meta').textContent=`${S.age} ans · THE LOCK · ÉDITION I`;
+  document.getElementById('rc-mail').textContent=S.mail;
+  const tags=document.getElementById('rc-tags');tags.innerHTML='';
+  S.postes.forEach(p=>{const t=document.createElement('div');t.className='rtag';t.textContent=p;tags.appendChild(t)});
+  document.getElementById('rc-mn').textContent=S.mn.name||'—';
+  document.getElementById('rc-sc').textContent=S.sc.name||'Non définie';
+  document.getElementById('rc-mn-nv').textContent=NIV_LBL[S.mn.niv]||'';
+  document.getElementById('rc-sc-nv').textContent=S.sc.niv?NIV_LBL[S.sc.niv]:'';
+  renderAv();
+}
+
+// ══════════════════════════════════════════
+//  SUBMIT
+// ══════════════════════════════════════════
+function submitForm(){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step-mail').classList.add('active');
+  document.getElementById('mail-addr').textContent=S.mail;
+  document.getElementById('prog-dots').style.opacity='.3';
+}
+function simConfirm(){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step-confirmed').classList.add('active');
+  document.getElementById('conf-title').textContent=`BIENVENUE, ${S.pseudo.toUpperCase()} !`;
+  const cc=document.getElementById('conf-card');
+  cc.innerHTML=`<div class="rcap" style="font-size:.9em"><div class="rtop" style="padding:14px"><div class="rav" style="width:54px;height:54px"><svg width="50" height="50" viewBox="0 0 160 200">${buildAvSVG(S.av)}</svg></div><div><div class="rpseudo" style="font-size:20px">${S.pseudo.toUpperCase()}</div><div class="rmeta">${S.age} ans</div><div class="rtags">${S.postes.map(p=>`<div class="rtag">${p}</div>`).join('')}</div></div></div></div>`;
+}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+buildProg();
+buildAvOpts();
+renderAv();
+buildPcats();
+buildPgrid();
+
+function nav(page){
+  var pages={
+    'accueil':'index.html',
+    'inscription':'inscription.html',
+    'profil':'profil.html',
+    'feed':'feed.html',
+    'classement':'classement.html',
+    'ligue':'ligue.html',
+    'economie':'economie.html','minijeux':'minijeux.html','notifications':'notifications.html','coach':'coach.html',
+    'joueurs':'joueurs.html'
+  };
+  if(pages[page]) window.location.href=pages[page];
+}
+
+
+var THE_LOCK_LEVELS = [
+  {key:'recrue',    name:'RECRUE',    xp:0,     color:'#4a6080'},
+  {key:'initie',    name:'INITIE',    xp:500,   color:'#22c55e'},
+  {key:'apprenti',  name:'APPRENTI',  xp:1500,  color:'#00d4ff'},
+  {key:'confirme',  name:'CONFIRME',  xp:3000,  color:'#4fa3ff'},
+  {key:'elite',     name:'ELITE',     xp:6000,  color:'#a855f7'},
+  {key:'legendaire',name:'LEGENDAIRE',xp:10000, color:'#f0b429'},
+  {key:'icon',      name:'ICON',      xp:20000, color:'#ff2d55'}
+];
+function getLevelFromXP(xp){
+  var lv=THE_LOCK_LEVELS[0];
+  THE_LOCK_LEVELS.forEach(function(l){if(xp>=l.xp)lv=l;});
+  return lv;
+}
+
+</script>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">THE <span>LOCK</span></div>
+    <div class="footer-links">
+      <button class="footer-link">A propos</button>
+      <button class="footer-link">CGU</button>
+      <button class="footer-link">Confidentialite</button>
+      <button class="footer-link">Contact</button>
+    </div>
+    <div class="footer-right">THE LOCK · EDITION I · 2026</div>
+  </div>
+</footer>
+</body>
+</html>

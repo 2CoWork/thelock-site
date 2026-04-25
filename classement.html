@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE LOCK · Classement</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#f0b429;--electric:#00d4ff;--danger:#ff2d55;--green:#22c55e;
+  --purple:#a855f7;--ink:#07090f;--panel:#0d1117;--panel2:#111822;
+  --border:#1c2a3a;--text:#e2e8f0;--muted:#4a6080;--card:#0f1923;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);font-family:'DM Sans',sans-serif;color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at 20% 0%,#0d1a2e,transparent 50%),
+                   radial-gradient(ellipse at 80% 100%,#1a0d1a,transparent 50%);
+}
+
+/* TOPBAR */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(7,9,15,.88);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.tb-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;color:white}
+.tb-logo span{color:var(--gold)}
+.tb-nav{display:flex;gap:2px}
+.tb-link{padding:6px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;color:var(--muted);background:none;border:none;cursor:pointer;border-radius:6px;transition:all .2s}
+.tb-link:hover{color:white;background:rgba(255,255,255,.05)}
+.tb-link.on{color:var(--gold)}
+
+/* LAYOUT */
+.layout{max-width:900px;margin:0 auto;padding:24px 16px}
+
+/* HEADER */
+.page-header{margin-bottom:24px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.ph-left{}
+.ph-eyebrow{font-size:10px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:4px}
+.ph-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,6vw,48px);letter-spacing:4px;color:white;line-height:1}
+.ph-sub{font-size:13px;color:var(--muted);margin-top:4px}
+.ph-right{display:flex;align-items:center;gap:8px}
+.live-badge{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;background:rgba(255,45,85,.08);
+  border:1px solid rgba(255,45,85,.2);border-radius:20px;
+  font-size:11px;font-weight:700;color:var(--danger);letter-spacing:1px;
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--danger);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* MY RANK BANNER */
+.my-rank-banner{
+  background:linear-gradient(135deg,rgba(240,180,41,.08),rgba(0,212,255,.04));
+  border:1px solid rgba(240,180,41,.2);border-radius:14px;
+  padding:16px 20px;margin-bottom:20px;
+  display:flex;align-items:center;gap:16px;
+  position:relative;overflow:hidden;
+}
+.my-rank-banner::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),var(--electric));
+}
+.mr-rank{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:2px;color:var(--gold);line-height:1;flex-shrink:0;width:60px}
+.mr-info{flex:1}
+.mr-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:white}
+.mr-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.mr-stats{display:flex;gap:16px;margin-top:8px}
+.mr-stat{text-align:center}
+.mr-stat-val{font-family:'Bebas Neue',sans-serif;font-size:18px;color:white}
+.mr-stat-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.mr-trend{
+  padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;
+  background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);
+  flex-shrink:0;
+}
+
+/* TOP 3 PODIUM */
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin-bottom:24px}
+.podium-item{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  cursor:pointer;transition:transform .2s;
+}
+.podium-item:hover{transform:translateY(-4px)}
+.pod-av{
+  border-radius:50%;border:3px solid;
+  overflow:hidden;background:#080c14;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.pod-crown{
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  font-size:20px;
+}
+.pod-rank{
+  position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+  font-family:'Bebas Neue',sans-serif;font-size:12px;
+  padding:1px 8px;border-radius:10px;border:2px solid var(--ink);
+  white-space:nowrap;
+}
+.pod-name{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;color:white;margin-top:10px}
+.pod-val{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.pod-plat{
+  border-radius:10px 10px 0 0;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:8px;
+  font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;
+}
+
+/* FILTERS */
+.filters-wrap{margin-bottom:16px}
+.filter-tabs{
+  display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;
+  scrollbar-width:none;
+}
+.filter-tabs::-webkit-scrollbar{display:none}
+.ftab{
+  padding:8px 16px;font-size:12px;font-weight:700;letter-spacing:.5px;
+  background:var(--card);border:1px solid var(--border);color:var(--muted);
+  border-radius:20px;cursor:pointer;transition:all .2s;white-space:nowrap;
+  font-family:'DM Sans',sans-serif;flex-shrink:0;
+}
+.ftab:hover{border-color:rgba(240,180,41,.3);color:var(--text)}
+.ftab.on{background:rgba(240,180,41,.1);border-color:var(--gold);color:var(--gold)}
+
+/* SUB FILTERS */
+.sub-filters{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.sfbtn{
+  padding:4px 12px;font-size:11px;font-weight:700;letter-spacing:.5px;
+  background:var(--panel2);border:1px solid var(--border);color:var(--muted);
+  border-radius:20px;cursor:pointer;transition:all .2s;
+  font-family:'DM Sans',sans-serif;
+}
+.sfbtn:hover{border-color:var(--electric);color:var(--electric)}
+.sfbtn.on{background:rgba(0,212,255,.08);border-color:var(--electric);color:var(--electric)}
+
+/* RANKING TABLE */
+.rank-table{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;
+}
+.rank-header{
+  display:grid;grid-template-columns:48px 1fr repeat(4,80px);
+  padding:10px 16px;border-bottom:1px solid var(--border);
+  font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;
+}
+@media(max-width:600px){
+  .rank-header{grid-template-columns:40px 1fr repeat(2,60px)}
+  .col-hide{display:none}
+}
+.rank-row{
+  display:grid;grid-template-columns:48px 1fr repeat(4,80px);
+  padding:12px 16px;border-bottom:1px solid rgba(28,42,58,.5);
+  align-items:center;cursor:pointer;transition:all .2s;
+  position:relative;
+}
+@media(max-width:600px){
+  .rank-row{grid-template-columns:40px 1fr repeat(2,60px)}
+}
+.rank-row:last-child{border-bottom:none}
+.rank-row:hover{background:rgba(255,255,255,.03)}
+.rank-row.me{background:rgba(240,180,41,.05);border-left:3px solid var(--gold)}
+.rank-row.top1{background:rgba(240,180,41,.06)}
+.rank-row.top2{background:rgba(192,192,192,.04)}
+.rank-row.top3{background:rgba(205,127,50,.04)}
+
+/* Rank number */
+.rk-num{
+  font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;
+  display:flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:8px;
+}
+.rk-gold{background:rgba(240,180,41,.15);color:var(--gold)}
+.rk-silver{background:rgba(192,192,192,.12);color:#ccc}
+.rk-bronze{background:rgba(205,127,50,.12);color:#cd7f32}
+.rk-normal{color:var(--muted);font-size:14px}
+
+/* Player info */
+.rk-player{display:flex;align-items:center;gap:12px}
+.rk-av{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:#080c14;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.rk-info{}
+.rk-name{font-weight:700;font-size:14px;color:white;display:flex;align-items:center;gap:6px}
+.rk-me-tag{
+  font-size:9px;padding:1px 6px;border-radius:10px;
+  background:rgba(240,180,41,.15);color:var(--gold);border:1px solid rgba(240,180,41,.2);
+  font-weight:700;letter-spacing:1px;
+}
+.rk-pos{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* Stats cols */
+.rk-stat{text-align:center}
+.rk-stat-val{font-family:'Bebas Neue',sans-serif;font-size:16px;color:white}
+.rk-stat-sub{font-size:9px;color:var(--muted);letter-spacing:.5px}
+.rk-trend{
+  display:inline-block;font-size:10px;font-weight:700;
+  padding:2px 6px;border-radius:10px;
+}
+.up{background:rgba(34,197,94,.12);color:var(--green)}
+.dn{background:rgba(255,45,85,.12);color:var(--danger)}
+.eq{background:rgba(74,96,128,.12);color:var(--muted)}
+
+/* Separator */
+.rank-sep{
+  padding:8px 16px;background:var(--panel2);
+  font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;
+  border-bottom:1px solid var(--border);
+}
+
+/* ANIMATION */
+.rank-row{animation:rowIn .3s ease both}
+@keyframes rowIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="tb-logo" href="index.html">THE <span>LOCK</span></a>
+  <nav class="tb-nav">
+    <button class="tb-link" onclick="nav('accueil')">Accueil</button>
+    <button class="tb-link" onclick="nav('joueurs')">Joueurs</button>
+    <button class="tb-link" onclick="nav('ligue')">Ligues</button>
+    <button class="tb-link on" onclick="nav('classement')" class="tb-link on">Classement</button>
+    <button class="tb-link" onclick="nav('economie')">Economie</button>
+  </nav>
+  <div class="tb-right">
+    <div class="tb-icon" title="Notifications"><span>🔔</span><div class="tb-notif-dot"></div></div>
+    <div class="tb-profile" onclick="nav('profil')">MON PROFIL</div>
+  </div>
+</div>
+
+  <div class="tb-nav">
+    <button class="tb-link">Accueil</button>
+    <button class="tb-link">Joueurs</button>
+    <button class="tb-link">Ligues</button>
+    <button class="tb-link on">Classement</button>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="ph-left">
+      <div class="ph-eyebrow">THE LOCK · EDITION I</div>
+      <div class="ph-title">CLASSEMENT</div>
+      <div class="ph-sub" id="rank-sub">27 joueurs · Mis a jour apres chaque match</div>
+    </div>
+    <div class="ph-right">
+      <div class="live-badge"><div class="live-dot"></div>EN DIRECT</div>
+    </div>
+  </div>
+
+  <!-- MON RANG -->
+  <div class="my-rank-banner">
+    <div class="mr-rank" id="my-rank-num">4</div>
+    <div class="mr-info">
+      <div class="mr-name">NASSIM · MON RANG</div>
+      <div class="mr-sub">Attaquant · Equipe Bleue · Level 7</div>
+      <div class="mr-stats">
+        <div class="mr-stat"><div class="mr-stat-val" id="my-val1">12</div><div class="mr-stat-label" id="my-lbl1">Buts</div></div>
+        <div class="mr-stat"><div class="mr-stat-val" id="my-val2">7</div><div class="mr-stat-label" id="my-lbl2">Assists</div></div>
+        <div class="mr-stat"><div class="mr-stat-val" id="my-val3">9.2</div><div class="mr-stat-label" id="my-lbl3">Note moy.</div></div>
+      </div>
+    </div>
+    <div class="mr-trend" id="my-trend">+2 places</div>
+  </div>
+
+  <!-- TOP 3 PODIUM -->
+  <div class="podium" id="podium"></div>
+
+  <!-- FILTERS -->
+  <div class="filters-wrap">
+    <div class="filter-tabs" id="filter-tabs"></div>
+    <div class="sub-filters" id="sub-filters"></div>
+  </div>
+
+  <!-- RANKING TABLE -->
+  <div class="rank-table">
+    <div class="rank-header">
+      <div>#</div>
+      <div>JOUEUR</div>
+      <div class="rk-stat" id="h1">BUTS</div>
+      <div class="rk-stat col-hide" id="h2">ASSISTS</div>
+      <div class="rk-stat col-hide" id="h3">NOTE</div>
+      <div class="rk-stat" id="h4">TREND</div>
+    </div>
+    <div id="rank-body"></div>
+  </div>
+
+</div>
+
+<script>
+// ── DATA ──
+var PLAYERS = [
+  {name:'Nassim', handle:'@nassim',  pos:'ATT',   team:'Bleue', note:10,  buts:12, assists:7,  valeur:8500,  level:7,  presences:8,  popularite:8420, me:true,  trend:'up',   trendVal:'+2'},
+  {name:'Yves',   handle:'@yves',    pos:'ATT',   team:'Rouge', note:10,  buts:14, assists:5,  valeur:9200,  level:8,  presences:8,  popularite:9100, me:false, trend:'up',   trendVal:'+1'},
+  {name:'ABD',    handle:'@abd',     pos:'ATT',   team:'Bleue', note:10,  buts:10, assists:9,  valeur:9000,  level:8,  presences:8,  popularite:8800, me:false, trend:'eq',   trendVal:'='},
+  {name:'Damien', handle:'@damien',  pos:'ATT',   team:'Bleue', note:9.5, buts:11, assists:6,  valeur:8200,  level:7,  presences:8,  popularite:7900, me:false, trend:'up',   trendVal:'+3'},
+  {name:'Nimy',   handle:'@nimy',    pos:'ATT',   team:'Rouge', note:9,   buts:8,  assists:4,  valeur:7800,  level:6,  presences:7,  popularite:7200, me:false, trend:'up',   trendVal:'+1'},
+  {name:'Kaloga1',handle:'@kal1',    pos:'MC',    team:'Rouge', note:8.5, buts:3,  assists:11, valeur:7500,  level:7,  presences:8,  popularite:6800, me:false, trend:'up',   trendVal:'+2'},
+  {name:'Marin',  handle:'@marin',   pos:'GK',    team:'Rouge', note:8.5, buts:0,  assists:0,  valeur:7200,  level:6,  presences:8,  popularite:6400, me:false, trend:'eq',   trendVal:'='},
+  {name:'Bilal',  handle:'@bilal',   pos:'MDef',  team:'Bleue', note:8,   buts:2,  assists:8,  valeur:6800,  level:6,  presences:7,  popularite:5900, me:false, trend:'dn',   trendVal:'-1'},
+  {name:'Kaloga2',handle:'@kal2',    pos:'MC',    team:'Bleue', note:8,   buts:4,  assists:7,  valeur:6600,  level:6,  presences:7,  popularite:5700, me:false, trend:'up',   trendVal:'+1'},
+  {name:'Quentin',handle:'@quentin', pos:'MC',    team:'Rouge', note:8,   buts:3,  assists:6,  valeur:6400,  level:5,  presences:6,  popularite:5200, me:false, trend:'eq',   trendVal:'='},
+  {name:'Francis',handle:'@francis', pos:'MOff',  team:'Rouge', note:8,   buts:5,  assists:5,  valeur:6200,  level:5,  presences:7,  popularite:5000, me:false, trend:'up',   trendVal:'+2'},
+  {name:'Damien', handle:'@damien17',pos:'ATT',   team:'Bleue', note:9.5, buts:9,  assists:4,  valeur:7900,  level:7,  presences:8,  popularite:7100, me:false, trend:'up',   trendVal:'+1'},
+  {name:'TraoBabe',handle:'@trao',   pos:'LAT',   team:'Rouge', note:7.5, buts:1,  assists:5,  valeur:5800,  level:5,  presences:6,  popularite:4600, me:false, trend:'eq',   trendVal:'='},
+  {name:'Christoph',handle:'@chris', pos:'MC',    team:'Bleue', note:7.5, buts:2,  assists:6,  valeur:5600,  level:5,  presences:6,  popularite:4400, me:false, trend:'dn',   trendVal:'-1'},
+  {name:'Eros',   handle:'@eros',    pos:'LAT',   team:'Rouge', note:7,   buts:1,  assists:3,  valeur:5200,  level:4,  presences:5,  popularite:3800, me:false, trend:'eq',   trendVal:'='},
+  {name:'Moha',   handle:'@moha',    pos:'DC',    team:'Bleue', note:7,   buts:0,  assists:2,  valeur:5000,  level:4,  presences:6,  popularite:3600, me:false, trend:'up',   trendVal:'+1'},
+  {name:'Meschac',handle:'@meschac', pos:'DC',    team:'Bleue', note:7,   buts:0,  assists:3,  valeur:4900,  level:4,  presences:5,  popularite:3400, me:false, trend:'eq',   trendVal:'='},
+  {name:'Djibson',handle:'@djibson', pos:'DC',    team:'Bleue', note:6,   buts:0,  assists:1,  valeur:4200,  level:3,  presences:5,  popularite:2800, me:false, trend:'dn',   trendVal:'-1'},
+  {name:'Mouzayyy',handle:'@mouzay', pos:'DC',    team:'Bleue', note:6,   buts:0,  assists:1,  valeur:4000,  level:3,  presences:4,  popularite:2600, me:false, trend:'eq',   trendVal:'='},
+  {name:'Edgar',  handle:'@edgar',   pos:'MOff',  team:'Rouge', note:6,   buts:2,  assists:2,  valeur:3900,  level:3,  presences:4,  popularite:2400, me:false, trend:'up',   trendVal:'+1'},
+  {name:'Skeyte', handle:'@skeyte',  pos:'MC',    team:'Rouge', note:6,   buts:1,  assists:2,  valeur:3700,  level:3,  presences:4,  popularite:2200, me:false, trend:'eq',   trendVal:'='},
+  {name:'Matthieu',handle:'@matt',   pos:'GK',    team:'Bleue', note:5,   buts:0,  assists:0,  valeur:3200,  level:2,  presences:5,  popularite:1800, me:false, trend:'up',   trendVal:'+2'},
+  {name:'Leo',    handle:'@leo',     pos:'DC',    team:'Rouge', note:5,   buts:0,  assists:0,  valeur:3000,  level:2,  presences:4,  popularite:1600, me:false, trend:'dn',   trendVal:'-1'},
+  {name:'Angelo', handle:'@angelo',  pos:'DC',    team:'Rouge', note:5,   buts:0,  assists:0,  valeur:2900,  level:2,  presences:3,  popularite:1400, me:false, trend:'eq',   trendVal:'='},
+  {name:'LPape',  handle:'@lpape',   pos:'ATT',   team:'Rouge', note:5,   buts:1,  assists:0,  valeur:2800,  level:2,  presences:3,  popularite:1200, me:false, trend:'up',   trendVal:'+1'},
+  {name:'Djibson2',handle:'@djib2',  pos:'MC',    team:'Bleue', note:6,   buts:1,  assists:2,  valeur:3800,  level:3,  presences:5,  popularite:2500, me:false, trend:'eq',   trendVal:'='},
+  {name:'JNR',    handle:'@jnr',     pos:'COACH', team:'',      note:0,   buts:0,  assists:0,  valeur:12000, level:10, presences:8,  popularite:15000,me:false, trend:'up',   trendVal:'+1'},
+];
+
+var SKIN_COLORS = ['#C68642','#8D5524','#F1C27D','#4A2912','#D4956A','#6B3A2A','#E8A87C','#2D1508','#B5724A','#FDBCB4','#F5CBA7','#FAD7A0','#A0522D'];
+var EYE_COLORS  = ['#00d4ff','#ff2d55','#a855f7','#f0b429','#22c55e','#8B4513','#4fa3ff','#1abc9c'];
+
+// Assign random but consistent colors
+function getColors(idx) {
+  return {
+    skin: SKIN_COLORS[idx % SKIN_COLORS.length],
+    eye:  EYE_COLORS[idx % EYE_COLORS.length],
+    hair: ['#1a1a1a','#3d2b1f','#FFD700','#C0392B','#4a90d9','#888','#2c2c2c','#8B4513'][idx % 8]
+  };
+}
+
+// Build mini avatar SVG
+function miniAv(idx, size) {
+  var c = getColors(idx);
+  return '<svg width="'+size+'" height="'+size+'" viewBox="34 30 92 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78 Q108,54 80,50 Q52,54 44,78Z" fill="'+c.hair+'"/>' +
+    '<ellipse cx="80" cy="82" rx="36" ry="39" fill="'+c.skin+'"/>' +
+    '<ellipse cx="63" cy="80" rx="9" ry="7" fill="white" stroke="#0a0a0a" stroke-width="1.5"/>' +
+    '<ellipse cx="63" cy="80" rx="5" ry="4" fill="'+c.eye+'"/>' +
+    '<ellipse cx="63" cy="80" rx="3" ry="3" fill="#040404"/>' +
+    '<ellipse cx="97" cy="80" rx="9" ry="7" fill="white" stroke="#0a0a0a" stroke-width="1.5"/>' +
+    '<ellipse cx="97" cy="80" rx="5" ry="4" fill="'+c.eye+'"/>' +
+    '<ellipse cx="97" cy="80" rx="3" ry="3" fill="#040404"/>' +
+    '<path d="M66,100 Q80,98 94,100" stroke="#0a0a0a" stroke-width="1.5" fill="none"/>' +
+    '</svg>';
+}
+
+// ── FILTER CONFIG ──
+var FILTERS = [
+  {key:'buts',    label:'Buts',       col:'buts',       hdr:['BUTS','ASSISTS','NOTE','TREND'],    sub:['Tous les postes','Attaquants','Milieux','Defenseurs']},
+  {key:'assists', label:'Assists',    col:'assists',    hdr:['ASSISTS','BUTS','NOTE','TREND'],    sub:['Tous les postes','Attaquants','Milieux','Defenseurs']},
+  {key:'note',    label:'Note moy.',  col:'note',       hdr:['NOTE','BUTS','ASSISTS','TREND'],    sub:['Tous les postes','GK','Defenseurs','Milieux','Attaquants']},
+  {key:'valeur',  label:'Valeur',     col:'valeur',     hdr:['VALEUR','NOTE','LEVEL','TREND'],    sub:['Tous','Equipe Bleue','Equipe Rouge']},
+  {key:'level',   label:'Level',      col:'level',      hdr:['LEVEL','VALEUR','PRESENCES','TREND'],sub:['Tous les niveaux','LEGENDAIRE','CONFIRME','RECRUE']},
+  {key:'presences',label:'Presences', col:'presences',  hdr:['PRESENCES','NOTE','BUTS','TREND'],  sub:['Tous','Titulaires','Remplacants']},
+  {key:'popularite',label:'Popularite',col:'popularite',hdr:['POPULARITE','FOLLOWERS','VALEUR','TREND'],sub:['Tous','Joueurs','Coachs','Supporters']},
+];
+
+var currentFilter = 'buts';
+var currentSub = 0;
+var currentPoste = 'Tous les postes';
+
+// ── BUILD FILTERS ──
+function buildFilterTabs() {
+  var wrap = document.getElementById('filter-tabs');
+  wrap.innerHTML = '';
+  FILTERS.forEach(function(f) {
+    var btn = document.createElement('button');
+    btn.className = 'ftab' + (f.key === currentFilter ? ' on' : '');
+    btn.textContent = f.label;
+    btn.onclick = function() { currentFilter = f.key; currentSub = 0; render(); };
+    wrap.appendChild(btn);
+  });
+}
+
+function buildSubFilters() {
+  var wrap = document.getElementById('sub-filters');
+  wrap.innerHTML = '';
+  var cfg = FILTERS.find(function(f){ return f.key === currentFilter; });
+  if (!cfg) return;
+  cfg.sub.forEach(function(s, i) {
+    var btn = document.createElement('button');
+    btn.className = 'sfbtn' + (i === currentSub ? ' on' : '');
+    btn.textContent = s;
+    btn.onclick = function() { currentSub = i; render(); };
+    wrap.appendChild(btn);
+  });
+}
+
+// ── SORT & FILTER PLAYERS ──
+function getSortedPlayers() {
+  var cfg = FILTERS.find(function(f){ return f.key === currentFilter; });
+  var col = cfg ? cfg.col : 'buts';
+  var sub = cfg ? cfg.sub[currentSub] : '';
+
+  var filtered = PLAYERS.slice();
+
+  // Apply sub filter
+  if (sub && sub !== 'Tous les postes' && sub !== 'Tous' && sub !== 'Tous les niveaux') {
+    if (sub === 'Attaquants') filtered = filtered.filter(function(p){ return p.pos==='ATT'||p.pos==='F9'; });
+    else if (sub === 'Milieux') filtered = filtered.filter(function(p){ return p.pos==='MC'||p.pos==='MDef'||p.pos==='MOff'||p.pos==='B2B'; });
+    else if (sub === 'Defenseurs') filtered = filtered.filter(function(p){ return p.pos==='DC'||p.pos==='LAT'||p.pos==='LIB'; });
+    else if (sub === 'GK') filtered = filtered.filter(function(p){ return p.pos==='GK'; });
+    else if (sub === 'Equipe Bleue') filtered = filtered.filter(function(p){ return p.team==='Bleue'; });
+    else if (sub === 'Equipe Rouge') filtered = filtered.filter(function(p){ return p.team==='Rouge'; });
+    else if (sub === 'Coachs') filtered = filtered.filter(function(p){ return p.pos==='COACH'; });
+  }
+
+  // Sort
+  filtered.sort(function(a, b) { return (b[col]||0) - (a[col]||0); });
+  return filtered;
+}
+
+// ── BUILD PODIUM ──
+function buildPodium(players) {
+  var wrap = document.getElementById('podium');
+  wrap.innerHTML = '';
+  var top3 = players.slice(0, 3);
+  var order = [1, 0, 2]; // 2nd, 1st, 3rd
+  var heights = [80, 100, 65];
+  var colors = ['#C0C0C0', '#f0b429', '#cd7f32'];
+  var crowns = ['', '👑', ''];
+  var labels = ['#2', '#1', '#3'];
+  var sizes = [52, 64, 46];
+  var col = FILTERS.find(function(f){ return f.key===currentFilter; });
+  var colKey = col ? col.col : 'buts';
+
+  order.forEach(function(ri, displayIdx) {
+    var p = top3[ri];
+    if (!p) return;
+    var playerIdx = PLAYERS.indexOf(p);
+    var item = document.createElement('div');
+    item.className = 'podium-item';
+    var sz = sizes[displayIdx];
+    var color = colors[displayIdx];
+    var h = heights[displayIdx];
+    var crown = crowns[displayIdx];
+    var lbl = labels[displayIdx];
+    var val = p[colKey] !== undefined ? p[colKey] : '-';
+    if (colKey === 'valeur') val = 'EUR' + val.toLocaleString();
+
+    item.innerHTML =
+      '<div class="pod-av" style="width:'+sz+'px;height:'+sz+'px;border-color:'+color+';box-shadow:0 0 20px '+color+'44;position:relative">' +
+        (crown ? '<div class="pod-crown">'+crown+'</div>' : '') +
+        miniAv(playerIdx, sz) +
+        '<div class="pod-rank" style="background:'+color+';color:#000">'+lbl+'</div>' +
+      '</div>' +
+      '<div class="pod-name">'+p.name+'</div>' +
+      '<div class="pod-val">'+val+'</div>' +
+      '<div class="pod-plat" style="width:'+(sz+20)+'px;height:'+h+'px;background:linear-gradient(to bottom,'+color+'22,'+color+'08);border:1px solid '+color+'33">'+lbl+'</div>';
+
+    wrap.appendChild(item);
+  });
+}
+
+// ── BUILD RANK TABLE ──
+function buildTable(players) {
+  var body = document.getElementById('rank-body');
+  body.innerHTML = '';
+  var cfg = FILTERS.find(function(f){ return f.key===currentFilter; });
+  var hdrs = cfg ? cfg.hdr : ['BUTS','ASSISTS','NOTE','TREND'];
+  var cols = ['buts','assists','note','trend'];
+  if(currentFilter==='note')      cols=['note','buts','assists','trend'];
+  if(currentFilter==='valeur')    cols=['valeur','note','level','trend'];
+  if(currentFilter==='level')     cols=['level','valeur','presences','trend'];
+  if(currentFilter==='presences') cols=['presences','note','buts','trend'];
+  if(currentFilter==='popularite') cols=['popularite','valeur','presences','trend'];
+  if(currentFilter==='assists')   cols=['assists','buts','note','trend'];
+
+  // Update headers
+  ['h1','h2','h3','h4'].forEach(function(id,i){
+    var el=document.getElementById(id);
+    if(el) el.textContent=hdrs[i]||'';
+  });
+
+  var myRankNum = 1;
+  players.forEach(function(p, idx) {
+    if (p.me) myRankNum = idx + 1;
+
+    var row = document.createElement('div');
+    var cls = 'rank-row';
+    if (p.me) cls += ' me';
+    if (idx === 0) cls += ' top1';
+    else if (idx === 1) cls += ' top2';
+    else if (idx === 2) cls += ' top3';
+    row.className = cls;
+    row.style.animationDelay = (idx * 0.03) + 's';
+
+    var rankNum = idx + 1;
+    var rankCls = rankNum===1?'rk-gold':rankNum===2?'rk-silver':rankNum===3?'rk-bronze':'rk-normal';
+    var rankEl = '<div class="rk-num '+rankCls+'">'+rankNum+'</div>';
+
+    var playerIdx = PLAYERS.indexOf(p);
+    var avEl = '<div class="rk-av">'+miniAv(playerIdx, 38)+'</div>';
+
+    var teamColor = p.team==='Bleue'?'#4fa3ff':p.team==='Rouge'?'#ff6b6b':'#a855f7';
+    var meTag = p.me ? '<span class="rk-me-tag">MOI</span>' : '';
+    var playerEl = '<div class="rk-player">'+avEl+'<div class="rk-info"><div class="rk-name">'+p.name+meTag+'</div><div class="rk-pos" style="color:'+teamColor+'">'+p.pos+(p.team?' · '+p.team:'')+'</div></div></div>';
+
+    function fmtVal(col) {
+      var v = p[col];
+      if (col === 'trend') {
+        var cls2 = p.trend==='up'?'up':p.trend==='dn'?'dn':'eq';
+        var arrow = p.trend==='up'?'&#9650;':p.trend==='dn'?'&#9660;':'&#8212;';
+        return '<div class="rk-stat"><div class="rk-trend '+cls2+'">'+arrow+' '+p.trendVal+'</div></div>';
+      }
+      if (col === 'valeur') return '<div class="rk-stat col-hide"><div class="rk-stat-val">'+v+'</div><div class="rk-stat-sub">EUR</div></div>';
+      return '<div class="rk-stat col-hide"><div class="rk-stat-val">'+v+'</div></div>';
+    }
+
+    var col1 = cols[0]; var col2 = cols[1]; var col3 = cols[2];
+    var c1val = p[col1] !== undefined ? p[col1] : '-';
+    var c1 = '<div class="rk-stat"><div class="rk-stat-val">'+c1val+'</div></div>';
+    var c2 = fmtVal(col2);
+    var c3 = fmtVal(col3);
+    var c4 = fmtVal('trend');
+
+    row.innerHTML = rankEl + playerEl + c1 + c2 + c3 + c4;
+    body.appendChild(row);
+  });
+
+  // Update my rank banner
+  document.getElementById('my-rank-num').textContent = myRankNum;
+  var me = players.find(function(p){ return p.me; });
+  if (me) {
+    var cfg2 = FILTERS.find(function(f){ return f.key===currentFilter; });
+    var col = cfg2 ? cfg2.col : 'buts';
+    document.getElementById('my-val1').textContent = me[cols[0]] !== undefined ? me[cols[0]] : '-';
+    document.getElementById('my-val2').textContent = me[cols[1]] !== undefined ? me[cols[1]] : '-';
+    document.getElementById('my-val3').textContent = me[cols[2]] !== undefined ? me[cols[2]] : '-';
+    document.getElementById('my-lbl1').textContent = (cfg2?cfg2.hdr[0]:'Buts');
+    document.getElementById('my-lbl2').textContent = (cfg2?cfg2.hdr[1]:'Assists');
+    document.getElementById('my-lbl3').textContent = (cfg2?cfg2.hdr[2]:'Note');
+    var trendEl = document.getElementById('my-trend');
+    trendEl.textContent = me.trend==='up'?('+'+me.trendVal.replace('+','')+' places'):me.trend==='dn'?(me.trendVal+' places'):'Stable';
+    trendEl.style.background = me.trend==='up'?'rgba(34,197,94,.1)':me.trend==='dn'?'rgba(255,45,85,.1)':'rgba(74,96,128,.1)';
+    trendEl.style.color = me.trend==='up'?'var(--green)':me.trend==='dn'?'var(--danger)':'var(--muted)';
+    trendEl.style.borderColor = me.trend==='up'?'rgba(34,197,94,.2)':me.trend==='dn'?'rgba(255,45,85,.2)':'rgba(74,96,128,.2)';
+  }
+}
+
+// ── MAIN RENDER ──
+function render() {
+  var players = getSortedPlayers();
+  buildFilterTabs();
+  buildSubFilters();
+  buildPodium(players);
+  buildTable(players);
+}
+
+render();
+
+function nav(page){
+  var pages={
+    'accueil':'index.html',
+    'inscription':'inscription.html',
+    'profil':'profil.html',
+    'feed':'feed.html',
+    'classement':'classement.html',
+    'ligue':'ligue.html',
+    'economie':'economie.html','minijeux':'minijeux.html','notifications':'notifications.html','coach':'coach.html',
+    'joueurs':'joueurs.html'
+  };
+  if(pages[page]) window.location.href=pages[page];
+}
+
+
+var THE_LOCK_LEVELS = [
+  {key:'recrue',    name:'RECRUE',    xp:0,     color:'#4a6080'},
+  {key:'initie',    name:'INITIE',    xp:500,   color:'#22c55e'},
+  {key:'apprenti',  name:'APPRENTI',  xp:1500,  color:'#00d4ff'},
+  {key:'confirme',  name:'CONFIRME',  xp:3000,  color:'#4fa3ff'},
+  {key:'elite',     name:'ELITE',     xp:6000,  color:'#a855f7'},
+  {key:'legendaire',name:'LEGENDAIRE',xp:10000, color:'#f0b429'},
+  {key:'icon',      name:'ICON',      xp:20000, color:'#ff2d55'}
+];
+function getLevelFromXP(xp){
+  var lv=THE_LOCK_LEVELS[0];
+  THE_LOCK_LEVELS.forEach(function(l){if(xp>=l.xp)lv=l;});
+  return lv;
+}
+
+</script>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">THE <span>LOCK</span></div>
+    <div class="footer-links">
+      <button class="footer-link">A propos</button>
+      <button class="footer-link">CGU</button>
+      <button class="footer-link">Confidentialite</button>
+      <button class="footer-link">Contact</button>
+    </div>
+    <div class="footer-right">THE LOCK · EDITION I · 2026</div>
+  </div>
+</footer>
+</body>
+</html>

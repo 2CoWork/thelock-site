@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE LOCK · Notifications</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#f0b429;--electric:#00d4ff;--danger:#ff2d55;--green:#22c55e;--purple:#a855f7;--ink:#07090f;--panel:#0d1117;--panel2:#111822;--border:#1c2a3a;--text:#e2e8f0;--muted:#4a6080;--card:#0f1923}
+body{background:var(--ink);font-family:'DM Sans',sans-serif;color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at 20% 0%,#0d1a2e,transparent 50%),radial-gradient(ellipse at 80% 100%,#1a0d1a,transparent 50%)}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(7,9,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tb-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;color:white;cursor:pointer}
+.tb-logo span{color:var(--gold)}
+.tb-nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tb-nav::-webkit-scrollbar{display:none}
+.tb-link{padding:6px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;border-radius:6px;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.tb-link:hover{color:white;background:rgba(255,255,255,.05)}
+.tb-link.on{color:var(--gold)}
+.tb-right{display:flex;gap:8px;align-items:center}
+.tb-icon{width:34px;height:34px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;position:relative;transition:all .2s}
+.tb-icon:hover{border-color:var(--gold)}
+.tb-notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;background:var(--danger);border-radius:50%;border:1px solid var(--ink)}
+.tb-profile{padding:0 12px;height:34px;border-radius:8px;background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.2);display:flex;align-items:center;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--gold);cursor:pointer;white-space:nowrap}
+
+/* LAYOUT */
+.layout{max-width:700px;margin:0 auto;padding:24px 16px;display:flex;flex-direction:column;gap:14px}
+
+/* HEADER */
+.page-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.ph-left{}
+.ph-eyebrow{font-size:10px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:4px}
+.ph-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,6vw,42px);letter-spacing:4px;color:white;line-height:1;display:flex;align-items:center;gap:12px}
+.ph-badge{font-size:14px;font-family:'DM Mono',monospace;padding:3px 10px;border-radius:20px;background:rgba(255,45,85,.12);color:var(--danger);border:1px solid rgba(255,45,85,.2)}
+.ph-actions{display:flex;gap:8px}
+.btn-sm{padding:7px 14px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;border-radius:8px;cursor:pointer;transition:all .2s;border:none}
+.btn-read{background:var(--panel2);border:1px solid var(--border);color:var(--muted)}
+.btn-read:hover{border-color:var(--gold);color:var(--gold)}
+.btn-clear{background:rgba(255,45,85,.08);border:1px solid rgba(255,45,85,.2);color:var(--danger)}
+.btn-clear:hover{background:rgba(255,45,85,.15)}
+
+/* FILTERS */
+.filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.filters::-webkit-scrollbar{display:none}
+.fbtn{padding:7px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:20px;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0}
+.fbtn:hover{border-color:rgba(240,180,41,.3);color:var(--text)}
+.fbtn.on{background:rgba(240,180,41,.1);border-color:var(--gold);color:var(--gold)}
+.fbtn-count{display:inline-block;background:var(--danger);color:white;border-radius:10px;padding:0 5px;font-size:9px;margin-left:4px;font-family:'DM Mono',monospace}
+
+/* NOTIF GROUP */
+.notif-group-label{font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;padding:4px 0;display:flex;align-items:center;gap:10px}
+.ngl-line{flex:1;height:1px;background:var(--border)}
+
+/* NOTIF ITEM */
+.notif-item{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:14px 16px;display:flex;gap:12px;align-items:flex-start;
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+  animation:fadeIn .3s ease both;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.notif-item:hover{background:rgba(255,255,255,.02);border-color:rgba(240,180,41,.15)}
+.notif-item.unread{border-left:3px solid var(--gold)}
+.notif-item.unread::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(240,180,41,.02);pointer-events:none}
+
+/* TYPE COLORS */
+.notif-item.t-match{border-left-color:var(--green)}
+.notif-item.t-valeur{border-left-color:var(--electric)}
+.notif-item.t-ligue{border-left-color:var(--purple)}
+.notif-item.t-level{border-left-color:var(--gold)}
+.notif-item.t-mercato{border-left-color:var(--danger)}
+.notif-item.t-social{border-left-color:#4fa3ff}
+.notif-item.t-coach{border-left-color:var(--green)}
+.notif-item.t-systeme{border-left-color:var(--muted)}
+
+.ni-icon-wrap{
+  width:42px;height:42px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  border:1px solid var(--border);
+}
+.ni-body{flex:1;min-width:0}
+.ni-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px}
+.ni-title{font-weight:700;font-size:13px;color:white;line-height:1.3}
+.ni-time{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.ni-text{font-size:12px;color:var(--muted);line-height:1.5}
+.ni-text strong{color:var(--text);font-weight:600}
+.ni-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.na-btn{padding:5px 14px;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.na-accept{background:var(--green);color:#000}
+.na-accept:hover{background:#16a34a}
+.na-refuse{background:rgba(255,45,85,.1);color:var(--danger);border:1px solid rgba(255,45,85,.2)}
+.na-refuse:hover{background:rgba(255,45,85,.18)}
+.na-view{background:var(--panel2);color:var(--muted);border:1px solid var(--border)}
+.na-view:hover{border-color:var(--gold);color:var(--gold)}
+.ni-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:white;margin-bottom:6px}
+
+/* SETTINGS CARD */
+.settings-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.sc-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:white;margin-bottom:14px}
+.setting-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(28,42,58,.4)}
+.setting-row:last-child{border-bottom:none}
+.sr-icon{font-size:18px;width:32px;text-align:center;flex-shrink:0}
+.sr-info{flex:1}
+.sr-label{font-weight:600;font-size:13px;color:white}
+.sr-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.toggle{width:44px;height:24px;border-radius:12px;background:var(--border);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--gold)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:white;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.toggle.on::after{transform:translateX(20px)}
+
+/* FOOTER */
+.site-footer{background:var(--ink);border-top:1px solid var(--border);padding:24px 20px;margin-top:20px}
+.footer-inner{max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:4px;color:white}
+.footer-logo span{color:var(--gold)}
+.footer-right{font-size:11px;color:#2a3a4a;font-family:'DM Mono',monospace}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-logo" onclick="nav('accueil')">THE <span>LOCK</span></div>
+  <nav class="tb-nav">
+    <button class="tb-link" onclick="nav('accueil')">Accueil</button>
+    <button class="tb-link" onclick="nav('joueurs')">Joueurs</button>
+    <button class="tb-link" onclick="nav('ligue')">Ligues</button>
+    <button class="tb-link" onclick="nav('classement')">Classement</button>
+    <button class="tb-link" onclick="nav('economie')">Economie</button>
+  </nav>
+  <div class="tb-right">
+    <div class="tb-icon on" style="border-color:var(--gold)"><span>🔔</span></div>
+    <div class="tb-profile" onclick="nav('profil')">MON PROFIL</div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="ph-left">
+      <div class="ph-eyebrow">THE LOCK · EDITION I</div>
+      <div class="ph-title">NOTIFICATIONS <span class="ph-badge" id="unread-count">8</span></div>
+    </div>
+    <div class="ph-actions">
+      <button class="btn-sm btn-read" onclick="markAllRead()">Tout lire</button>
+      <button class="btn-sm btn-clear" onclick="clearAll()">Effacer</button>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters" id="filters"></div>
+
+  <!-- NOTIFS -->
+  <div id="notif-container"></div>
+
+  <!-- SETTINGS -->
+  <div class="settings-card">
+    <div class="sc-title">PARAMETRES DE NOTIFICATIONS</div>
+    <div id="settings-list"></div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">THE <span>LOCK</span></div>
+    <div class="footer-right">THE LOCK · EDITION I · 2026</div>
+  </div>
+</footer>
+
+<script>
+// ══════════════════════════════
+//  DATA
+// ══════════════════════════════
+var NOTIFS = [
+  // AUJOURD HUI
+  {id:1,  type:'coach',   icon:'2705',   title:'Presence validee',          text:'<strong>JNR</strong> a valide ta presence a l entrainement du 15 Mai. Tu gagnes <strong>+200 XP</strong> et <strong>+75 LC</strong>.',         time:'Il y a 5 min',  group:'today', unread:true,  actions:[]},
+  {id:2,  type:'match',   icon:'26BD',   title:'Resultat de match',         text:'L equipe Bleue a gagne 3-2 contre l equipe Rouge. Tu as marque <strong>2 buts</strong> et realise <strong>1 assist</strong>. Note: <strong>9.5</strong>.',  time:'Il y a 2h',    group:'today', unread:true,  actions:['Voir le match']},
+  {id:3,  type:'valeur',  icon:'1F4C8',  title:'Valeur en hausse',          text:'Ta valeur boursiere a augmente de <strong>+13.3%</strong> suite a tes performances. Nouvelle valeur: <strong>8 500 EUR</strong>.',                 time:'Il y a 3h',    group:'today', unread:true,  actions:['Voir ma valeur']},
+  {id:4,  type:'social',  icon:'1F465',  title:'Nouveau follower',          text:'<strong>Damien</strong> et <strong>Francis</strong> te suivent maintenant sur THE LOCK.',                                                          time:'Il y a 4h',    group:'today', unread:true,  actions:['Voir profil']},
+  {id:5,  type:'level',   icon:'26A1',   title:'Progression de niveau',     text:'Tu es a <strong>65%</strong> du niveau Elite. Continue comme ca ! Il te faut encore <strong>3 500 XP</strong>.',                                  time:'Il y a 5h',    group:'today', unread:true,  actions:[]},
+  // HIER
+  {id:6,  type:'mercato', icon:'1F504',  title:'Offre de transfert',        text:'Le coach de l equipe Rouge te propose un transfert pour la prochaine edition. Valeur proposee: <strong>9 000 LC</strong>.',                        time:'Hier 20h',     group:'yesterday', unread:true, actions:['Accepter','Refuser']},
+  {id:7,  type:'ligue',   icon:'1F3C6',  title:'Ligue THE LOCK Edition I',  text:'Le mercato est ouvert pour <strong>72 heures</strong>. Les coachs peuvent recruter et trader librement.',                                         time:'Hier 18h',     group:'yesterday', unread:true, actions:['Voir le mercato']},
+  {id:8,  type:'coach',   icon:'1F4CB',  title:'Entrainement programme',    text:'<strong>JNR</strong> a programme un entrainement <strong>Tactique</strong> pour le 19 Mai a 18h. Lieu: Terrain municipal.',                       time:'Hier 14h',     group:'yesterday', unread:false, actions:['Confirmer presence','Decliner']},
+  // CETTE SEMAINE
+  {id:9,  type:'social',  icon:'1F91D',  title:'Demande d ami acceptee',    text:'<strong>Yves</strong> a accepte ta demande d ami. Vous pouvez maintenant voir vos profils complets.',                                             time:'12 Mai',       group:'week', unread:false, actions:[]},
+  {id:10, type:'level',   icon:'1F451',  title:'Level Up !',                text:'Felicitations ! Tu as atteint le niveau <strong>CONFIRME</strong>. Tu gagnes <strong>+2 000 LC</strong> et debloques la capacite custom.',        time:'10 Mai',       group:'week', unread:false, actions:[]},
+  {id:11, type:'match',   icon:'1F3C6',  title:'Hat-trick de Damien',       text:'<strong>Damien</strong> a realise un hat-trick lors du match M8. Un moment historique pour THE LOCK Edition I.',                                  time:'10 Mai',       group:'week', unread:false, actions:['Voir le match']},
+  {id:12, type:'systeme', icon:'1F512',  title:'Bienvenue dans THE LOCK',   text:'Ton compte a ete valide avec succes. Explore le site et commence a accumuler des <strong>Lock Coins</strong>.',                                   time:'1 Mai',        group:'week', unread:false, actions:[]},
+];
+
+var FILTERS_DATA = [
+  {key:'all',     label:'Tout',       count:8},
+  {key:'match',   label:'Matchs',     count:2},
+  {key:'coach',   label:'Coach',      count:2},
+  {key:'valeur',  label:'Valeur',     count:1},
+  {key:'level',   label:'Level',      count:2},
+  {key:'mercato', label:'Mercato',    count:1},
+  {key:'social',  label:'Social',     count:2},
+  {key:'ligue',   label:'Ligue',      count:1},
+  {key:'systeme', label:'Systeme',    count:0},
+];
+
+var SETTINGS = [
+  {icon:'26BD',  label:'Resultats de matchs',    sub:'Score, notes et stats apres chaque match', on:true},
+  {icon:'1F4C8', label:'Valeur boursiere',        sub:'Hausse ou baisse de ta valeur', on:true},
+  {icon:'26A1',  label:'Progression de niveau',   sub:'Notifications de level up et XP', on:true},
+  {icon:'1F3C6', label:'Actualites de la ligue',  sub:'Mercato, nouvelles formations, matchs', on:true},
+  {icon:'1F465', label:'Activite sociale',         sub:'Nouveaux followers, demandes d ami', on:true},
+  {icon:'1F4CB', label:'Entrainements',            sub:'Convocations et validations de presence', on:true},
+  {icon:'1F504', label:'Offres de transfert',      sub:'Propositions de mercato des coachs', on:true},
+  {icon:'1F512', label:'Systeme',                  sub:'Mises a jour et annonces THE LOCK', on:false},
+];
+
+var currentFilter = 'all';
+var notifStates = {};
+
+// ══════════════════════════════
+//  BUILD UI
+// ══════════════════════════════
+function buildFilters(){
+  var wrap = document.getElementById('filters');
+  FILTERS_DATA.forEach(function(f){
+    var btn = document.createElement('button');
+    btn.className = 'fbtn' + (f.key===currentFilter?' on':'');
+    var countHtml = f.count > 0 ? '<span class="fbtn-count">'+f.count+'</span>' : '';
+    btn.innerHTML = f.label + countHtml;
+    btn.onclick = function(){
+      currentFilter = f.key;
+      document.querySelectorAll('.fbtn').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      renderNotifs();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function buildSettings(){
+  var wrap = document.getElementById('settings-list');
+  SETTINGS.forEach(function(s, i){
+    var row = document.createElement('div');
+    row.className = 'setting-row';
+    row.innerHTML =
+      '<div class="sr-icon">'+String.fromCodePoint(parseInt(s.icon,16))+'</div>' +
+      '<div class="sr-info"><div class="sr-label">'+s.label+'</div><div class="sr-sub">'+s.sub+'</div></div>' +
+      '<div class="toggle'+(s.on?' on':'')+'" id="toggle-'+i+'" onclick="toggleSetting('+i+',this)"></div>';
+    wrap.appendChild(row);
+  });
+}
+
+// ══════════════════════════════
+//  RENDER NOTIFS
+// ══════════════════════════════
+function getFiltered(){
+  // Build list of disabled types based on settings
+  var typeMap = {
+    'match':'match', 'coach':'coach', 'valeur':'valeur',
+    'level':'level', 'ligue':'ligue', 'mercato':'mercato',
+    'social':'social', 'systeme':'systeme'
+  };
+  var settingTypes = [
+    'match','valeur','level','ligue','social','coach','mercato','systeme'
+  ];
+  var disabledTypes = {};
+  SETTINGS.forEach(function(s, i){
+    if(!s.on) disabledTypes[settingTypes[i]] = true;
+  });
+
+  var filtered = NOTIFS.filter(function(n){
+    if(notifStates[n.id] === 'deleted') return false;
+    if(disabledTypes[n.type]) return false;
+    if(currentFilter === 'all') return true;
+    return n.type === currentFilter;
+  });
+  return filtered;
+}
+
+function renderNotifs(){
+  var container = document.getElementById('notif-container');
+  container.innerHTML = '';
+  var filtered = getFiltered();
+
+  if(!filtered.length){
+    container.innerHTML =
+      '<div class="empty-state">' +
+        '<div class="empty-icon">🔔</div>' +
+        '<div class="empty-title">AUCUNE NOTIFICATION</div>' +
+        '<div>Tu es a jour sur tout !</div>' +
+      '</div>';
+    updateCount();
+    return;
+  }
+
+  var groups = {today:'AUJOURD HUI', yesterday:'HIER', week:'CETTE SEMAINE'};
+  var rendered = {};
+
+  filtered.forEach(function(n, idx){
+    // Group label
+    if(!rendered[n.group]){
+      rendered[n.group] = true;
+      var label = document.createElement('div');
+      label.className = 'notif-group-label';
+      label.innerHTML = '<div class="ngl-line"></div><span>'+groups[n.group]+'</span><div class="ngl-line"></div>';
+      container.appendChild(label);
+    }
+
+    var isRead = notifStates[n.id] === 'read';
+    var unread = n.unread && !isRead;
+
+    var item = document.createElement('div');
+    item.className = 'notif-item t-'+n.type + (unread?' unread':'');
+    item.style.animationDelay = (idx * 0.04) + 's';
+    item.id = 'notif-'+n.id;
+
+    // Icon bg color by type
+    var iconBg = {
+      match:'rgba(34,197,94,.1)', coach:'rgba(34,197,94,.1)',
+      valeur:'rgba(0,212,255,.1)', ligue:'rgba(168,85,247,.1)',
+      level:'rgba(240,180,41,.1)', mercato:'rgba(255,45,85,.1)',
+      social:'rgba(79,163,255,.1)', systeme:'rgba(74,96,128,.1)'
+    };
+
+    // Actions HTML
+    var actionsHtml = '';
+    if(n.actions && n.actions.length){
+      actionsHtml = '<div class="ni-actions">';
+      n.actions.forEach(function(a, ai){
+        var cls = ai===0 && (a==='Accepter'||a==='Confirmer presence') ? 'na-accept' :
+                  (a==='Refuser'||a==='Decliner') ? 'na-refuse' : 'na-view';
+        actionsHtml += '<button class="na-btn '+cls+'" onclick="handleAction(event,'+n.id+',\''+a+'\')">'+a+'</button>';
+      });
+      actionsHtml += '</div>';
+    }
+
+    item.innerHTML =
+      '<div class="ni-icon-wrap" style="background:'+(iconBg[n.type]||'var(--panel2)')+';border-color:var(--border)">'+
+        String.fromCodePoint(parseInt(n.icon,16))+
+      '</div>' +
+      '<div class="ni-body">' +
+        '<div class="ni-header">' +
+          '<div class="ni-title">'+n.title+'</div>' +
+          '<div class="ni-time">'+n.time+'</div>' +
+        '</div>' +
+        '<div class="ni-text">'+n.text+'</div>' +
+        actionsHtml +
+      '</div>' +
+      (unread ? '<div class="ni-unread-dot"></div>' : '');
+
+    item.onclick = function(){ markRead(n.id); };
+    container.appendChild(item);
+  });
+
+  updateCount();
+}
+
+// ══════════════════════════════
+//  INTERACTIONS
+// ══════════════════════════════
+function markRead(id){
+  notifStates[id] = 'read';
+  var el = document.getElementById('notif-'+id);
+  if(el){
+    el.classList.remove('unread');
+    var dot = el.querySelector('.ni-unread-dot');
+    if(dot) dot.remove();
+  }
+  updateCount();
+}
+
+function markAllRead(){
+  NOTIFS.forEach(function(n){ notifStates[n.id] = 'read'; });
+  renderNotifs();
+}
+
+function clearAll(){
+  NOTIFS.forEach(function(n){ notifStates[n.id] = 'deleted'; });
+  renderNotifs();
+  var btn = document.querySelector('.btn-clear');
+  if(btn){ btn.textContent = 'Efface !'; setTimeout(function(){ btn.textContent = 'Effacer'; }, 1500); }
+}
+
+function handleAction(e, id, action){
+  e.stopPropagation();
+  var el = document.getElementById('notif-'+id);
+  var actionsWrap = el ? el.querySelector('.ni-actions') : null;
+  if(action === 'Accepter' || action === 'Confirmer presence'){
+    if(actionsWrap) actionsWrap.innerHTML = '<span style="font-size:12px;color:var(--green);font-weight:700">Accepte</span>';
+    markRead(id);
+  } else if(action === 'Refuser' || action === 'Decliner'){
+    if(actionsWrap) actionsWrap.innerHTML = '<span style="font-size:12px;color:var(--danger);font-weight:700">Refuse</span>';
+    markRead(id);
+  } else {
+    markRead(id);
+  }
+}
+
+function updateCount(){
+  var unread = NOTIFS.filter(function(n){
+    return n.unread && notifStates[n.id] !== 'read' && notifStates[n.id] !== 'deleted';
+  }).length;
+  var el = document.getElementById('unread-count');
+  if(el){ el.textContent = unread; el.style.display = unread > 0 ? 'inline' : 'none'; }
+}
+
+function toggleSetting(idx, el){
+  SETTINGS[idx].on = !SETTINGS[idx].on;
+  el.classList.toggle('on', SETTINGS[idx].on);
+  renderNotifs();
+}
+
+// ── NAV ──
+function nav(page){
+  var pages={'accueil':'index.html','profil':'profil.html','joueurs':'joueurs.html','ligue':'ligue.html','classement':'classement.html','economie':'economie.html','minijeux':'minijeux.html','notifications':'notifications.html','coach':'coach.html','coach':'coach.html'};
+  if(pages[page]) window.location.href=pages[page];
+}
+
+// ── INIT ──
+buildFilters();
+buildSettings();
+renderNotifs();
+</script>
+</body>
+</html>
