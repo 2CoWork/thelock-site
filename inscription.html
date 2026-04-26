@@ -205,7 +205,7 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;padd
 <div class="topbar">
   <a class="tb-logo" href="index.html">THE <span>LOCK</span></a>
   <nav class="tb-nav">
-    <button class="tb-link" onclick="window.location.href='index.html'">Accueil</button>
+    <button class="tb-link" onclick="nav('accueil')">Accueil</button>
     <button class="tb-link" onclick="nav('joueurs')">Joueurs</button>
     <button class="tb-link" onclick="nav('ligue')">Ligues</button>
     <button class="tb-link" onclick="nav('classement')">Classement</button>
@@ -363,7 +363,7 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;padd
         <div class="conftitle" id="conf-title">BIENVENUE !</div>
         <div class="confsub">Ton compte THE LOCK · ÉDITION I est actif.<br>Accède à ton profil et rejoins l'aventure.</div>
         <div id="conf-card" style="width:100%;max-width:300px;margin-bottom:20px"></div>
-        <button class="btn btn-next" style="max-width:260px" onclick="window.location.href='profil.html'">ACCÉDER À MON PROFIL →</button>
+        <button class="btn btn-next" style="max-width:260px" onclick="alert('→ Redirection vers le profil joueur !')">ACCÉDER À MON PROFIL →</button>
       </div>
     </div>
   </div>
@@ -915,32 +915,6 @@ function submitForm(){
   document.getElementById('prog-dots').style.opacity='.3';
 }
 function simConfirm(){
-  // Save user data to localStorage
-  var userData = {
-    pseudo: S.pseudo,
-    age: S.age,
-    mail: S.mail,
-    gender: S.gender,
-    skin: S.av.skin,
-    hair: S.av.hair,
-    eye: S.av.eye,
-    postes: S.postes || [],
-    role: S.role || 'Joueur',
-    capa1: S.capa1 || '',
-    capa2: S.capa2 || '',
-    level: 'RECRUE',
-    xp: 0,
-    lc: 500,
-    valeur: 1000,
-    followers: 0,
-    buts: 0,
-    assists: 0,
-    note: 0,
-    presences: 0,
-    loggedIn: true,
-    createdAt: new Date().toISOString()
-  };
-  try { localStorage.setItem('thelock_user', JSON.stringify(userData)); } catch(e){}
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
   document.getElementById('step-confirmed').classList.add('active');
   document.getElementById('conf-title').textContent=`BIENVENUE, ${S.pseudo.toUpperCase()} !`;
@@ -965,14 +939,9 @@ function nav(page){
     'feed':'feed.html',
     'classement':'classement.html',
     'ligue':'ligue.html',
-    'economie':'economie.html',
-    'joueurs':'joueurs.html',
-    'coach':'coach.html',
-    'minijeux':'minijeux.html',
-    'notifications':'notifications.html'
+    'economie':'economie.html','minijeux':'minijeux.html','notifications':'notifications.html','coach':'coach.html',
+    'joueurs':'joueurs.html'
   };
-  if(pages[page]) window.location.href=pages[page];
-};
   if(pages[page]) window.location.href=pages[page];
 }
 

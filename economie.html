@@ -188,7 +188,7 @@ body{background:var(--ink);font-family:'DM Sans',sans-serif;color:var(--text);mi
 <div class="topbar">
   <a class="tb-logo" href="index.html">THE <span>LOCK</span></a>
   <nav class="tb-nav">
-    <button class="tb-link" onclick="window.location.href='index.html'">Accueil</button>
+    <button class="tb-link" onclick="nav('accueil')">Accueil</button>
     <button class="tb-link" onclick="nav('joueurs')">Joueurs</button>
     <button class="tb-link" onclick="nav('ligue')">Ligues</button>
     <button class="tb-link" onclick="nav('classement')">Classement</button>
@@ -659,14 +659,9 @@ function nav(page){
     'feed':'feed.html',
     'classement':'classement.html',
     'ligue':'ligue.html',
-    'economie':'economie.html',
-    'joueurs':'joueurs.html',
-    'coach':'coach.html',
-    'minijeux':'minijeux.html',
-    'notifications':'notifications.html'
+    'economie':'economie.html','minijeux':'minijeux.html','notifications':'notifications.html','coach':'coach.html',
+    'joueurs':'joueurs.html'
   };
-  if(pages[page]) window.location.href=pages[page];
-};
   if(pages[page]) window.location.href=pages[page];
 }
 
@@ -699,17 +694,5 @@ function getLevelFromXP(xp){
     <div class="footer-right">THE LOCK · EDITION I · 2026</div>
   </div>
 </footer>
-<script>
-// AUTH CHECK
-(function(){
-  try{
-    var u=JSON.parse(localStorage.getItem('thelock_user')||'null');
-    if(!u||!u.loggedIn){ window.location.href='index.html?auth=1'; return; }
-    // Update topbar
-    var tb=document.querySelector('.tb-profile');
-    if(tb) tb.textContent=u.pseudo.toUpperCase();
-  }catch(e){}
-})();
-</script>
 </body>
 </html>

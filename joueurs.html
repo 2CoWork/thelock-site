@@ -194,9 +194,9 @@ body{background:var(--ink);font-family:'DM Sans',sans-serif;color:var(--text);mi
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="tb-logo" onclick="window.location.href='index.html'">THE <span>LOCK</span></div>
+  <div class="tb-logo" onclick="nav('accueil')">THE <span>LOCK</span></div>
   <nav class="tb-nav">
-    <button class="tb-link" onclick="window.location.href='index.html'">Accueil</button>
+    <button class="tb-link" onclick="nav('accueil')">Accueil</button>
     <button class="tb-link on">Joueurs</button>
     <button class="tb-link" onclick="nav('ligue')">Ligues</button>
     <button class="tb-link" onclick="nav('classement')">Classement</button>
@@ -578,18 +578,6 @@ document.head.appendChild(style);
 // ── INIT ──
 buildFilters();
 renderPlayers();
-</script>
-<script>
-// AUTH CHECK
-(function(){
-  try{
-    var u=JSON.parse(localStorage.getItem('thelock_user')||'null');
-    if(!u||!u.loggedIn){ window.location.href='index.html?auth=1'; return; }
-    // Update topbar
-    var tb=document.querySelector('.tb-profile');
-    if(tb) tb.textContent=u.pseudo.toUpperCase();
-  }catch(e){}
-})();
 </script>
 </body>
 </html>
