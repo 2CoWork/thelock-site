@@ -784,36 +784,6 @@ body{background:var(--ink);font-family:'DM Sans',sans-serif;color:var(--text);mi
 </div><!-- /layout -->
 
 <script>
-// ── AUTH ──
-var TL={getUser:function(){try{return JSON.parse(localStorage.getItem('tl_user')||'null');}catch(e){return null;}}};
-var USER=TL.getUser();
-if(!USER||!USER.loggedIn){window.location.href='index.html';}
-
-function applyUser(){
-  if(!USER) return;
-  // Name
-  var n=document.querySelector('.hero-name');
-  if(n) n.innerHTML=USER.pseudo.toUpperCase()+' <span style="color:var(--gold)">· THE LOCK</span>';
-  // Handle  
-  var h=document.querySelector('.hero-handle');
-  if(h) h.textContent='@'+USER.pseudo.toLowerCase().replace(/ /g,'_');
-  // Tagline
-  var t=document.querySelector('.hero-tagline');
-  if(t) t.textContent=(USER.role||'Joueur')+' · THE LOCK Edition I';
-  // Topbar name
-  var tb=document.querySelector('.tb-profile');
-  if(tb) tb.textContent=USER.pseudo.toUpperCase();
-  // Level
-  var lv=document.querySelector('.av-level');
-  if(lv) lv.textContent=USER.level||'RECRUE';
-  // Stats
-  var qs=document.querySelectorAll('.qs-val');
-  if(qs.length>=5){qs[0].textContent=USER.note||'0';qs[1].textContent=USER.presences||'0';qs[2].textContent=USER.buts||'0';qs[3].textContent=USER.assists||'0';qs[4].textContent=USER.followers||'0';}
-  // Avatar colors
-  if(USER.skin&&window.av){av.skin=USER.skin;av.hair=USER.hair||av.hair;av.eye=USER.eye||av.eye;}
-}
-
-
 // AVATAR
 var av={skin:'#C68642',hair:'#1a1a1a',eye:'#00d4ff',gender:'M'};
 function dk(h,p){try{var n=parseInt(h.replace('#',''),16);return '#'+[((n>>16)&255),(n>>8)&255,n&255].map(function(v){return Math.max(0,v-p).toString(16).padStart(2,'0')}).join('')}catch(e){return h}}
@@ -839,7 +809,6 @@ function buildAv(){
     '<path d="M116,82 Q114,68 108,64" fill="'+av.hair+'" stroke="#0a0a0a" stroke-width="1" opacity=".85"/>';
 }
 document.getElementById('profile-av').innerHTML=buildAv();
-applyUser();
 var ra=document.getElementById('recap-av');
 if(ra) ra.innerHTML=buildAv();
 
