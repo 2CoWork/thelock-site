@@ -485,7 +485,7 @@ body{background:var(--ink);font-family:'DM Sans',sans-serif;color:var(--text);mi
 </head>
 <body>
 <div class="topbar">
-  <a class="tb-logo" href="index.html">THE <span>LOCK</span></a>
+  <a class="tb-logo" href="thelock-v4.html">THE <span>LOCK</span></a>
   <nav class="tb-nav">
     <button class="tb-link" onclick="nav('accueil')">Accueil</button>
     <button class="tb-link" onclick="nav('joueurs')">Joueurs</button>
@@ -809,6 +809,7 @@ function buildAv(){
     '<path d="M116,82 Q114,68 108,64" fill="'+av.hair+'" stroke="#0a0a0a" stroke-width="1" opacity=".85"/>';
 }
 document.getElementById('profile-av').innerHTML=buildAv();
+applyUserData();
 var ra=document.getElementById('recap-av');
 if(ra) ra.innerHTML=buildAv();
 
@@ -1036,14 +1037,14 @@ function confirmLogout(){
 
 function nav(page){
   var pages={
-    'accueil':'index.html',
+    'accueil':'thelock-v4.html',
     'inscription':'inscription.html',
     'profil':'profil.html',
-    'feed':'feed.html',
-    'classement':'classement.html',
-    'ligue':'ligue.html',
-    'economie':'economie.html','minijeux':'minijeux.html','notifications':'notifications.html','coach':'coach.html',
-    'joueurs':'joueurs.html'
+    'feed':'thelock-feed.html',
+    'classement':'thelock-classement.html',
+    'ligue':'thelock-ligue.html',
+    'economie':'thelock-economie.html',
+    'joueurs':'thelock-joueurs.html'
   };
   if(pages[page]) window.location.href=pages[page];
 }
