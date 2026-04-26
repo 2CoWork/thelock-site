@@ -784,20 +784,29 @@ body{background:var(--ink);font-family:'DM Sans',sans-serif;color:var(--text);mi
 </div><!-- /layout -->
 
 <script>
-// ── LOAD USER FROM LOCALSTORAGE ──
+// ── AUTH CHECK ──
 var USER = null;
-try { var raw = localStorage.getItem('thelock_user'); if(raw) USER = JSON.parse(raw); } catch(e){}
+try{ var _r = localStorage.getItem('thelock_user'); if(_r) USER = JSON.parse(_r); }catch(e){}
+if(!USER || !USER.loggedIn){ window.location.href='index.html?auth=1'; }
+
+// ── AVATAR ──
+var av={
+  skin: (USER && USER.skin) ? USER.skin : '#C68642',
+  hair: (USER && USER.hair) ? USER.hair : '#1a1a1a',
+  eye:  (USER && USER.eye)  ? USER.eye  : '#00d4ff',
+  gender: (USER && USER.gender) ? USER.gender : 'M'
+};
 
 function applyUserData(){
   if(!USER) return;
   var hn = document.querySelector('.hero-name');
-  if(hn) hn.innerHTML = USER.pseudo.toUpperCase() + ' <span style="color:var(--gold)"> THE LOCK</span>';
+  if(hn) hn.innerHTML = USER.pseudo.toUpperCase() + ' <span style="color:var(--gold)"> · THE LOCK</span>';
   var hh = document.querySelector('.hero-handle');
-  if(hh) hh.textContent = '@' + USER.pseudo.toLowerCase().replace(/ /g,'_');
+  if(hh) hh.textContent = '@' + USER.pseudo.toLowerCase().replace(/ /g,'_') + ' · #THE LOCK';
   var ht = document.querySelector('.hero-tagline');
-  if(ht) ht.textContent = (USER.role || 'Joueur') + ' · THE LOCK Edition I';
+  if(ht) ht.textContent = (USER.role || 'Joueur') + ' · THE LOCK Edition I · 2026';
   var al = document.querySelector('.av-level');
-  if(al) al.textContent = USER.level || 'RECRUE';
+  if(al) al.textContent = 'RECRUE';
   var tb = document.querySelector('.tb-profile');
   if(tb) tb.textContent = USER.pseudo.toUpperCase();
   var qvals = document.querySelectorAll('.qs-val');
@@ -808,13 +817,7 @@ function applyUserData(){
     qvals[3].textContent = USER.assists || '0';
     qvals[4].textContent = USER.followers || '0';
   }
-  if(USER.skin) av.skin = USER.skin;
-  if(USER.hair) av.hair = USER.hair;
-  if(USER.eye)  av.eye  = USER.eye;
-}
-
-// ── AVATAR ──
-var av={skin:'#C68642',hair:'#1a1a1a',eye:'#00d4ff',gender:'M'};'#C68642',hair:'#1a1a1a',eye:'#00d4ff',gender:'M'};
+}'#C68642',hair:'#1a1a1a',eye:'#00d4ff',gender:'M'};
 function dk(h,p){try{var n=parseInt(h.replace('#',''),16);return '#'+[((n>>16)&255),(n>>8)&255,n&255].map(function(v){return Math.max(0,v-p).toString(16).padStart(2,'0')}).join('')}catch(e){return h}}
 function buildAv(){
   return '<path d="M44,78 Q42,50 58,38 Q68,30 80,29 Q92,28 102,38 Q118,50 116,78 Q108,54 80,50 Q52,54 44,78Z" fill="'+av.hair+'"/>'+

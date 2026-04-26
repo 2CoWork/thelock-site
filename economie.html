@@ -694,5 +694,17 @@ function getLevelFromXP(xp){
     <div class="footer-right">THE LOCK · EDITION I · 2026</div>
   </div>
 </footer>
+<script>
+// AUTH CHECK
+(function(){
+  try{
+    var u=JSON.parse(localStorage.getItem('thelock_user')||'null');
+    if(!u||!u.loggedIn){ window.location.href='index.html?auth=1'; return; }
+    // Update topbar
+    var tb=document.querySelector('.tb-profile');
+    if(tb) tb.textContent=u.pseudo.toUpperCase();
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
