@@ -214,9 +214,9 @@ body{background:var(--ink);font-family:'DM Sans',sans-serif;color:var(--text);mi
 <body>
 
 <div class="topbar">
-  <div class="tb-logo" onclick="nav('accueil')">THE <span>LOCK</span></div>
+  <div class="tb-logo" onclick="window.location.href='index.html'">THE <span>LOCK</span></div>
   <nav class="tb-nav">
-    <button class="tb-link" onclick="nav('accueil')">Accueil</button>
+    <button class="tb-link" onclick="window.location.href='index.html'">Accueil</button>
     <button class="tb-link" onclick="nav('joueurs')">Joueurs</button>
     <button class="tb-link" onclick="nav('ligue')">Ligues</button>
     <button class="tb-link on">Mini-Jeux</button>
@@ -639,7 +639,21 @@ function showScreen(id){
 
 // ── NAV ──
 function nav(page){
-  var pages={'accueil':'index.html','profil':'profil.html','joueurs':'joueurs.html','ligue':'ligue.html','classement':'classement.html','economie':'economie.html','minijeux':'minijeux.html','notifications':'notifications.html','coach':'coach.html'};
+  var pages={
+    'accueil':'index.html',
+    'inscription':'inscription.html',
+    'profil':'profil.html',
+    'feed':'feed.html',
+    'classement':'classement.html',
+    'ligue':'ligue.html',
+    'economie':'economie.html',
+    'joueurs':'joueurs.html',
+    'coach':'coach.html',
+    'minijeux':'minijeux.html',
+    'notifications':'notifications.html'
+  };
+  if(pages[page]) window.location.href=pages[page];
+};
   if(pages[page]) window.location.href=pages[page];
 }
 

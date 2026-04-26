@@ -203,9 +203,9 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;padd
 </head>
 <body>
 <div class="topbar">
-  <a class="tb-logo" href="thelock-v4.html">THE <span>LOCK</span></a>
+  <a class="tb-logo" href="index.html">THE <span>LOCK</span></a>
   <nav class="tb-nav">
-    <button class="tb-link" onclick="nav('accueil')">Accueil</button>
+    <button class="tb-link" onclick="window.location.href='index.html'">Accueil</button>
     <button class="tb-link" onclick="nav('joueurs')">Joueurs</button>
     <button class="tb-link" onclick="nav('ligue')">Ligues</button>
     <button class="tb-link" onclick="nav('classement')">Classement</button>
@@ -959,15 +959,20 @@ buildPgrid();
 
 function nav(page){
   var pages={
-    'accueil':'thelock-v4.html',
-    'inscription':'thelock-inscription-v3.html',
-    'profil':'thelock-profil-v2.html',
-    'feed':'thelock-feed.html',
-    'classement':'thelock-classement.html',
-    'ligue':'thelock-ligue.html',
-    'economie':'thelock-economie.html',
-    'joueurs':'thelock-joueurs.html'
+    'accueil':'index.html',
+    'inscription':'inscription.html',
+    'profil':'profil.html',
+    'feed':'feed.html',
+    'classement':'classement.html',
+    'ligue':'ligue.html',
+    'economie':'economie.html',
+    'joueurs':'joueurs.html',
+    'coach':'coach.html',
+    'minijeux':'minijeux.html',
+    'notifications':'notifications.html'
   };
+  if(pages[page]) window.location.href=pages[page];
+};
   if(pages[page]) window.location.href=pages[page];
 }
 
